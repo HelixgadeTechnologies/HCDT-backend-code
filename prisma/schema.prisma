@@ -13,13 +13,288 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+//MODEL
 model User {
-  id       Int      @id @default(autoincrement())
-  name     String
-  password String
-  email    String   @unique
-  createAt DateTime @default(now())
-  updateAt DateTime @default(now())
+  userId                   String                     @id @default(uuid())
+  firstName                String?
+  lastName                 String?
+  email                    String?                    @unique
+  address                  String?
+  role                     Role?                      @relation(fields: [roleId], references: [roleId])
+  roleId                   String?
+  status                   Int?
+  password                 String?
+  createAt                 DateTime?                  @default(now())
+  updateAt                 DateTime?                  @default(now())
+  trust                    Trust[]
+  trustEstablishmentStatus TrustEstablishmentStatus[]
+  conflict                 Conflict[]
 
   @@map("users")
+}
+
+model Role {
+  roleId    String  @id @default(uuid())
+  roleName  String?
+  roleOrder Int?
+  users     User[]
+
+  @@map("role")
+}
+
+model Settlor {
+  settlorId          String  @id @default(uuid())
+  settlorName        String?
+  omlCode            String?
+  contactName        String?
+  contactEmail       String?
+  contactPhoneNumber String?
+  trust              Trust[]
+
+  @@map("settlor")
+}
+
+model Trust {
+  trustId                               String                         @id @default(uuid())
+  trustName                             String?
+  settlor                               Settlor?                       @relation(fields: [settlorId], references: [settlorId])
+  settlorId                             String?
+  user                                  User?                          @relation(fields: [userId], references: [userId])
+  userId                                String?
+  country                               String?
+  state                                 String?
+  localGovernmentArea                   String?
+  trustCommunities                      String?
+  totalMaleBotMembers                   Int?
+  totalFemaleBotMembers                 Int?
+  totalPwdBotMembers                    Int?
+  TotalMaleAdvisoryCommitteeMembers     Int?
+  TotalFemaleAdvisoryCommitteeMembers   Int?
+  TotalPwdAdvisoryCommitteeMembers      Int?
+  TotalMaleManagementCommitteeMembers   Int?
+  TotalFemaleManagementCommitteeMembers Int?
+  TotalPwdManagementCommitteeMembers    Int?
+  createAt                              DateTime?                      @default(now())
+  updateAt                              DateTime?                      @default(now())
+  botDetails                            BotDetails[]
+  trustEstablishmentStatus              TrustEstablishmentStatus[]
+  project                               Project[]
+  averageCommunitySatisfaction          AverageCommunitySatisfaction[]
+  economicImpact                        EconomicImpact[]
+
+  @@map("trust")
+}
+
+model BotDetails {
+  botDetailsId String  @id @default(uuid())
+  firstName    String?
+  lastName     String?
+  email        String?
+  phoneNumber  String?
+  trust        Trust?  @relation(fields: [trustId], references: [trustId])
+  trustId      String?
+
+  @@map("botdetails")
+}
+
+//Trust Management
+
+model TrustEstablishmentStatus {
+  trustEstablishmentStatusId                   String                   @id @default(uuid())
+  trustRegisteredWithCAC                       Int?
+  cscDocument                                  Bytes?
+  yearIncorporated                             Int?
+  botConstitutedAndInaugurated                 Int?
+  managementCommitteeConstitutedAndInaugurated Int?
+  advisoryCommitteeConstitutedAndInaugurated   Int?
+  isTrustDevelopmentPlanReadilyAvailable       Int?
+  isTrustDevelopmentPlanBudgetReadilyAvailable Int?
+  yearDeveloped                                Int?
+  yearExpired                                  Int?
+  developmentPlanDocument                      Bytes?
+  developmentPlanBudgetDocument                Bytes?
+  yearOfFundsReceivedByTrust                   Int?
+  totalFundsReceivedByTrust                    Int?
+  capitalExpenditure                           Int?
+  reserve                                      Int?
+  user                                         User?                    @relation(fields: [admin], references: [userId])
+  admin                                        String?
+  yearOfNeedsAssessment                        Int?
+  statusOfNeedAssessment                       Int?
+  communityWomenConsulted                      Int?
+  pwDsConsulted                                Int?
+  communityYouthsConsulted                     Int?
+  communityLeadershipConsulted                 Int?
+  attendanceSheet                              Int?
+  distributionMatrixDevelopedBySettlor         Boolean?
+  trustDistributionMatrixDocument              Bytes?
+  operationalExpenditure                       OperationalExpenditure[]
+  trust                                        Trust?                   @relation(fields: [trustId], references: [trustId])
+  trustId                                      String?
+  createAt                                     DateTime?                @default(now())
+  updateAt                                     DateTime?                @default(now())
+
+  @@map("trustestablishmentstatus")
+}
+
+model OperationalExpenditure {
+  OperationalExpenditureId          String                    @id @default(uuid())
+  settlorOperationalExpenditureYear Int?
+  settlorOperationalExpenditure     Int?
+  trustEstablishmentStatus          TrustEstablishmentStatus? @relation(fields: [trustEstablishmentStatusId], references: [trustEstablishmentStatusId])
+  trustEstablishmentStatusId        String?
+
+  @@map("operationalexpenditure")
+}
+
+model Project {
+  projectId                             String           @id @default(uuid())
+  projectTitle                          String?
+  projectCategory                       ProjectCategory? @relation(fields: [projectCategoryId], references: [projectCategoryId])
+  projectCategoryId                     Int?
+  totalBudget                           Int?
+  community                             String?
+  awardDate                             DateTime?
+  nameOfContractor                      String?
+  annualApprovedBudget                  String?
+  statusReport                          StatusReport?    @relation(fields: [projectStatus], references: [statusReportId])
+  projectStatus                         Int?
+  qualityRating                         QualityRating?   @relation(fields: [qualityRatingId], references: [qualityRatingId])
+  qualityRatingId                       Int?
+  projectVideo                          Bytes?
+  numberOfMaleEmployedByContractor      Int?
+  numberOfFemaleEmployedByContractor    Int?
+  numberOfPwDsEmployedByContractor      Int?
+  typeOfWork                            String?
+  numberOfHostCommunityMemberContracted Int?
+  numberOfMaleBenefited                 Int?
+  numberOfFemaleBenefited               Int?
+  numberOfPwDsBenefited                 Int?
+  trust                                 Trust?           @relation(fields: [trustId], references: [trustId])
+  trustId                               String?
+  createAt                              DateTime?        @default(now())
+  updateAt                              DateTime?        @default(now())
+  conflict                              Conflict[]
+
+  @@map("project")
+}
+
+model ProjectCategory {
+  projectCategoryId Int       @id @default(autoincrement())
+  categoryName      String?
+  project           Project[]
+
+  @@map("projectcategory")
+}
+
+model QualityRating {
+  qualityRatingId Int       @id @default(autoincrement())
+  qualityRating   String?
+  project         Project[]
+
+  @@map("qualityrating")
+}
+
+model StatusReport {
+  statusReportId Int       @id @default(autoincrement())
+  statusReport   String?
+  project        Project[]
+
+  @@map("statusreport")
+}
+
+model TypeOfWork {
+  typeOfWorkId Int     @id @default(autoincrement())
+  typeOfWork   String?
+
+  @@map("typeofwork")
+}
+
+model Conflict {
+  ConflictId              String                 @id @default(uuid())
+  project                 Project?               @relation(fields: [projectId], references: [projectId])
+  projectId               String?
+  user                    User?                  @relation(fields: [userId], references: [userId])
+  userId                  String?
+  causeOfConflict         CauseOfConflict?       @relation(fields: [causeOfConflictId], references: [CauseOfConflictId])
+  causeOfConflictId       Int?
+  partiesInvolve          PartiesInvolve?        @relation(fields: [partiesInvolveId], references: [partiesInvolveId])
+  partiesInvolveId        Int?
+  narrateIssues           String?
+  conflictStatus          ConflictStatus?        @relation(fields: [conflictStatusId], references: [conflictStatusId])
+  conflictStatusId        Int?
+  issuesAddressBy         IssuesAddressBy?       @relation(fields: [issuesAddressById], references: [issuesAddressById])
+  issuesAddressById       Int?
+  courtLitigationStatus   CourtLitigationStatus? @relation(fields: [courtLitigationStatusId], references: [courtLitigationStatusId])
+  courtLitigationStatusId Int?
+  createAt                DateTime?              @default(now())
+  updateAt                DateTime?              @default(now())
+
+  @@map("conflict")
+}
+
+model CauseOfConflict {
+  CauseOfConflictId Int        @id @default(autoincrement())
+  causeOfConflict   String?
+  conflict          Conflict[]
+
+  @@map("causeofconflict")
+}
+
+model PartiesInvolve {
+  partiesInvolveId Int        @id @default(autoincrement())
+  partiesInvolve   String?
+  conflict         Conflict[]
+
+  @@map("partiesinvolve")
+}
+
+model ConflictStatus {
+  conflictStatusId Int        @id @default(autoincrement())
+  conflictStatus   String?
+  conflict         Conflict[]
+
+  @@map("conflictstatus")
+}
+
+model IssuesAddressBy {
+  issuesAddressById Int        @id @default(autoincrement())
+  issuesAddressBy   String?
+  conflict          Conflict[]
+
+  @@map("issuesaddressby")
+}
+
+model CourtLitigationStatus {
+  courtLitigationStatusId Int        @id @default(autoincrement())
+  courtLitigationStatus   String?
+  conflict                Conflict[]
+
+  @@map("courtlitigationstatus")
+}
+
+model AverageCommunitySatisfaction {
+  averageCommunitySatisfactionId String  @id @default(uuid())
+  infoProjects                   Int?
+  communityConsult               Int?
+  localParticipation             Int?
+  reportMechanism                Int?
+  conflictMinimization           Int?
+  projectHandover                Int?
+  maintenanceConsult             Int?
+  incomeProject                  Int?
+  trust                          Trust?  @relation(fields: [trustId], references: [trustId])
+  trustId                        String?
+
+  @@map("averagecommunitysatisfaction")
+}
+
+model EconomicImpact {
+  economicImpactId  String  @id @default(uuid())
+  businessGrowth    Int?
+  incomeIncrease    Int?
+  livelihoodImprove Int?
+  accessAmenities   Int?
+  trust             Trust?  @relation(fields: [trustId], references: [trustId])
+  trustId           String?
 }
