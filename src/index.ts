@@ -1,22 +1,21 @@
 import express, { Express, Request, Response } from "express";
 import { PORT } from "./secrets";
 import rootRouters from "./routes/index";
+import setupSwagger from './swagger';
 var cors = require('cors')
-
 let app: Express = express();
 
-// Allow all origins (not recommended for production)
+// ✅ Body parsing middleware should be first
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// ✅ CORS should come after body parsing
 app.use(cors());
 
-// app.use(
-//     cors({
-//       origin: "http://your-frontend.com", // Replace with your frontend URL
-//       methods: ["GET", "POST", "PUT", "DELETE"],
-//       allowedHeaders: ["Content-Type", "Authorization"],
-//     })
-//   );
+// ✅ Setup Swagger documentation
+setupSwagger(app);
 
-app.use("/api", rootRouters)
-
+// ✅ Register all routes
+app.use("/api", rootRouters);
 
 app.listen(PORT, () => console.log("The server is live"));

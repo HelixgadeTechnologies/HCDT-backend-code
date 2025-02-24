@@ -20,12 +20,18 @@ model User {
   lastName                 String?
   email                    String?                    @unique
   address                  String?
+  phoneNumber              String?
   role                     Role?                      @relation(fields: [roleId], references: [roleId])
   roleId                   String?
   status                   Int?
+  community                String?
+  state                    String?
+  localGovernmentArea      String?
   password                 String?
   createAt                 DateTime?                  @default(now())
   updateAt                 DateTime?                  @default(now())
+  profilePic               Bytes?
+  profilePicExtension      String?
   trust                    Trust[]
   trustEstablishmentStatus TrustEstablishmentStatus[]
   conflict                 Conflict[]
@@ -45,7 +51,7 @@ model Role {
 model Settlor {
   settlorId          String  @id @default(uuid())
   settlorName        String?
-  omlCode            String?
+  omlCode            String? @unique
   contactName        String?
   contactEmail       String?
   contactPhoneNumber String?
@@ -103,6 +109,7 @@ model TrustEstablishmentStatus {
   trustEstablishmentStatusId                   String                   @id @default(uuid())
   trustRegisteredWithCAC                       Int?
   cscDocument                                  Bytes?
+  cscDocumentExtension                         String?
   yearIncorporated                             Int?
   botConstitutedAndInaugurated                 Int?
   managementCommitteeConstitutedAndInaugurated Int?
@@ -112,7 +119,9 @@ model TrustEstablishmentStatus {
   yearDeveloped                                Int?
   yearExpired                                  Int?
   developmentPlanDocument                      Bytes?
+  developmentPlanDocumentExtension             String?
   developmentPlanBudgetDocument                Bytes?
+  developmentPlanBudgetDocumentExtension       String?
   yearOfFundsReceivedByTrust                   Int?
   totalFundsReceivedByTrust                    Int?
   capitalExpenditure                           Int?
@@ -128,6 +137,7 @@ model TrustEstablishmentStatus {
   attendanceSheet                              Int?
   distributionMatrixDevelopedBySettlor         Boolean?
   trustDistributionMatrixDocument              Bytes?
+  trustDistributionMatrixDocumentExtension     String?
   operationalExpenditure                       OperationalExpenditure[]
   trust                                        Trust?                   @relation(fields: [trustId], references: [trustId])
   trustId                                      String?
@@ -162,6 +172,7 @@ model Project {
   qualityRating                         QualityRating?   @relation(fields: [qualityRatingId], references: [qualityRatingId])
   qualityRatingId                       Int?
   projectVideo                          Bytes?
+  projectVideoExtension                 String?
   numberOfMaleEmployedByContractor      Int?
   numberOfFemaleEmployedByContractor    Int?
   numberOfPwDsEmployedByContractor      Int?
@@ -298,3 +309,5 @@ model EconomicImpact {
   trust             Trust?  @relation(fields: [trustId], references: [trustId])
   trustId           String?
 }
+
+//Views will be ignored during migration
