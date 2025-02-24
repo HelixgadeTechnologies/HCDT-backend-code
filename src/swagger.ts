@@ -7,9 +7,9 @@ const options: swaggerJSDoc.Options = {
   definition: {
     openapi: '3.0.0',
     info: {
-      title: 'My API',
+      title: 'HCDT API',
       version: '1.0.0',
-      description: 'API documentation for my Express TypeScript app',
+      description: 'API documentation for an independent monitoring and evaluation system that aims to promote community participation and effective implementation of the Host Community Development Trust for sustainable development.',
     },
   },
   apis: ['./src/routes/*.ts'], // Path to the API routes with Swagger comments
