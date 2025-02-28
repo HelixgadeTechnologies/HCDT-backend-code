@@ -1,4 +1,4 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { IAuth, IDraSignUp, ILogin, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserView } from "../interface/authInterface"
@@ -6,16 +6,15 @@ import { Console } from "console";
 
 
 const prisma = new PrismaClient();
-const SECRET = "your_secret_key"; // Change this to a secure secret key authInterface
-// hash password
-// const hashedPassword = await bcrypt.hash(data.password, 10);
+
+const SECRET = "hcdtSecretKey";
 
 
 export const registerUser = async (data: any) => {
   const roles = await prisma.role.findFirst({ where: { roleName: "ADMIN" } });
-  console.log(roles, "roles")
+
   const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
-  // console.log(existingUser, "fromexistingUserService")
+
   if (existingUser) throw new Error("User with this email already exists");
 
   // hash password
@@ -39,6 +38,11 @@ export const registerUser = async (data: any) => {
 
 };
 
+export const removeUser = async (userId:string) :Promise<User> =>{
+  let user = await prisma.user.delete({where:{userId} })
+  return user
+}
+
 export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   if (isCreate) {
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
@@ -50,25 +54,35 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
         firstName: data.firstName || null,
         lastName: data.lastName || null,
         email: data.email,
-        role: data.roleId ? { connect: { roleId: data.roleId } } : undefined,
-        trust: data.trustId ? { connect: { trustId: data.trustId } } : undefined,
+        roleId: data.roleId || null,
+        trusts: data.trusts,
         status: 0,
         password: hashedPassword
       } as Prisma.UserCreateInput
     });
   } else {
     return prisma.user.update({
-      where: { email: data.email },
+      where: { userId: data.userId },
       data: {
         firstName: data.firstName || null,
         lastName: data.lastName || null,
-        role: data.roleId ? { connect: { roleId: data.roleId } } : undefined,
-        trust: data.trustId ? { connect: { trustId: data.trustId } } : undefined,
+        email: data.email || null,
+        roleId: data.roleId || null,
+        trusts: data.trusts,
         status: 0
       },
     });
   }
 };
+
+export const getAllAdmin = async () :Promise<Array<IUserView>> =>{
+   const user: IUserView[] = await prisma.$queryRaw`
+    SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"})
+  `;
+  return user
+}
+
+
 
 export const registerNuprc = async (data: ISignUpNUPRC, isCreate: boolean) => {
 
@@ -85,21 +99,31 @@ export const registerNuprc = async (data: ISignUpNUPRC, isCreate: boolean) => {
         lastName: data.lastName || null,
         email: data.email,
         phoneNumber: data.phoneNumber || null,
-        role: roles?.roleId ? { connect: { roleId: roles?.roleId } } : undefined,
+        roleId: roles?.roleId || null,
         password: hashedPassword
       } as Prisma.UserCreateInput
     });
   } else {
     return prisma.user.update({
-      where: { email: data.email },
+      where: { userId: data.userId },
       data: {
         firstName: data.firstName || null,
         lastName: data.lastName || null,
+        email: data.email || null,
         phoneNumber: data.phoneNumber || null,
       }
     });
   }
 };
+
+export const getAllNUPRC = async () :Promise<Array<IUserView>> =>{
+  const user: IUserView[] = await prisma.$queryRaw`
+   SELECT * FROM user_view WHERE role IN(${"NUPRC-ADR"})
+ `;
+ return user
+}
+
+
 export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
 
   const roles = await prisma.role.findFirst({ where: { roleName: "DRA" } });
@@ -121,42 +145,58 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
     });
   } else {
     return prisma.user.update({
-      where: { email: data.email },
+      where: { userId: data.userId },
       data: {
         firstName: data.firstName || null,
         lastName: data.lastName || null,
+        email: data.email || null,
         phoneNumber: data.phoneNumber || null,
       }
     });
   }
 };
-export const registerSettlor = async (data: ISettlorSignUp, isCreate: boolean) => {
+
+export const getAllDRA = async () :Promise<Array<IUserView>> =>{
+  const user: IUserView[] = await prisma.$queryRaw`
+   SELECT * FROM user_view WHERE role IN(${"DRA"})
+ `;
+ return user
+}
+
+export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
+  const settlorData = {
+    settlorName: data.settlorName ?? null,
+    omlCode: data.omlCode ?? null,
+    contactName: data.contactName ?? null,
+    contactEmail: data.contactEmail ?? null,
+    contactPhoneNumber: data.contactPhoneNumber ?? null,
+  };
+
   if (isCreate) {
-    const existingSettlor = await prisma.settlor.findUnique({ where: { omlCode: data.omlCode } });
+    const existingSettlor = await prisma.settlor.findUnique({
+      where: { omlCode: data.omlCode as string },
+    });
     if (existingSettlor) throw new Error("Settlor with this OmlCode already exists");
 
-    return prisma.settlor.create({
-      data: {
-        settlorName: data.settlorName || null,
-        omlCode: data.omlCode,
-        contactName: data.contactName || null,
-        contactEmail: data.contactEmail || null,
-        contactPhoneNumber: data.contactPhoneNumber,
-      }
-    });
-  } else {
-    return prisma.settlor.update({
-      where: { omlCode: data.omlCode },
-      data: {
-        settlorName: data.settlorName || null,
-        contactName: data.contactName || null,
-        contactEmail: data.contactEmail || null,
-        contactPhoneNumber: data.contactPhoneNumber,
-      }
-    });
+    return prisma.settlor.create({ data: settlorData });
   }
-};
 
+  return prisma.settlor.update({
+    where: { settlorId: data.settlorId },
+    data: settlorData,
+  });
+};
+export const getAllSettlor = async () :Promise<Array<Settlor>> =>{
+  const user: Settlor[] = await prisma.$queryRaw`
+  SELECT * FROM settlor
+`;
+ return user
+}
+
+export const removeSettlor = async (settlorId:string) :Promise<Settlor> =>{
+  const settlor = prisma.settlor.delete({where:{settlorId}})
+ return settlor
+}
 
 export const loginUser = async (data: ILogin) => {
 

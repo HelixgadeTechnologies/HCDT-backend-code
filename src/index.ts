@@ -1,6 +1,6 @@
 import express, { Express, Request, Response } from "express";
 import { PORT } from "./secrets";
-import rootRouters from "./routes/index";
+import rootRoutes from "./routes/index";
 import setupSwagger from './swagger';
 var cors = require('cors')
 let app: Express = express();
@@ -16,6 +16,6 @@ app.use(cors());
 setupSwagger(app);
 
 // ✅ Register all routes
-app.use("/api", rootRouters);
+app.use("/api", rootRoutes);
 
 app.listen(PORT, () => console.log("The server is live"));

@@ -32,6 +32,7 @@ model User {
   updateAt                 DateTime?                  @default(now())
   profilePic               Bytes?
   profilePicExtension      String?
+  trusts                   String?
   trust                    Trust[]
   trustEstablishmentStatus TrustEstablishmentStatus[]
   conflict                 Conflict[]
@@ -62,8 +63,9 @@ model Settlor {
 
 model Trust {
   trustId                               String                         @id @default(uuid())
-  trustName                             String?
+  trustName                             String                         @unique
   settlor                               Settlor?                       @relation(fields: [settlorId], references: [settlorId])
+  nameOfOmls                            String?
   settlorId                             String?
   user                                  User?                          @relation(fields: [userId], references: [userId])
   userId                                String?
@@ -74,12 +76,12 @@ model Trust {
   totalMaleBotMembers                   Int?
   totalFemaleBotMembers                 Int?
   totalPwdBotMembers                    Int?
-  TotalMaleAdvisoryCommitteeMembers     Int?
-  TotalFemaleAdvisoryCommitteeMembers   Int?
-  TotalPwdAdvisoryCommitteeMembers      Int?
-  TotalMaleManagementCommitteeMembers   Int?
-  TotalFemaleManagementCommitteeMembers Int?
-  TotalPwdManagementCommitteeMembers    Int?
+  totalMaleAdvisoryCommitteeMembers     Int?
+  totalFemaleAdvisoryCommitteeMembers   Int?
+  totalPwdAdvisoryCommitteeMembers      Int?
+  totalMaleManagementCommitteeMembers   Int?
+  totalFemaleManagementCommitteeMembers Int?
+  totalPwdManagementCommitteeMembers    Int?
   createAt                              DateTime?                      @default(now())
   updateAt                              DateTime?                      @default(now())
   botDetails                            BotDetails[]
@@ -97,8 +99,8 @@ model BotDetails {
   lastName     String?
   email        String?
   phoneNumber  String?
-  trust        Trust?  @relation(fields: [trustId], references: [trustId])
-  trustId      String?
+  trust        Trust   @relation(fields: [trustId], references: [trustId])
+  trustId      String
 
   @@map("botdetails")
 }
@@ -109,7 +111,7 @@ model TrustEstablishmentStatus {
   trustEstablishmentStatusId                   String                   @id @default(uuid())
   trustRegisteredWithCAC                       Int?
   cscDocument                                  Bytes?
-  cscDocumentExtension                         String?
+  cscDocumentMimeType                          String?
   yearIncorporated                             Int?
   botConstitutedAndInaugurated                 Int?
   managementCommitteeConstitutedAndInaugurated Int?
@@ -119,9 +121,9 @@ model TrustEstablishmentStatus {
   yearDeveloped                                Int?
   yearExpired                                  Int?
   developmentPlanDocument                      Bytes?
-  developmentPlanDocumentExtension             String?
+  developmentPlanDocumentMimeType              String?
   developmentPlanBudgetDocument                Bytes?
-  developmentPlanBudgetDocumentExtension       String?
+  developmentPlanBudgetDocumentMimeType        String?
   yearOfFundsReceivedByTrust                   Int?
   totalFundsReceivedByTrust                    Int?
   capitalExpenditure                           Int?
@@ -137,10 +139,10 @@ model TrustEstablishmentStatus {
   attendanceSheet                              Int?
   distributionMatrixDevelopedBySettlor         Boolean?
   trustDistributionMatrixDocument              Bytes?
-  trustDistributionMatrixDocumentExtension     String?
+  trustDistributionMatrixDocumentMimeType      String?
   operationalExpenditure                       OperationalExpenditure[]
   trust                                        Trust?                   @relation(fields: [trustId], references: [trustId])
-  trustId                                      String?
+  trustId                                      String?                  @unique
   createAt                                     DateTime?                @default(now())
   updateAt                                     DateTime?                @default(now())
 

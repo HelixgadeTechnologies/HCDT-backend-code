@@ -1,5 +1,5 @@
 export interface IUser {
-    userId: number
+    userId: string
     firstName?: string | null;
     lastName?: string | null;
     email?: string;
@@ -27,21 +27,24 @@ export interface IAuth {
 }
 
 export interface ISignUpAdmin {
+    userId: string;
     firstName: string | null;
     lastName: string | null;
     email: string;
     roleId: string | null;
-    trustId: string | null;
+    trusts: string | null;
     status?: number | null;
 }
 
 export interface ISignUpNUPRC {
+    userId: string;
     firstName: string | null;
     lastName: string | null;
     email: string;
     phoneNumber: string | null;
 }
 export interface ISettlorSignUp {
+    settlorId: string
     settlorName: string | null;
     omlCode: string;
     contactName: string | null;
@@ -49,6 +52,7 @@ export interface ISettlorSignUp {
     contactPhoneNumber: string | null;
 }
 export interface IDraSignUp {
+    userId: string;
     firstName: string | null;
     lastName: string | null;
     email: string;

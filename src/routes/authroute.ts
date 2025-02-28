@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addAdmin, addDRA, addNuprc, addSettlor, login, register, test } from "../controllers/authController";
+import { addAdmin, addDRA, addNuprc, addSettlor, deleteSettlor, deleteUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, login, register, test } from "../controllers/authController";
 
 const authRoutes: Router = Router();
 /**
@@ -7,6 +7,7 @@ const authRoutes: Router = Router();
  * /api/auth/signIn:
  *   post:
  *     summary: Sign In a user
+ *     tags: [Auth] 
  *     description: Fetches a user from the database for login
  *     requestBody:
  *       required: true
@@ -64,6 +65,7 @@ authRoutes.post("/signIn", login);
  * /api/auth/signUp:
  *   post:
  *     summary: SignUp a user
+ *     tags: [Auth]
  *     description: Save a user's data to the database during sign-up
  *     requestBody:
  *       required: true
@@ -108,18 +110,62 @@ authRoutes.post("/signIn", login);
  *                 example: "Obiaokpo"
  *               password:
  *                 type: string
- *                 example: "securePassword123"
+ *                 example: "12345"
  *     responses:
  *       200:
  *         description: User signed up successfully.
  */
 authRoutes.post("/signUp", register);
+
+/**
+ * @swagger
+ * /api/auth/remove:
+ *   post:
+ *     summary: Delete a user by ID
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - userId
+ *             properties:
+ *               userId:
+ *                 type: string
+ *                 example: "17b5914e-092d-46ad-a851-5c01f795265e"
+ *     responses:
+ *       200:
+ *         description: User successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User deleted successfully"
+ *                 user:
+ *                   type: object
+ *       400:
+ *         description: Bad request (missing userId)
+ *       404:
+ *         description: User not found
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.post("/remove", deleteUser)
+
 /**
  * @swagger
  * /api/auth/addAdmin:
  *   post:
  *     summary: Create or Update an Admin
- *     description: Creates a new admin if isCreate is true, otherwise updates an existing admin.
+ *     tags: [Auth]
+ *     description: |
+ *       Creates a new Admin if `isCreate` is true, otherwise updates an existing Admin.  
+ *       **Note:** `userId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
  *     requestBody:
  *       required: true
  *       content:
@@ -138,6 +184,9 @@ authRoutes.post("/signUp", register);
  *                 required:
  *                   - email
  *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
  *                   firstName:
  *                     type: string
  *                     example: "John"
@@ -150,9 +199,9 @@ authRoutes.post("/signUp", register);
  *                   roleId:
  *                     type: string
  *                     example: "uuid-role-id"
- *                   trustId:
+ *                   trusts:
  *                     type: string
- *                     example: "uuid-trust-id"
+ *                     example: "uuid-trust-id-1, uuid-trust-id-2"
  *                   status:
  *                     type: integer
  *                     example: 0
@@ -188,10 +237,50 @@ authRoutes.post("/addAdmin", addAdmin);
 
 /**
  * @swagger
- * /api/auth/addNuprc:
+ * /api/auth/allAdmin:
+ *   get:
+ *     summary: Retrieve all admin users
+ *     tags: [Auth]  
+ *     description: Returns a list of users with roles `SUPER ADMIN` or `ADMIN`
+ *     responses:
+ *       200:
+ *         description: A list of admin users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
+ *                   firstName:
+ *                     type: string
+ *                     example: "John"
+ *                   lastName:
+ *                     type: string
+ *                     example: "Doe"
+ *                   email:
+ *                     type: string
+ *                     example: "john.doe@example.com"
+ *                   role:
+ *                     type: string
+ *                     example: "ADMIN"
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.get("/allAdmin", listAllAdmin);
+
+/**
+ * @swagger
+ * /api/auth/addnuprc:
  *   post:
  *     summary: Create or Update NUPRC-ADR
- *     description: Creates a new NUPRC-ADR if isCreate is true, otherwise updates an existing NUPRC-ADR.
+ *     tags: [Auth]
+ *     description: |
+ *       Creates a new NUPRC-ADR if `isCreate` is true, otherwise updates an existing NUPRC-ADR.  
+ *       **Note:** `userId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
  *     requestBody:
  *       required: true
  *       content:
@@ -210,6 +299,9 @@ authRoutes.post("/addAdmin", addAdmin);
  *                 required:
  *                   - email
  *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
  *                   firstName:
  *                     type: string
  *                     example: "John"
@@ -253,14 +345,54 @@ authRoutes.post("/addAdmin", addAdmin);
  *       500:
  *         description: Internal server error
  */
-authRoutes.post("/addNuprc", addNuprc);
+authRoutes.post("/addnuprc", addNuprc);
+
+/**
+ * @swagger
+ * api/auth/allnuprc:
+ *   get:
+ *     summary: Retrieve all NUPRC-ADR users
+ *     tags: [Auth] 
+ *     description: Returns a list of users with the role `NUPRC-ADR`
+ *     responses:
+ *       200:
+ *         description: A list of NUPRC-ADR users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "c8f6e2a3-1234-5678-90ab-cdef12345678"
+ *                   firstName:
+ *                     type: string
+ *                     example: "Alice"
+ *                   lastName:
+ *                     type: string
+ *                     example: "Smith"
+ *                   email:
+ *                     type: string
+ *                     example: "alice.smith@example.com"
+ *                   role:
+ *                     type: string
+ *                     example: "NUPRC-ADR"
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.get("/allnuprc", listAllNUPRC);
 
 /**
  * @swagger
  * /api/auth/addDRA:
  *   post:
  *     summary: Create or Update DRA
- *     description: Creates a new DRA if isCreate is true, otherwise updates an existing DRA.
+ *     tags: [Auth]
+ *     description: |
+ *       Creates a new DRA if `isCreate` is true, otherwise updates an existing DRA.  
+ *       **Note:** `userId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
  *     requestBody:
  *       required: true
  *       content:
@@ -279,6 +411,9 @@ authRoutes.post("/addNuprc", addNuprc);
  *                 required:
  *                   - email
  *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
  *                   firstName:
  *                     type: string
  *                     example: "John"
@@ -326,10 +461,50 @@ authRoutes.post("/addDRA", addDRA);
 
 /**
  * @swagger
+ * /api/auth/allDra:
+ *   get:
+ *     summary: Retrieve all DRA users
+ *     tags: [Auth] 
+ *     description: Returns a list of users with the role `DRA`
+ *     responses:
+ *       200:
+ *         description: A list of DRA users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "b7e3d2f5-6789-1234-abcd-ef5678901234"
+ *                   firstName:
+ *                     type: string
+ *                     example: "John"
+ *                   lastName:
+ *                     type: string
+ *                     example: "Doe"
+ *                   email:
+ *                     type: string
+ *                     example: "john.doe@example.com"
+ *                   role:
+ *                     type: string
+ *                     example: "DRA"
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.get("/allDra", listAllDRA);
+
+/**
+ * @swagger
  * /api/auth/addSettlor:
  *   post:
  *     summary: Create or Update Settlor
- *     description: Creates a new Settlor if isCreate is true, otherwise updates an existing Settlor.
+ *     tags: [Auth]
+*     description: |
+ *       Creates a new Settlor if `isCreate` is true, otherwise updates an existing Settlor.  
+ *       **Note:** `settlorId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
  *     requestBody:
  *       required: true
  *       content:
@@ -348,6 +523,9 @@ authRoutes.post("/addDRA", addDRA);
  *                 required:
  *                   - settlorEmail
  *                 properties:
+ *                   settlorId:
+ *                     type: string
+ *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
  *                   settlorName:
  *                     type: string
  *                     example: "Oando"
@@ -365,7 +543,7 @@ authRoutes.post("/addDRA", addDRA);
  *                     example: "090983763674"
  *     responses:
  *       200:
- *         description: Successfully created or updated DRA.
+ *         description: Successfully created or updated Settlor.
  *         content:
  *           application/json:
  *             schema:
@@ -395,9 +573,87 @@ authRoutes.post("/addSettlor", addSettlor);
 
 /**
  * @swagger
+ * /api/auth/allSettlor:
+ *   get:
+ *     summary: Retrieve all settlors
+ *     tags: [Auth]  
+ *     description: Returns a list of all settlors
+ *     responses:
+ *       200:
+ *         description: A list of settlors
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   settlorId:
+ *                     type: string
+ *                     example: "e1a2b3c4-5678-9101-1121-314151617181"
+ *                   settlorName:
+ *                     type: string
+ *                     example: "John Settlor"
+ *                   omlCode:
+ *                     type: string
+ *                     example: "OML-123"
+ *                   contactName:
+ *                     type: string
+ *                     example: "Jane Doe"
+ *                   contactEmail:
+ *                     type: string
+ *                     example: "jane.doe@example.com"
+ *                   contactPhoneNumber:
+ *                     type: string
+ *                     example: "+2348012345678"
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.get("/allSettlor", listAllSettlor);
+
+/**
+ * @swagger
+ * /api/auth/removeSettlor:
+ *   post:
+ *     summary: Remove a Settlor
+ *     tags: [Auth]
+ *     description: Deletes a settlor by settlorId
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               settlorId:
+ *                 type: string
+ *                 example: "e1a2b3c4-5678-9101-1121-314151617181"
+ *     responses:
+ *       200:
+ *         description: Settlor successfully removed
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "Settlor removed successfully"
+ *       400:
+ *         description: Settlor ID is missing
+ *       404:
+ *         description: Settlor not found
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.post("/removeSettlor", deleteSettlor);
+
+/**
+ * @swagger
  * /api/auth/test:
  *   get:
  *     summary: Entry Point
+ *     tags: [Auth]
  *     description: This is just a test route
  *     responses:
  *       200:

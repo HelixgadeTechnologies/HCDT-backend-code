@@ -1,8 +1,13 @@
 import { Router } from "express"
 import authRoutes from "./authroute"
+import trustRoutes from "./trustRoute";
 
-const rootRouters: Router = Router();
+const rootRoutes: Router = Router();
 
-rootRouters.use("/auth", authRoutes);
 
-export default rootRouters;
+rootRoutes.use("/auth", authRoutes);
+rootRoutes.use("/trust", trustRoutes);
+
+
+
+export default rootRoutes;
