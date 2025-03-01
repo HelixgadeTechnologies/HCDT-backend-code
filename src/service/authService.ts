@@ -38,8 +38,8 @@ export const registerUser = async (data: any) => {
 
 };
 
-export const removeUser = async (userId:string) :Promise<User> =>{
-  let user = await prisma.user.delete({where:{userId} })
+export const removeUser = async (userId: string): Promise<User> => {
+  let user = await prisma.user.delete({ where: { userId } })
   return user
 }
 
@@ -75,8 +75,8 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   }
 };
 
-export const getAllAdmin = async () :Promise<Array<IUserView>> =>{
-   const user: IUserView[] = await prisma.$queryRaw`
+export const getAllAdmin = async (): Promise<Array<IUserView>> => {
+  const user: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"})
   `;
   return user
@@ -116,11 +116,11 @@ export const registerNuprc = async (data: ISignUpNUPRC, isCreate: boolean) => {
   }
 };
 
-export const getAllNUPRC = async () :Promise<Array<IUserView>> =>{
+export const getAllNUPRC = async (): Promise<Array<IUserView>> => {
   const user: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"NUPRC-ADR"})
  `;
- return user
+  return user
 }
 
 
@@ -156,11 +156,11 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
   }
 };
 
-export const getAllDRA = async () :Promise<Array<IUserView>> =>{
+export const getAllDRA = async (): Promise<Array<IUserView>> => {
   const user: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"DRA"})
  `;
- return user
+  return user
 }
 
 export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
@@ -186,16 +186,16 @@ export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
     data: settlorData,
   });
 };
-export const getAllSettlor = async () :Promise<Array<Settlor>> =>{
+export const getAllSettlor = async (): Promise<Array<Settlor>> => {
   const user: Settlor[] = await prisma.$queryRaw`
   SELECT * FROM settlor
 `;
- return user
+  return user
 }
 
-export const removeSettlor = async (settlorId:string) :Promise<Settlor> =>{
-  const settlor = prisma.settlor.delete({where:{settlorId}})
- return settlor
+export const removeSettlor = async (settlorId: string): Promise<Settlor> => {
+  const settlor = prisma.settlor.delete({ where: { settlorId } })
+  return settlor
 }
 
 export const loginUser = async (data: ILogin) => {

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
-import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getTrustEstablishment, removeTrust } from "../service/trustService";
+import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getTrust, getTrustEstablishment, removeTrust } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
 import { PrismaClient } from "@prisma/client";
 
@@ -27,13 +27,7 @@ export const getTrustInfo = async (req: Request, res: Response) => {
     try {
         const { trustId } = req.params;
 
-        const trust: ITrustView[] = await prisma.$queryRaw`
-          SELECT * FROM trust_view WHERE trustId = ${trustId}
-        `;
-
-        if (trust.length == 0) {
-            res.status(404).json(notFoundResponse("Trust not found", trust));
-        }
+        const trust = await getTrust(trustId);
 
         res.status(201).json(successResponse("Trust", trust));
     } catch (error: any) {
