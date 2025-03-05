@@ -18,3 +18,5 @@ logs/
 .vscode/  
 .idea/  
 DB/
+package-lock.json
+nodemon.json
