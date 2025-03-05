@@ -17,3 +17,4 @@ logs/
 # Editor files  
 .vscode/  
 .idea/  
+DB/
