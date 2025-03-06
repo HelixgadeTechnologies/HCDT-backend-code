@@ -237,7 +237,7 @@ authRoutes.post("/addAdmin", addAdmin);
 
 /**
  * @swagger
- * /api/auth/allAdmin:
+ * /api/auth/admin:
  *   get:
  *     summary: Retrieve all admin users
  *     tags: [Auth]  
@@ -270,7 +270,7 @@ authRoutes.post("/addAdmin", addAdmin);
  *       500:
  *         description: Internal server error
  */
-authRoutes.get("/allAdmin", listAllAdmin);
+authRoutes.get("/admin", listAllAdmin);
 
 /**
  * @swagger
