@@ -100,8 +100,8 @@ model BotDetails {
   lastName     String?
   email        String?
   phoneNumber  String?
-  trust        Trust   @relation(fields: [trustId], references: [trustId])
-  trustId      String
+  trust        Trust?  @relation(fields: [trustId], references: [trustId])
+  trustId      String?
 
   @@map("botdetails")
 }
