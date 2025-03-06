@@ -12,6 +12,7 @@ datasource db {
   provider = "mysql"
   url      = env("STACKHERO_MYSQL_DATABASE")
   // url      = env("DATABASE_URL")
+
 }
 
 //MODEL
