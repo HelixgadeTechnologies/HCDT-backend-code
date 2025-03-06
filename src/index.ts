@@ -17,7 +17,7 @@ app.use(cors());
 setupSwagger(app);
 
 // ✅ Register all routes
-app.use("/", lifeCheck);
 app.use("/api", rootRoutes);
+app.use("/", lifeCheck);
 
 app.listen(PORT, () => console.log("The server is live"));
