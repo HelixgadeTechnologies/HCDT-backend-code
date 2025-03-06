@@ -10,7 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = "mysql://root:2MXqVys7UamyAzuP8yBRo8rqMPFcbSMV@y0p0ti.stackhero-network.com:4985/root?sslaccept=strict"
+  url      = env("DATABASE_URL")
 }
 
 // datasource db {
