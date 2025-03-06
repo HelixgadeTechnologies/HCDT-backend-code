@@ -10,8 +10,8 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url      = env("STACKHERO_MYSQL_DATABASE_URL")
-  // url      = env("DATABASE_URL")
+  // url      = env("STACKHERO_MYSQL_DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 //MODEL
@@ -100,8 +100,8 @@ model BotDetails {
   lastName     String?
   email        String?
   phoneNumber  String?
-  trust        Trust?  @relation(fields: [trustId], references: [trustId])
-  trustId      String?
+  trust        Trust   @relation(fields: [trustId], references: [trustId])
+  trustId      String
 
   @@map("botdetails")
 }

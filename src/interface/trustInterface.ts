@@ -41,7 +41,7 @@ export interface IBotDetailsInsert {
     lastName?: string | null;
     email?: string | null;
     phoneNumber?: string | null;
-    trustId?: string | null;
+    trustId: string;
 }
 export interface ITrustView {
     trustId: string;
