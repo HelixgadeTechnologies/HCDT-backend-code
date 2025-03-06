@@ -53,7 +53,7 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
             lastName: botDetail.lastName,
             email: botDetail.email,
             phoneNumber: botDetail.phoneNumber,
-            trustId: trust.trustId,
+            trustId: trust.trustId as string,
         }));
 
         await prisma.$transaction([
