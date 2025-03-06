@@ -10,8 +10,7 @@ generator client {
 
 datasource db {
   provider = "mysql"
-  url = "mysql://root:${process.env.STACKHERO_MYSQL_ROOT_PASSWORD}@${process.env.STACKHERO_MYSQL_HOST}:${process.env.STACKHERO_MYSQL_PORT}/root?sslaccept=strict"
-  // url      = env("DATABASE_URL")
+  url      = env("DATABASE_URL")
 }
 
 // datasource db {
