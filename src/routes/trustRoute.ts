@@ -8,6 +8,8 @@ const trustRoutes: Router = Router();
  *   post:
  *     summary: Create or update a trust
  *     tags: [Trust]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     description: |
  *       Creates a new Trust if `isCreate` is true, otherwise updates an existing Trust.  
  *       **Note:** `trustId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
@@ -256,6 +258,8 @@ trustRoutes.get("/trust/:trustId", getTrustInfo);
  *   post:
  *     summary: Delete a trust by ID
  *     tags: [Trust]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     requestBody:
  *       required: true
  *       content:
@@ -297,6 +301,8 @@ trustRoutes.post("/remove", deleteTrust);
  *     summary: Create or update a Trust Establishment Status
  *     description: If the trust establishment status exists, it updates the record; otherwise, it creates a new one.
  *     tags: [Trust]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     requestBody:
  *       required: true
  *       content:

@@ -12,12 +12,20 @@ const options: swaggerJSDoc.Options = {
       description: 'API documentation for an independent monitoring and evaluation system that aims to promote community participation and effective implementation of the Host Community Development Trust for sustainable development.',
     },
     servers: [{ url: "https://myhcdtbackend-e9275292f4e2.herokuapp.com/" }],
+    // servers: [{ url: "http://localhost:8000/" }],
     tags: [
       { name: "Auth", description: "Authentication Endpoints" },
       { name: "Trust", description: "Trust Management Endpoints" },
       // { name: "BotDetails", description: "BotDetails Management Endpoints" }, // Added BotDetails tag
     ],
     components: {
+      securitySchemes: {
+        bearerAuth: {
+          type: "http",
+          scheme: "bearer",
+          bearerFormat: "JWT", // Important!
+        }
+      },
       schemas: {
         BotDetails: {
           type: "object",
@@ -76,6 +84,7 @@ const options: swaggerJSDoc.Options = {
         }
       }
     }
+
   },
   apis: ['./src/routes/*.ts'], // Path to the API routes with Swagger comments
 };

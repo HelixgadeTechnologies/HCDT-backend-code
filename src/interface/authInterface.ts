@@ -68,7 +68,7 @@ export interface ILogin {
 // Views
 
 export interface IUserView {
-    userId: number
+    userId: number;
     firstName?: string | null;
     lastName?: string | null;
     email?: string;
@@ -79,7 +79,7 @@ export interface IUserView {
     community?: string | null;
     state?: string | null;
     localGovernmentArea?: string | null;
-    profilePic?: string | null;
-    profilePicExtension?: string | null;
+    profilePic?: Buffer | string | null; // Buffer for Prisma bytes, string for converted hex
+    profilePicMimeType?: string | null;
     password?: string | null;
 }

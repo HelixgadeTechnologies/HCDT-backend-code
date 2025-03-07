@@ -1,8 +1,10 @@
-import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
+import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { IAuth, IDraSignUp, ILogin, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserView } from "../interface/authInterface"
 import { Console } from "console";
+import { JWT_SECRET } from "../secrets";
+import { bufferToHex } from "../utils/hexBufaBufaHex";
 
 
 const prisma = new PrismaClient();
@@ -11,7 +13,7 @@ const SECRET = "hcdtSecretKey";
 
 
 export const registerUser = async (data: any) => {
-  const roles = await prisma.role.findFirst({ where: { roleName: "ADMIN" } });
+  const roles = await prisma.role.findFirst({ where: { roleName: "SUPER ADMIN" } });
 
   const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
 
@@ -39,6 +41,7 @@ export const registerUser = async (data: any) => {
 };
 
 export const removeUser = async (userId: string): Promise<User> => {
+  console.log(userId, "remove")
   let user = await prisma.user.delete({ where: { userId } })
   return user
 }
@@ -75,11 +78,30 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   }
 };
 
+export const getUserById = async (userId: string): Promise<Array<IUserView>> => {
+  // Fetch user data from the database
+  const users: IUserView[] = await prisma.$queryRaw`
+    SELECT * FROM user_view WHERE userId = ${userId}
+  `;
+  // Process each user and convert profilePic to a hex string if it exists
+  const processedUsers = users.map((user) => ({
+    ...user,
+    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+  }));
+
+  return processedUsers;
+};
 export const getAllAdmin = async (): Promise<Array<IUserView>> => {
-  const user: IUserView[] = await prisma.$queryRaw`
+  const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"})
   `;
-  return user
+   // Process each user and convert profilePic to a hex string if it exists
+   const processedUsers = users.map((user) => ({
+    ...user,
+    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+  }));
+
+  return processedUsers;
 }
 
 
@@ -117,10 +139,16 @@ export const registerNuprc = async (data: ISignUpNUPRC, isCreate: boolean) => {
 };
 
 export const getAllNUPRC = async (): Promise<Array<IUserView>> => {
-  const user: IUserView[] = await prisma.$queryRaw`
+  const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"NUPRC-ADR"})
  `;
-  return user
+    // Process each user and convert profilePic to a hex string if it exists
+    const processedUsers = users.map((user) => ({
+      ...user,
+      profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+    }));
+  
+    return processedUsers;
 }
 
 
@@ -157,10 +185,16 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
 };
 
 export const getAllDRA = async (): Promise<Array<IUserView>> => {
-  const user: IUserView[] = await prisma.$queryRaw`
+  const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"DRA"})
  `;
-  return user
+    // Process each user and convert profilePic to a hex string if it exists
+    const processedUsers = users.map((user) => ({
+      ...user,
+      profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+    }));
+  
+    return processedUsers;
 }
 
 export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
@@ -198,6 +232,14 @@ export const removeSettlor = async (settlorId: string): Promise<Settlor> => {
   return settlor
 }
 
+export const getAllRole = async (): Promise<Array<Role>> => {
+  const role: Role[] = await prisma.$queryRaw`
+  SELECT * FROM role
+`;
+  return role
+}
+
+
 export const loginUser = async (data: ILogin) => {
 
   const user: IUserView[] = await prisma.$queryRaw`
@@ -207,9 +249,10 @@ export const loginUser = async (data: ILogin) => {
   if (user.length < 1) throw new Error("Invalid credentials");
 
   const isPasswordValid = await bcrypt.compare(data.password, user[0].password as string);
+  console.log(isPasswordValid, "isPasswordValid")
 
   if (!isPasswordValid) throw new Error("Invalid credentials");
 
-
-  return jwt.sign(user[0], SECRET, { expiresIn: "1h" });
+  console.log(JWT_SECRET, "JWT_SECRET")
+  return jwt.sign(user[0], JWT_SECRET as string, { expiresIn: "1h" });
 };

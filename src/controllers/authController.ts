@@ -1,12 +1,35 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor } from "../service/authService"
+import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole } from "../service/authService"
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
+import { JwtPayload } from "jsonwebtoken";
+
+
 export const register = async (req: Request, res: Response) => {
     try {
 
         const user = await registerUser(req.body);
         res.status(201).json(successResponse("User registered successfully", user));
+    } catch (error: any) {
+        res.status(500).json(errorResponse("Internal server error", error));
+    }
+
+};
+export const getUser = async (req: Request, res: Response) => {
+    try {
+
+        const { userId } = req.params;
+        if (!userId) {
+            res.status(400).json(notFoundResponse("User ID is required", userId));
+        }
+
+        const user = await getUserById(userId);
+
+        if (user.length == 0) {
+            res.status(400).json(notFoundResponse("User not found", {}));
+        }
+
+        res.status(201).json(successResponse("User registered successfully", user[0]));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));
     }
@@ -18,9 +41,16 @@ export const deleteUser = async (req: Request, res: Response) => {
         if (!userId) {
             res.status(400).json(notFoundResponse("User ID is required", userId));
         }
-        const user = await removeUser(req.body);
+
+        const userRes = await getUserById(req.body.userId);
+        if (userRes.length == 0) {
+            res.status(400).json(notFoundResponse("User not found", {}));
+        }
+
+        const user = await removeUser(req.body.userId);
         res.status(201).json(successResponse("User removed successfully", user));
     } catch (error: any) {
+        console.log(error, "errorr")
         res.status(500).json(errorResponse("Internal server error", error));
     }
 
@@ -28,8 +58,21 @@ export const deleteUser = async (req: Request, res: Response) => {
 
 export const addAdmin = async (req: Request, res: Response) => {
     try {
+        // Ensure req.user exists (set in auth middleware)
+        if (!req.user || req.user.role !== "SUPER ADMIN") {
+            res.status(403).json(errorResponse("Access denied. Only SUPER_ADMIN can add admins.", ""));
+        }
+
         const admin = await registerAdmin(req.body.data, req.body.isCreate);
         res.status(201).json(successResponse("Admin registered successfully", admin));
+    } catch (error: any) {
+        res.status(400).json(errorResponse("Internal server error", error));
+    }
+};
+export const getRoles = async (req: Request, res: Response) => {
+    try {
+        const roles = await getAllRole();
+        res.status(201).json(successResponse("Roles", roles));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addAdmin, addDRA, addNuprc, addSettlor, deleteSettlor, deleteUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, login, register, test } from "../controllers/authController";
+import { addAdmin, addDRA, addNuprc, addSettlor, deleteSettlor, deleteUser, getRoles, getUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, login, register, test } from "../controllers/authController";
 
 const authRoutes: Router = Router();
 /**
@@ -119,10 +119,70 @@ authRoutes.post("/signUp", register);
 
 /**
  * @swagger
+ * /api/auth/getUser/{userId}:
+ *   get:
+ *     summary: Retrieve user details by user ID
+ *     tags: [Auth]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the user to retrieve
+ *     responses:
+ *       200:
+ *         description: User found successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User found successfully"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       example: "17b5914e-092d-46ad-a851-5c01f795265e"
+ *                     firstName:
+ *                       type: string
+ *                       example: "John"
+ *                     lastName:
+ *                       type: string
+ *                       example: "Doe"
+ *                     email:
+ *                       type: string
+ *                       example: "johndoe@example.com"
+ *                     profilePic:
+ *                       type: string
+ *                       description: Profile picture in hex format
+ *                       example: "4a6f686e446f65"
+ *       400:
+ *         description: Bad request (User ID missing or user not found)
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: "User ID is required"
+ *       500:
+ *         description: Internal server error
+ */
+authRoutes.get("/getUser/:userId", getUser)
+
+/**
+ * @swagger
  * /api/auth/remove:
  *   post:
  *     summary: Delete a user by ID
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     requestBody:
  *       required: true
  *       content:
@@ -150,6 +210,8 @@ authRoutes.post("/signUp", register);
  *                   type: object
  *       400:
  *         description: Bad request (missing userId)
+ *       401:
+ *         description: Unauthorized (missing or invalid token)
  *       404:
  *         description: User not found
  *       500:
@@ -163,6 +225,8 @@ authRoutes.post("/remove", deleteUser)
  *   post:
  *     summary: Create or Update an Admin
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     description: |
  *       Creates a new Admin if `isCreate` is true, otherwise updates an existing Admin.  
  *       **Note:** `userId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
@@ -237,7 +301,7 @@ authRoutes.post("/addAdmin", addAdmin);
 
 /**
  * @swagger
- * /api/auth/admin:
+ * /api/auth/admins:
  *   get:
  *     summary: Retrieve all admin users
  *     tags: [Auth]  
@@ -270,7 +334,46 @@ authRoutes.post("/addAdmin", addAdmin);
  *       500:
  *         description: Internal server error
  */
-authRoutes.get("/admin", listAllAdmin);
+authRoutes.get("/admins", listAllAdmin);
+
+/**
+ * @swagger
+ * /api/auth/roles:
+ *   get:
+ *     summary: Get all roles
+ *     tags: [Auth]
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved roles
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Roles"
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       roleId:
+ *                         type: string
+ *                         example: "17b5914e-092d-46ad-a851-5c01f795265e"
+ *                       roleName:
+ *                         type: string
+ *                         example: "Admin"
+ *                       roleOrder:
+ *                         type: integer
+ *                         example: 1
+ *       400:
+ *         description: Internal server error
+ */
+authRoutes.get("/roles", getRoles);
 
 /**
  * @swagger
@@ -278,6 +381,8 @@ authRoutes.get("/admin", listAllAdmin);
  *   post:
  *     summary: Create or Update NUPRC-ADR
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     description: |
  *       Creates a new NUPRC-ADR if `isCreate` is true, otherwise updates an existing NUPRC-ADR.  
  *       **Note:** `userId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
@@ -390,6 +495,8 @@ authRoutes.get("/allnuprc", listAllNUPRC);
  *   post:
  *     summary: Create or Update DRA
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     description: |
  *       Creates a new DRA if `isCreate` is true, otherwise updates an existing DRA.  
  *       **Note:** `userId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
@@ -502,7 +609,9 @@ authRoutes.get("/allDra", listAllDRA);
  *   post:
  *     summary: Create or Update Settlor
  *     tags: [Auth]
-*     description: |
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
+ *     description: |
  *       Creates a new Settlor if `isCreate` is true, otherwise updates an existing Settlor.  
  *       **Note:** `settlorId` can be ignored if `isCreate` is true but is required when `isCreate` is false.
  *     requestBody:
@@ -617,6 +726,8 @@ authRoutes.get("/allSettlor", listAllSettlor);
  *   post:
  *     summary: Remove a Settlor
  *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
  *     description: Deletes a settlor by settlorId
  *     requestBody:
  *       required: true

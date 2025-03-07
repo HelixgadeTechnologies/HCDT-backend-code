@@ -3,21 +3,44 @@ import { PORT } from "./secrets";
 import rootRoutes from "./routes/index";
 import setupSwagger from './swagger';
 import { lifeCheck } from "./routes/lfeCheck";
+import authenticateToken from "./middlewares/auth.middleware";
 var cors = require('cors')
 let app: Express = express();
 
-// ✅ Body parsing middleware should be first
+// Enable CORS before body parsers (to handle preflight requests properly)
+app.use(cors());
+
+// Trust proxy (for Heroku or reverse proxies)
+app.set("trust proxy", 1);
+
+// Body parsing middleware (AFTER CORS)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ✅ CORS should come after body parsing
-app.use(cors());
-
-// ✅ Setup Swagger documentation
+// Setup Swagger (AFTER routes, so it doesn't interfere)
 setupSwagger(app);
 
-// ✅ Register all routes
+// Apply JWT middleware for all protected POST requests
+app.use((req, res, next) => {
+    // Define routes to exclude from authentication
+    const excludedRoutes = ["/api/auth/signIn", "/api/auth/signUp"];
+
+    if (excludedRoutes.includes(req.path)) {
+        return next(); // Skip authentication for these routes
+    }
+
+    authenticateToken(req, res, next); // Apply middleware for all other routes
+});
+
+
+// Register routes
 app.use("/api", rootRoutes);
 app.use("/", lifeCheck);
+app.use((req, res) => {
+    res.status(404).json({
+        success: false,
+        message: "Route not found",
+    });
+});
 
 app.listen(PORT, () => console.log("The server is live"));

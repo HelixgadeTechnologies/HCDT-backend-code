@@ -13,11 +13,6 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// datasource db {
-//   provider = "mysql"
-//   url      = env("MY_DATABASE_URL")
-// }
-
 //MODEL
 model User {
   userId                   String                     @id @default(uuid())
@@ -36,7 +31,7 @@ model User {
   createAt                 DateTime?                  @default(now())
   updateAt                 DateTime?                  @default(now())
   profilePic               Bytes?
-  profilePicExtension      String?
+  profilePicMimeType       String?
   trusts                   String?
   trust                    Trust[]
   trustEstablishmentStatus TrustEstablishmentStatus[]
