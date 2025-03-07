@@ -86,7 +86,11 @@ export const getUserById = async (userId: string): Promise<Array<IUserClient>> =
   // Process each user and convert profilePic to a hex string if it exists
   const processedUsers: IUserClient[] = users.map((user) => ({
     ...user,
-    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+    profilePic: user.profilePic
+      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
+        ? bufferToHex(user.profilePic)
+        : user.profilePic // If it's already a string, keep it as is
+      : null,
   }));
 
   return processedUsers;
@@ -98,7 +102,11 @@ export const getAllAdmin = async (): Promise<Array<IUserClient>> => {
   // Process each user and convert profilePic to a hex string if it exists
   const processedUsers: IUserClient[] = users.map((user) => ({
     ...user,
-    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+    profilePic: user.profilePic
+      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
+        ? bufferToHex(user.profilePic)
+        : user.profilePic // If it's already a string, keep it as is
+      : null,
   }));
 
   return processedUsers;
@@ -145,7 +153,11 @@ export const getAllNUPRC = async (): Promise<Array<IUserClient>> => {
   // Process each user and convert profilePic to a hex string if it exists
   const processedUsers: IUserClient[] = users.map((user) => ({
     ...user,
-    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+    profilePic: user.profilePic
+      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
+        ? bufferToHex(user.profilePic)
+        : user.profilePic // If it's already a string, keep it as is
+      : null,
   }));
 
   return processedUsers;
@@ -191,7 +203,11 @@ export const getAllDRA = async (): Promise<Array<IUserClient>> => {
   // Process each user and convert profilePic to a hex string if it exists
   const processedUsers: IUserClient[] = users.map((user) => ({
     ...user,
-    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+    profilePic: user.profilePic
+      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
+        ? bufferToHex(user.profilePic)
+        : user.profilePic // If it's already a string, keep it as is
+      : null,
   }));
 
   return processedUsers;
