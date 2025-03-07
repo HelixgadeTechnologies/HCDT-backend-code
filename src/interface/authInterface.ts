@@ -83,3 +83,19 @@ export interface IUserView {
     profilePicMimeType?: string | null;
     password?: string | null;
 }
+export interface IUserClient {
+    userId: number;
+    firstName?: string | null;
+    lastName?: string | null;
+    email?: string;
+    address?: string | null;
+    phoneNumber?: string | null;
+    role?: string | null;
+    status?: number | null;
+    community?: string | null;
+    state?: string | null;
+    localGovernmentArea?: string | null;
+    profilePic?: string | null; // Buffer for Prisma bytes, string for converted hex
+    profilePicMimeType?: string | null;
+    password?: string | null;
+}

@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { IAuth, IDraSignUp, ILogin, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserView } from "../interface/authInterface"
+import { IAuth, IDraSignUp, ILogin, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { Console } from "console";
 import { JWT_SECRET } from "../secrets";
 import { bufferToHex } from "../utils/hexBufaBufaHex";
@@ -78,25 +78,25 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   }
 };
 
-export const getUserById = async (userId: string): Promise<Array<IUserView>> => {
+export const getUserById = async (userId: string): Promise<Array<IUserClient>> => {
   // Fetch user data from the database
   const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE userId = ${userId}
   `;
   // Process each user and convert profilePic to a hex string if it exists
-  const processedUsers = users.map((user) => ({
+  const processedUsers: IUserClient[] = users.map((user) => ({
     ...user,
     profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
   }));
 
   return processedUsers;
 };
-export const getAllAdmin = async (): Promise<Array<IUserView>> => {
+export const getAllAdmin = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"})
   `;
-   // Process each user and convert profilePic to a hex string if it exists
-   const processedUsers = users.map((user) => ({
+  // Process each user and convert profilePic to a hex string if it exists
+  const processedUsers: IUserClient[] = users.map((user) => ({
     ...user,
     profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
   }));
@@ -138,17 +138,17 @@ export const registerNuprc = async (data: ISignUpNUPRC, isCreate: boolean) => {
   }
 };
 
-export const getAllNUPRC = async (): Promise<Array<IUserView>> => {
+export const getAllNUPRC = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"NUPRC-ADR"})
  `;
-    // Process each user and convert profilePic to a hex string if it exists
-    const processedUsers = users.map((user) => ({
-      ...user,
-      profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
-    }));
-  
-    return processedUsers;
+  // Process each user and convert profilePic to a hex string if it exists
+  const processedUsers: IUserClient[] = users.map((user) => ({
+    ...user,
+    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+  }));
+
+  return processedUsers;
 }
 
 
@@ -184,17 +184,17 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
   }
 };
 
-export const getAllDRA = async (): Promise<Array<IUserView>> => {
+export const getAllDRA = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"DRA"})
  `;
-    // Process each user and convert profilePic to a hex string if it exists
-    const processedUsers = users.map((user) => ({
-      ...user,
-      profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
-    }));
-  
-    return processedUsers;
+  // Process each user and convert profilePic to a hex string if it exists
+  const processedUsers: IUserClient[] = users.map((user) => ({
+    ...user,
+    profilePic: user.profilePic ? bufferToHex(Buffer.from(user.profilePic)) : null,
+  }));
+
+  return processedUsers;
 }
 
 export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
