@@ -4,10 +4,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node dist/index.js",
-    "postinstall": "tsc",
-    "dev": "npx ts-node src/index.ts",
-    "pr1": " npx prisma generate",
-    "pr2": " npx prisma migrate dev --name new_sub_table"
+    "postinstall": "tsc"
   },
   "keywords": [],
   "author": "",
@@ -22,7 +19,7 @@
     "nodemon": "^2.0.15",
     "prisma": "^6.3.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "dependencies": {
     "@prisma/client": "^6.3.1",
