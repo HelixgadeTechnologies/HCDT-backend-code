@@ -5,6 +5,7 @@ import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
 const prisma = new PrismaClient();
 
 export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
+
     // Prepare trust data
     const trustData: Prisma.TrustCreateInput = {
         trustName: data.trustName as string,
@@ -40,6 +41,12 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
             create: trustData,
         });
     } else {
+        let uniqueTrust = await prisma.trust.findUnique({ where: { trustId: data.trustId } })
+
+        if (uniqueTrust == null) {
+            throw new Error(`Invalid trust ID`);
+        }
+
         trust = await prisma.trust.update({
             where: { trustId: data.trustId },
             data: trustData,
@@ -89,8 +96,14 @@ export const getTrust = async (trustId: string): Promise<ITrustView | null> => {
 };
 
 export const removeTrust = async (trustId: string): Promise<Trust> => {
-    let trust = await prisma.trust.delete({ where: { trustId } })
-    return trust
+    let trust = await prisma.trust.findUnique({ where: { trustId } })
+
+    if (trust == null) {
+        throw new Error(`Invalid trust ID`);
+    }
+
+    let deletedTrust = await prisma.trust.delete({ where: { trustId } })
+    return deletedTrust
 }
 export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatus) => {
 

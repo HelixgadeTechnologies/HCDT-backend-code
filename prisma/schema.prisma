@@ -161,7 +161,7 @@ model OperationalExpenditure {
 
 model Project {
   projectId                             String           @id @default(uuid())
-  projectTitle                          String?
+  projectTitle                          String           @unique
   projectCategory                       ProjectCategory? @relation(fields: [projectCategoryId], references: [projectCategoryId])
   projectCategoryId                     Int?
   totalBudget                           Int?
@@ -174,7 +174,7 @@ model Project {
   qualityRating                         QualityRating?   @relation(fields: [qualityRatingId], references: [qualityRatingId])
   qualityRatingId                       Int?
   projectVideo                          Bytes?
-  projectVideoExtension                 String?
+  projectVideoMimeType                  String?
   numberOfMaleEmployedByContractor      Int?
   numberOfFemaleEmployedByContractor    Int?
   numberOfPwDsEmployedByContractor      Int?
@@ -224,12 +224,12 @@ model TypeOfWork {
 }
 
 model Conflict {
-  ConflictId              String                 @id @default(uuid())
+  conflictId              String                 @id @default(uuid())
   project                 Project?               @relation(fields: [projectId], references: [projectId])
   projectId               String?
   user                    User?                  @relation(fields: [userId], references: [userId])
   userId                  String?
-  causeOfConflict         CauseOfConflict?       @relation(fields: [causeOfConflictId], references: [CauseOfConflictId])
+  causeOfConflict         CauseOfConflict?       @relation(fields: [causeOfConflictId], references: [causeOfConflictId])
   causeOfConflictId       Int?
   partiesInvolve          PartiesInvolve?        @relation(fields: [partiesInvolveId], references: [partiesInvolveId])
   partiesInvolveId        Int?
@@ -247,7 +247,7 @@ model Conflict {
 }
 
 model CauseOfConflict {
-  CauseOfConflictId Int        @id @default(autoincrement())
+  causeOfConflictId Int        @id @default(autoincrement())
   causeOfConflict   String?
   conflict          Conflict[]
 
@@ -302,6 +302,20 @@ model AverageCommunitySatisfaction {
   @@map("averagecommunitysatisfaction")
 }
 
+model AcsOptionOne {
+  acsOptionOneId Int    @id @default(autoincrement())
+  acsOptionOne   String
+
+  @@map("acsoptionone")
+}
+
+model AcsOptionTwo {
+  acsOptionTwoId Int    @id @default(autoincrement())
+  acsOptionTwo   String
+
+  @@map("acsoptiontwo")
+}
+
 model EconomicImpact {
   economicImpactId  String  @id @default(uuid())
   businessGrowth    Int?
@@ -310,6 +324,16 @@ model EconomicImpact {
   accessAmenities   Int?
   trust             Trust?  @relation(fields: [trustId], references: [trustId])
   trustId           String?
+}
+
+model ImpactOptionOne {
+  impactOptionOneId Int    @id @default(autoincrement())
+  impactOptionOne   String
+}
+
+model ImpactOptionTwo {
+  impactOptionTwoId Int    @id @default(autoincrement())
+  impactOptionTwo   String
 }
 
 //Views will be ignored during migration

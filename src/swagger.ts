@@ -15,8 +15,12 @@ const options: swaggerJSDoc.Options = {
     // servers: [{ url: "http://localhost:8000/" }],
     tags: [
       { name: "Auth", description: "Authentication Endpoints" },
+      { name: "Setting", description: "Settings Endpoints" },
       { name: "Trust", description: "Trust Management Endpoints" },
-      // { name: "BotDetails", description: "BotDetails Management Endpoints" }, // Added BotDetails tag
+      { name: "Project", description: "Project Management Endpoints" },
+      { name: "Conflict", description: "Conflict Management Endpoints" },
+      { name: "Average Community Satisfaction", description: "Average Community Satisfaction Management Endpoints" },
+      { name: "Economic Impact", description: "Economic Impact Management Endpoints" },
     ],
     components: {
       securitySchemes: {
@@ -79,6 +83,133 @@ const options: swaggerJSDoc.Options = {
               type: "string",
               format: "uuid",
               example: "d3f8a2b4-12f5-4e7a-9f93-34f85d763b87"
+            }
+          }
+        },
+        ProjectView: {
+          type: "object",
+          properties: {
+            projectId: {
+              type: "string",
+              example: "abc123"
+            },
+            projectTitle: {
+              type: "string",
+              nullable: true,
+              example: "Road Construction Project"
+            },
+            projectCategory: {
+              type: "string",
+              nullable: true,
+              example: "Infrastructure"
+            },
+            totalBudget: {
+              type: "integer",
+              nullable: true,
+              example: 5000000
+            },
+            community: {
+              type: "string",
+              nullable: true,
+              example: "Lagos"
+            },
+            awardDate: {
+              type: "string",
+              format: "date-time",
+              nullable: true,
+              example: "2025-01-15T00:00:00.000Z"
+            },
+            nameOfContractor: {
+              type: "string",
+              nullable: true,
+              example: "XYZ Construction Ltd."
+            },
+            annualApprovedBudget: {
+              type: "string",
+              nullable: true,
+              example: "$2,000,000"
+            },
+            projectStatus: {
+              type: "integer",
+              nullable: true,
+              example: 1
+            },
+            projectStatusName: {
+              type: "string",
+              nullable: true,
+              example: "Ongoing"
+            },
+            qualityRatingId: {
+              type: "integer",
+              nullable: true,
+              example: 2
+            },
+            qualityRatingName: {
+              type: "string",
+              nullable: true,
+              example: "Good"
+            },
+            projectVideoMimeType: {
+              type: "string",
+              nullable: true,
+              example: "video/mp4"
+            },
+            numberOfMaleEmployedByContractor: {
+              type: "integer",
+              nullable: true,
+              example: 50
+            },
+            numberOfFemaleEmployedByContractor: {
+              type: "integer",
+              nullable: true,
+              example: 20
+            },
+            numberOfPwDsEmployedByContractor: {
+              type: "integer",
+              nullable: true,
+              example: 5
+            },
+            typeOfWork: {
+              type: "string",
+              nullable: true,
+              example: "Bridge Construction"
+            },
+            numberOfHostCommunityMemberContracted: {
+              type: "integer",
+              nullable: true,
+              example: 30
+            },
+            numberOfMaleBenefited: {
+              type: "integer",
+              nullable: true,
+              example: 1000
+            },
+            numberOfFemaleBenefited: {
+              type: "integer",
+              nullable: true,
+              example: 800
+            },
+            numberOfPwDsBenefited: {
+              type: "integer",
+              nullable: true,
+              example: 50
+            },
+            trustId: {
+              type: "string",
+              nullable: true,
+              example: "trust_123"
+            },
+            createAt: {
+              type: "string",
+              format: "date-time",
+              nullable: true,
+              example: "2025-01-01T12:00:00.000Z"
+            },
+            updateAt: {
+              type: "string",
+              format: "date-time",
+              nullable: true,
+              example: "2025-02-01T12:00:00.000Z"
             }
           }
         }

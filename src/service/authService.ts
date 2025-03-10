@@ -4,7 +4,8 @@ import jwt from "jsonwebtoken";
 import { IAuth, IDraSignUp, ILogin, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { Console } from "console";
 import { JWT_SECRET } from "../secrets";
-import { bufferToHex } from "../utils/hexBufaBufaHex";
+import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
+import { sendAdminRegistrationEmail } from "../utils/mail";
 
 
 const prisma = new PrismaClient();
@@ -46,12 +47,17 @@ export const removeUser = async (userId: string): Promise<User> => {
   return user
 }
 
+
+
 export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   if (isCreate) {
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
     if (existingUser) throw new Error("User with this email already exists");
+
+    //  await //sendAdminRegistrationEmail(data.email, data.lastName as string)
     // hash password
     const hashedPassword = await bcrypt.hash("12345", 10);
+
     return prisma.user.create({
       data: {
         firstName: data.firstName || null,
@@ -265,10 +271,60 @@ export const loginUser = async (data: ILogin) => {
   if (user.length < 1) throw new Error("Invalid credentials");
 
   const isPasswordValid = await bcrypt.compare(data.password, user[0].password as string);
-  console.log(isPasswordValid, "isPasswordValid")
+
 
   if (!isPasswordValid) throw new Error("Invalid credentials");
 
-  console.log(JWT_SECRET, "JWT_SECRET")
   return jwt.sign(user[0], JWT_SECRET as string, { expiresIn: "1h" });
+};
+
+export const changePassword = async (userId: string, oldPassword: string, newPassword: string, confirmPassword: string) => {
+  // Fetch user by ID
+  const user = await prisma.user.findUnique({ where: { userId } });
+  if (!user) {
+    throw new Error("User not found.");
+  }
+
+  // Check if old password matches
+  const passwordMatch = await bcrypt.compare(oldPassword, user.password as string);
+  if (!passwordMatch) {
+    throw new Error("Old password is incorrect.");
+  }
+
+  // Validate new password
+  if (newPassword !== confirmPassword) {
+    throw new Error("New password and confirm password do not match.");
+  }
+
+  // Hash the new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update user password
+  await prisma.user.update({
+    where: { userId },
+    data: { password: hashedPassword },
+  });
+
+  return { message: "Password changed successfully." };
+};
+
+export const updateProfilePicture = async (userId: string, hexImage: string, mimeType: string) => {
+  if (!hexImage || !mimeType) {
+    throw new Error("Profile picture and MIME type are required.");
+  }
+
+  // Convert HEX string to Buffer
+  const imageBuffer = hexToBuffer(hexImage)
+
+  // Update user profile picture
+  const updatedUser = await prisma.user.update({
+    where: { userId },
+    data: {
+      profilePic: imageBuffer,
+      profilePicMimeType: mimeType,
+    },
+    select: { userId: true, profilePicMimeType: true, profilePic: true },
+  });
+
+  return { message: "Profile picture updated successfully.", data: updatedUser };
 };

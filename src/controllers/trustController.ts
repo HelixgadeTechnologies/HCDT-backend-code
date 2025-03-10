@@ -7,8 +7,17 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 export const createTrust = async (req: Request, res: Response) => {
     try {
-        const user = await createOrUpdateTrust(req.body.data, req.body.isCreate);
-        res.status(201).json(successResponse("Trust creation successfully", user));
+        const { isCreate, data } = req.body;
+
+        if (typeof isCreate !== "boolean") {
+            res.status(400).json(errorResponse("Invalid request: isCreate must be a boolean."));
+        }
+
+        if (!isCreate && !data.trustId) {
+            res.status(400).json(errorResponse("Trust ID is required for updating."));
+        }
+        const trust = await createOrUpdateTrust(data, isCreate);
+        res.status(201).json(successResponse(`Trust ${isCreate ? "created" : "updated"} successfully`, trust));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));
     }
@@ -42,7 +51,7 @@ export const deleteTrust = async (req: Request, res: Response) => {
         if (!trustId) {
             res.status(400).json(notFoundResponse("Trust ID is required", trustId));
         }
-        const user = await removeTrust(req.body);
+        const user = await removeTrust(req.body.trustId);
         res.status(201).json(successResponse("Trust removed successfully", user));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));

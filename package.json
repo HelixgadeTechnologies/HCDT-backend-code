@@ -5,7 +5,9 @@
   "scripts": {
     "start": "node dist/index.js",
     "postinstall": "tsc",
-    "dev": "npx ts-node src/index.ts"
+    "dev": "npx ts-node src/index.ts",
+    "pr1": " npx prisma generate",
+    "pr2": " npx prisma migrate dev --name new_sub_table"
   },
   "keywords": [],
   "author": "",
@@ -16,6 +18,7 @@
     "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.9",
     "@types/node": "^22.13.1",
+    "@types/nodemailer": "^6.4.17",
     "nodemon": "^2.0.15",
     "prisma": "^6.3.1",
     "ts-node": "^10.9.2",
@@ -30,6 +33,7 @@
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.10.0",
     "prisma-merge-schema": "^1.0.0",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1"

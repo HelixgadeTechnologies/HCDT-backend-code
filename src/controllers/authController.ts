@@ -1,8 +1,9 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole } from "../service/authService"
+import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture } from "../service/authService"
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
+import { bufferToHex } from "../utils/hexBufaBufaHex";
 
 
 export const register = async (req: Request, res: Response) => {
@@ -64,7 +65,7 @@ export const addAdmin = async (req: Request, res: Response) => {
         }
 
         const admin = await registerAdmin(req.body.data, req.body.isCreate);
-        res.status(201).json(successResponse("Admin registered successfully", admin));
+        res.status(201).json(successResponse(`Admin ${req.body.isCreate ? "created" : "updated"} successfully`, admin));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }
@@ -74,7 +75,7 @@ export const getRoles = async (req: Request, res: Response) => {
         const roles = await getAllRole();
         res.status(201).json(successResponse("Roles", roles));
     } catch (error: any) {
-        res.status(400).json(errorResponse("Internal server error", error));
+        res.status(500).json(errorResponse("Internal server error", error));
     }
 };
 export const listAllAdmin = async (req: Request, res: Response) => {
@@ -90,7 +91,7 @@ export const listAllAdmin = async (req: Request, res: Response) => {
 export const addNuprc = async (req: Request, res: Response) => {
     try {
         const NUPRC = await registerNuprc(req.body.data, req.body.isCreate);
-        res.status(201).json(successResponse("NUPRC registered successfully", NUPRC));
+        res.status(201).json(successResponse(`NUPRC successfully ${req.body.isCreate ? "created" : "updated"}`, NUPRC));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }
@@ -107,7 +108,7 @@ export const listAllNUPRC = async (req: Request, res: Response) => {
 export const addDRA = async (req: Request, res: Response) => {
     try {
         const DRA = await registerDRA(req.body.data, req.body.isCreate);
-        res.status(201).json(successResponse("DRA registered successfully", DRA));
+        res.status(201).json(successResponse(`DRA successfully ${req.body.isCreate ? "created" : "updated"}`, DRA));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }
@@ -124,7 +125,7 @@ export const listAllDRA = async (req: Request, res: Response) => {
 export const addSettlor = async (req: Request, res: Response) => {
     try {
         const settlor = await registerSettlor(req.body.data, req.body.isCreate);
-        res.status(201).json(successResponse("Settlor registered successfully", settlor));
+        res.status(201).json(successResponse(`Settlor successfully ${req.body.isCreate ? "created" : "updated"}`, settlor));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }
@@ -153,6 +154,46 @@ export const login = async (req: Request, res: Response) => {
         res.status(200).json(successResponse("Login successfully", token));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
+    }
+};
+
+export const changeUserPassword = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id; // Assuming user ID is available from auth middleware
+        const { oldPassword, newPassword, confirmPassword } = req.body;
+
+        if (!userId) {
+            res.status(401).json(errorResponse("Unauthorized: User not authenticated."));
+        }
+
+        if (!oldPassword || !newPassword || !confirmPassword) {
+            res.status(400).json(errorResponse("All fields are required."));
+        }
+
+        const result = await changePassword(userId, oldPassword, newPassword, confirmPassword);
+        res.status(200).json(successResponse(result.message));
+    } catch (error: any) {
+        res.status(400).json(errorResponse(error.message));
+    }
+};
+
+export const updateUserProfilePicture = async (req: Request, res: Response) => {
+    try {
+        const userId = req.user?.id; // Assuming user ID is available from authentication middleware
+        const { hexImage, mimeType } = req.body;
+
+        if (!userId) {
+            res.status(401).json(errorResponse("Unauthorized: User not authenticated."));
+        }
+
+        if (!hexImage || !mimeType) {
+            res.status(400).json(errorResponse("Both hexImage and mimeType are required."));
+        }
+
+        const result = await updateProfilePicture(userId, hexImage, mimeType);
+        res.status(200).json(successResponse(result.message, { ...result.data, profilePic: result.data.profilePic ? bufferToHex(Buffer.from(result.data.profilePic)) : null }));
+    } catch (error: any) {
+        res.status(400).json(errorResponse(error.message));
     }
 };
 
