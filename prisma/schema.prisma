@@ -324,16 +324,22 @@ model EconomicImpact {
   accessAmenities   Int?
   trust             Trust?  @relation(fields: [trustId], references: [trustId])
   trustId           String?
+
+  @@map("economicimpact")
 }
 
 model ImpactOptionOne {
   impactOptionOneId Int    @id @default(autoincrement())
   impactOptionOne   String
+
+  @@map("impactoptionone")
 }
 
 model ImpactOptionTwo {
   impactOptionTwoId Int    @id @default(autoincrement())
   impactOptionTwo   String
+
+  @@map("impactoptiontwo")
 }
 
 //Views will be ignored during migration
