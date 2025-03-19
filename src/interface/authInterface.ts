@@ -57,6 +57,7 @@ export interface IDraSignUp {
     lastName: string | null;
     email: string;
     phoneNumber: string | null;
+    trust: string | null;
 }
 
 export interface ILogin {

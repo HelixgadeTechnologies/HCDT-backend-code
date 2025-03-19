@@ -1,15 +1,16 @@
 import nodemailer from "nodemailer";
 import { EMAIL_PASS, EMAIL_USER, SMTP_HOST, SMTP_PORT } from "../secrets";
-export const sendAdminRegistrationEmail = async (email: string, adminName: string) => {
+export const sendAdminRegistrationEmail = async (email: string, adminName: string, type: string) => {
     try {
+
         // Configure the transporter (Use real SMTP credentials)
         const transporter = nodemailer.createTransport({
             host: SMTP_HOST,
             port: Number(SMTP_PORT),
-            secure: false, // Use `true` for port 465, `false` for 587
+            secure: true, // Use `true` for port 465, `false` for 587
             auth: {
-                user: process.env.EMAIL_USER, // Your Gmail email
-                pass: process.env.EMAIL_PASS, // Your Gmail App Password
+                user: EMAIL_USER, // Your Gmail email
+                pass: EMAIL_PASS, // Your Gmail App Password
             },
             tls: {
                 rejectUnauthorized: false, // Bypass certificate issues (if any)
@@ -18,14 +19,14 @@ export const sendAdminRegistrationEmail = async (email: string, adminName: strin
 
         // Email options
         const mailOptions = {
-            from: process.env.EMAIL_USER,
+            from: EMAIL_USER,
             to: email,
-            subject: "Admin Account Registration",
+            subject: `${type} Account Registration`,
             text: `
                 Hello ${adminName},
 
-                Your admin account has been successfully registered.
-                You can now log in with the following credentials:
+                Your ${type.trim().toLowerCase()} account has been successfully registered.
+                You can now log in with the following credentials, navigate to setting and change your password:
 
                 Email: ${email}
                 Password: 12345
@@ -39,8 +40,8 @@ export const sendAdminRegistrationEmail = async (email: string, adminName: strin
 
         // Send the email
         await transporter.sendMail(mailOptions);
-        console.log("Email sent successfully to", email);
+        // console.log("Email sent successfully to", email);
     } catch (error) {
-        console.error("Error sending email:", error);
+        // console.error("Error sending email:", error);
     }
 };

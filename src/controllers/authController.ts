@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture } from "../service/authService"
+import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture, getSettlor } from "../service/authService"
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
@@ -141,8 +141,23 @@ export const listAllSettlor = async (req: Request, res: Response) => {
 };
 export const deleteSettlor = async (req: Request, res: Response) => {
     try {
-        const settlor = await removeSettlor(req.body);
-        res.status(201).json(successResponse("SETTLOR", settlor));
+        const { settlorId } = req.body;
+
+        // Check if settlorId is missing, null, undefined, or an empty string
+        if (!settlorId || settlorId.trim() === "") {
+            res.status(400).json(errorResponse("Settlor ID is required for deleting a settlor."));
+        }
+
+        const data = await getSettlor(req.body.settlorId);
+
+        if (data == null) {
+            res.status(404).json(notFoundResponse("Invalid settlor Id.", null));
+        }
+
+        const settlor = await removeSettlor(req.body.settlorId);
+
+        res.status(201).json(successResponse("Settlor successfully removed", settlor));
+
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }

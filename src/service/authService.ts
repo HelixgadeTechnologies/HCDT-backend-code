@@ -54,7 +54,7 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
     if (existingUser) throw new Error("User with this email already exists");
 
-    //  await //sendAdminRegistrationEmail(data.email, data.lastName as string)
+    await sendAdminRegistrationEmail(data.email, data.lastName as string, "Admin")
     // hash password
     const hashedPassword = await bcrypt.hash("12345", 10);
 
@@ -127,6 +127,9 @@ export const registerNuprc = async (data: ISignUpNUPRC, isCreate: boolean) => {
   if (isCreate) {
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
     if (existingUser) throw new Error("User with this email already exists");
+
+    await sendAdminRegistrationEmail(data.email, data.lastName as string, "NUPRC-ADR")
+
     // hash password
     const hashedPassword = await bcrypt.hash("12345", 10);
     return prisma.user.create({
@@ -177,6 +180,9 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
   if (isCreate) {
     const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
     if (existingUser) throw new Error("User with this email already exists");
+
+    await sendAdminRegistrationEmail(data.email, data.lastName as string, "DRA")
+
     // hash password
     const hashedPassword = await bcrypt.hash("12345", 10);
     return prisma.user.create({
@@ -186,7 +192,8 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
         email: data.email,
         phoneNumber: data.phoneNumber || null,
         role: roles?.roleId ? { connect: { roleId: roles?.roleId } } : undefined,
-        password: hashedPassword
+        password: hashedPassword,
+        trusts: data.trust
       } as Prisma.UserCreateInput
     });
   } else {
@@ -197,8 +204,9 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
         lastName: data.lastName || null,
         email: data.email || null,
         phoneNumber: data.phoneNumber || null,
+        trusts: data.trust || null
       }
-    });
+    })
   }
 };
 
@@ -247,6 +255,14 @@ export const getAllSettlor = async (): Promise<Array<Settlor>> => {
   SELECT * FROM settlor
 `;
   return user
+}
+export const getSettlor = async (settlorId: string): Promise<Settlor | null> => {
+
+  const settlor: Settlor[] = await prisma.$queryRaw`
+  SELECT * FROM settlor WHERE settlorId = ${settlorId}
+`;
+
+  return settlor == null ? null : settlor[0]
 }
 
 export const removeSettlor = async (settlorId: string): Promise<Settlor> => {

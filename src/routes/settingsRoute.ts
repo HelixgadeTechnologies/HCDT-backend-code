@@ -418,6 +418,9 @@ settingsRoute.get("/allnuprc", listAllNUPRC);
  *                   roleId:
  *                     type: string
  *                     example: "uuid-role-id"
+ *                   trust:
+ *                     type: string
+ *                     example: "uuid-trust-id"
  *                   status:
  *                     type: integer
  *                     example: 0
