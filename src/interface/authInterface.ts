@@ -75,7 +75,9 @@ export interface IUserView {
     email?: string;
     address?: string | null;
     phoneNumber?: string | null;
+    roleId?: number | null;
     role?: string | null;
+    trusts?: string | null;
     status?: number | null;
     community?: string | null;
     state?: string | null;
