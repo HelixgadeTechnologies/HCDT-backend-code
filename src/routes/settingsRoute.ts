@@ -301,6 +301,9 @@ settingsRoute.get("/roles", getRoles);
  *                   email:
  *                     type: string
  *                     example: "admin@example.com"
+ *                   phoneNumber:
+ *                     type: string
+ *                     example: "09037454733"
  *                   roleId:
  *                     type: string
  *                     example: "uuid-role-id"
@@ -339,7 +342,7 @@ settingsRoute.post("/addnuprc", addNuprc);
 
 /**
  * @swagger
- * api/setting/allnuprc:
+ * /api/setting/allnuprc:
  *   get:
  *     summary: Retrieve all NUPRC-ADR users
  *     tags: [Setting] 

@@ -42,7 +42,7 @@ export const registerUser = async (data: any) => {
 };
 
 export const removeUser = async (userId: string): Promise<User> => {
-  console.log(userId, "remove")
+  // console.log(userId, "remove")
   let user = await prisma.user.delete({ where: { userId } })
   return user
 }
