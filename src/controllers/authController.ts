@@ -194,7 +194,7 @@ export const changeUserPassword = async (req: Request, res: Response) => {
 
 export const updateUserProfilePicture = async (req: Request, res: Response) => {
     try {
-        const userId = req.user?.id; // Assuming user ID is available from authentication middleware
+        const userId = req.user?.userId; // Assuming user ID is available from authentication middleware
         const { hexImage, mimeType } = req.body;
 
         if (!userId) {
