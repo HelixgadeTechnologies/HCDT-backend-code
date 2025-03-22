@@ -22,20 +22,36 @@ export const sendAdminRegistrationEmail = async (email: string, adminName: strin
             from: EMAIL_USER,
             to: email,
             subject: `${type} Account Registration`,
-            text: `
-                Hello ${adminName},
+            // text: `
+            //     Hello ${adminName},
 
-                Your ${type.trim().toLowerCase()} account has been successfully registered.
-                You can now log in with the following credentials, navigate to setting and change your password:
+            //     Your ${type.trim().toLowerCase()} account has been successfully registered.
+            //     You can now log in with the following credentials, navigate to setting and change your password:
 
-                Email: ${email}
-                Password: 12345
+            //     Email: ${email}
+            //     Password: 12345
 
-                Best regards,
-                HCDT Team
+            //     Best regards,
+            //     HCDT Team
 
-                **Please do not reply to this email. This is an automated message.**`
-            ,
+            //     **Please do not reply to this email. This is an automated message.**`
+            // ,
+            html: `
+            <p>Hello ${adminName},</p>
+    
+            <p>Your <strong>${type.trim().toLowerCase()}</strong> account has been successfully registered.</p>
+    
+            <p>You can now log in using the credentials provided below:</p>
+            <p><strong>Email:</strong> ${email}</p>
+            <p><strong>Password:</strong> 12345</p>
+    
+            <p>Click the link below to log in:</p>
+            <p><a href="https://app-hcdtmonitor.netlify.app/" target="_blank">Go to Login Page</a></p>
+    
+            <p>Best regards,<br>HCDT Team</p>
+    
+            <p style="color: gray; font-size: 12px;"><em>Please do not reply to this email. This is an automated message.</em></p>
+        `,
         };
 
         // Send the email
