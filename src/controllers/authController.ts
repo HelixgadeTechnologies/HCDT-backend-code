@@ -174,7 +174,7 @@ export const login = async (req: Request, res: Response) => {
 
 export const changeUserPassword = async (req: Request, res: Response) => {
     try {
-        const userId = req.user?.id; // Assuming user ID is available from auth middleware
+        const userId = req.user?.userId; // Assuming user ID is available from auth middleware
         const { oldPassword, newPassword, confirmPassword } = req.body;
 
         if (!userId) {
