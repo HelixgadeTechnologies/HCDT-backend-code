@@ -84,23 +84,16 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   }
 };
 
-export const getUserById = async (userId: string): Promise<Array<IUserClient>> => {
+export const getUserById = async (userId: string): Promise<Array<IUserView>> => {
   // Fetch user data from the database
   const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE userId = ${userId}
   `;
-  // Process each user and convert profilePic to a hex string if it exists
-  const processedUsers: IUserClient[] = users.map((user) => ({
-    ...user,
-    profilePic: user.profilePic
-      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
-        ? bufferToHex(user.profilePic)
-        : user.profilePic // If it's already a string, keep it as is
-      : null,
-  }));
+  console.log("processedUsers", users)
 
-  return processedUsers;
+  return users;
 };
+
 export const getAllAdmin = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"})
@@ -329,14 +322,11 @@ export const updateProfilePicture = async (userId: string, hexImage: string, mim
     throw new Error("Profile picture and MIME type are required.");
   }
 
-  // Convert HEX string to Buffer
-  const imageBuffer = hexToBuffer(hexImage)
-
   // Update user profile picture
   const updatedUser = await prisma.user.update({
     where: { userId },
     data: {
-      profilePic: imageBuffer,
+      profilePic: hexImage,
       profilePicMimeType: mimeType,
     },
     select: { userId: true, profilePicMimeType: true, profilePic: true },

@@ -82,7 +82,7 @@ export interface IUserView {
     community?: string | null;
     state?: string | null;
     localGovernmentArea?: string | null;
-    profilePic?: Buffer | string | null; // Buffer for Prisma bytes, string for converted hex
+    profilePic?: string | null;
     profilePicMimeType?: string | null;
     password?: string | null;
 }
