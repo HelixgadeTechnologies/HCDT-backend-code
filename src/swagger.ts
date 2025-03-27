@@ -15,6 +15,7 @@ const options: swaggerJSDoc.Options = {
     // servers: [{ url: "http://localhost:8000/" }],
     tags: [
       { name: "Auth", description: "Authentication Endpoints" },
+      { name: "Upload", description: "Upload Endpoints" },
       { name: "Setting", description: "Settings Endpoints" },
       { name: "Trust", description: "Trust Management Endpoints" },
       { name: "Project", description: "Project Management Endpoints" },

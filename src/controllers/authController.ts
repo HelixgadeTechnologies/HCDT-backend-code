@@ -4,6 +4,7 @@ import { errorResponse, notFoundResponse, successResponse } from "../utils/respo
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { bufferToHex } from "../utils/hexBufaBufaHex";
+import { uploadFile } from "../utils/upload";
 
 export const register = async (req: Request, res: Response) => {
     try {
@@ -211,6 +212,20 @@ export const updateUserProfilePicture = async (req: Request, res: Response) => {
     }
 };
 
+export const upload = async (req: Request, res: Response) => {
+    try {
+        const { base64String, mimeType } = req.body;
+
+        if (!base64String || !mimeType) {
+            res.status(400).json(errorResponse("Both base64String and mimeType are required."));
+        }
+        let uploadUrl = await uploadFile(base64String, mimeType)
+
+        res.status(200).json(successResponse("uploadUrl", uploadUrl));
+    } catch (error: any) {
+        res.status(400).json(errorResponse(error.message));
+    }
+};
 export const test = async (req: Request, res: Response) => {
     res.send("HCDT API WORKING");
 };
