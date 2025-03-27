@@ -5,7 +5,6 @@ import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
 import { bufferToHex } from "../utils/hexBufaBufaHex";
 
-
 export const register = async (req: Request, res: Response) => {
     try {
 
@@ -195,18 +194,18 @@ export const changeUserPassword = async (req: Request, res: Response) => {
 export const updateUserProfilePicture = async (req: Request, res: Response) => {
     try {
         const userId = req.user?.userId; // Assuming user ID is available from authentication middleware
-        const { hexImage, mimeType } = req.body;
+        const { base64String, mimeType } = req.body;
 
         if (!userId) {
             res.status(401).json(errorResponse("Unauthorized: User not authenticated."));
         }
 
-        if (!hexImage || !mimeType) {
-            res.status(400).json(errorResponse("Both hexImage and mimeType are required."));
+        if (!base64String || !mimeType) {
+            res.status(400).json(errorResponse("Both base64String and mimeType are required."));
         }
 
-        const result = await updateProfilePicture(userId, hexImage, mimeType);
-        res.status(200).json(successResponse(result.message, { ...result.data, profilePic: result.data.profilePic ? bufferToHex(Buffer.from(result.data.profilePic)) : null }));
+        const result = await updateProfilePicture(userId, base64String, mimeType);
+        res.status(200).json(successResponse(result.message, result.data));
     } catch (error: any) {
         res.status(400).json(errorResponse(error.message));
     }

@@ -707,13 +707,13 @@ settingsRoute.post("/change-password", changeUserPassword);
  *           schema:
  *             type: object
  *             required:
- *               - hexImage
+ *               - base64String
  *               - mimeType
  *             properties:
- *               hexImage:
+ *               base64String:
  *                 type: string
  *                 example: "89504e470d0a1a0a0000000d49484452..."
- *                 description: The profile picture in HEX format.
+ *                 description: The profile picture in base64String format.
  *               mimeType:
  *                 type: string
  *                 example: "image/png"

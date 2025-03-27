@@ -6,7 +6,7 @@ import { Console } from "console";
 import { JWT_SECRET } from "../secrets";
 import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
 import { sendAdminRegistrationEmail } from "../utils/mail";
-
+import { deleteFile, getFileName, removeFileExtension, uploadFile } from "../utils/upload";
 
 const prisma = new PrismaClient();
 
@@ -89,26 +89,15 @@ export const getUserById = async (userId: string): Promise<Array<IUserView>> => 
   const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE userId = ${userId}
   `;
-  console.log("processedUsers", users)
 
   return users;
 };
 
-export const getAllAdmin = async (): Promise<Array<IUserClient>> => {
+export const getAllAdmin = async (): Promise<Array<IUserView>> => {
   const users: IUserView[] = await prisma.$queryRaw`
     SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"})
   `;
-  // Process each user and convert profilePic to a hex string if it exists
-  const processedUsers: IUserClient[] = users.map((user) => ({
-    ...user,
-    profilePic: user.profilePic
-      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
-        ? bufferToHex(user.profilePic)
-        : user.profilePic // If it's already a string, keep it as is
-      : null,
-  }));
-
-  return processedUsers;
+  return users;
 }
 
 
@@ -152,17 +141,7 @@ export const getAllNUPRC = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"NUPRC-ADR"})
  `;
-  // Process each user and convert profilePic to a hex string if it exists
-  const processedUsers: IUserClient[] = users.map((user) => ({
-    ...user,
-    profilePic: user.profilePic
-      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
-        ? bufferToHex(user.profilePic)
-        : user.profilePic // If it's already a string, keep it as is
-      : null,
-  }));
-
-  return processedUsers;
+  return users;
 }
 
 
@@ -207,17 +186,7 @@ export const getAllDRA = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"DRA"})
  `;
-  // Process each user and convert profilePic to a hex string if it exists
-  const processedUsers: IUserClient[] = users.map((user) => ({
-    ...user,
-    profilePic: user.profilePic
-      ? Buffer.isBuffer(user.profilePic) // Ensure it's a Buffer
-        ? bufferToHex(user.profilePic)
-        : user.profilePic // If it's already a string, keep it as is
-      : null,
-  }));
-
-  return processedUsers;
+  return users;
 }
 
 export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
@@ -317,16 +286,25 @@ export const changePassword = async (userId: string, oldPassword: string, newPas
   return { message: "Password changed successfully." };
 };
 
-export const updateProfilePicture = async (userId: string, hexImage: string, mimeType: string) => {
-  if (!hexImage || !mimeType) {
+export const updateProfilePicture = async (userId: string, base64String: string, mimeType: string) => {
+  if (!base64String || !mimeType) {
     throw new Error("Profile picture and MIME type are required.");
   }
 
+  const user = await prisma.user.findUnique({ where: { userId } })
+
+  if (user?.profilePic) {
+    await deleteFile(removeFileExtension(user.profilePic))
+  }
+
+  let uploadUrl = await uploadFile(base64String, mimeType)
+
+  const filePath = getFileName(uploadUrl)
   // Update user profile picture
   const updatedUser = await prisma.user.update({
     where: { userId },
     data: {
-      profilePic: hexImage,
+      profilePic: filePath,
       profilePicMimeType: mimeType,
     },
     select: { userId: true, profilePicMimeType: true, profilePic: true },

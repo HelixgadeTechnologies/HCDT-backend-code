@@ -117,6 +117,8 @@ authRoutes.post("/signIn", login);
  */
 authRoutes.post("/signUp", register);
 
+
+
 /**
  * @swagger
  * /api/auth/test:

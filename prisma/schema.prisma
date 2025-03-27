@@ -110,7 +110,7 @@ model BotDetails {
 model TrustEstablishmentStatus {
   trustEstablishmentStatusId                   String                   @id @default(uuid())
   trustRegisteredWithCAC                       Int?
-  cscDocument                                  Bytes?
+  cscDocument                                  String?
   cscDocumentMimeType                          String?
   yearIncorporated                             Int?
   botConstitutedAndInaugurated                 Int?
@@ -120,9 +120,9 @@ model TrustEstablishmentStatus {
   isTrustDevelopmentPlanBudgetReadilyAvailable Int?
   yearDeveloped                                Int?
   yearExpired                                  Int?
-  developmentPlanDocument                      Bytes?
+  developmentPlanDocument                      String?
   developmentPlanDocumentMimeType              String?
-  developmentPlanBudgetDocument                Bytes?
+  developmentPlanBudgetDocument                String?
   developmentPlanBudgetDocumentMimeType        String?
   yearOfFundsReceivedByTrust                   Int?
   totalFundsReceivedByTrust                    Int?
@@ -138,7 +138,7 @@ model TrustEstablishmentStatus {
   communityLeadershipConsulted                 Int?
   attendanceSheet                              Int?
   distributionMatrixDevelopedBySettlor         Boolean?
-  trustDistributionMatrixDocument              Bytes?
+  trustDistributionMatrixDocument              String?
   trustDistributionMatrixDocumentMimeType      String?
   operationalExpenditure                       OperationalExpenditure[]
   trust                                        Trust?                   @relation(fields: [trustId], references: [trustId])
@@ -173,7 +173,7 @@ model Project {
   projectStatus                         Int?
   qualityRating                         QualityRating?   @relation(fields: [qualityRatingId], references: [qualityRatingId])
   qualityRatingId                       Int?
-  projectVideo                          Bytes?
+  projectVideo                          String?
   projectVideoMimeType                  String?
   numberOfMaleEmployedByContractor      Int?
   numberOfFemaleEmployedByContractor    Int?
