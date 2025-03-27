@@ -1,12 +1,10 @@
 import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { IAuth, IDraSignUp, ILogin, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
-import { Console } from "console";
+import {IDraSignUp, ILogin, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { JWT_SECRET } from "../secrets";
-import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
 import { sendAdminRegistrationEmail } from "../utils/mail";
-import { deleteFile, getFileName, removeFileExtension, uploadFile } from "../utils/upload";
+import { deleteFile, getFileName, uploadFile } from "../utils/upload";
 
 const prisma = new PrismaClient();
 

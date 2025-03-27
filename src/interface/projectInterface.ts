@@ -38,7 +38,7 @@ export interface IProjectView {
     projectStatusName?: string | null;
     qualityRatingId?: number | null;
     qualityRatingName?: string | null;
-    projectVideo?: Buffer | string | null;
+    projectVideo?:string | null;
     projectVideoMimeType?: string | null;
     numberOfMaleEmployedByContractor?: number | null;
     numberOfFemaleEmployedByContractor?: number | null;

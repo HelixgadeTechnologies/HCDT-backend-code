@@ -110,7 +110,7 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
     const trustOperationalEstablishmentData = {
         trustId: data.trustId ?? null,
         trustRegisteredWithCAC: data.trustRegisteredWithCAC ?? null,
-        cscDocument: data.cscDocument ? hexToBuffer(data.cscDocument) : null,
+        cscDocument: data.cscDocument ? data.cscDocument : null,
         cscDocumentMimeType: data.cscDocumentMimeType ?? null,
         yearIncorporated: data.yearIncorporated ?? null,
         botConstitutedAndInaugurated: data.botConstitutedAndInaugurated ?? null,
@@ -120,9 +120,9 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         isTrustDevelopmentPlanBudgetReadilyAvailable: data.isTrustDevelopmentPlanBudgetReadilyAvailable ?? null,
         yearDeveloped: data.yearDeveloped ?? null,
         yearExpired: data.yearExpired ?? null,
-        developmentPlanDocument: data.developmentPlanDocument ? hexToBuffer(data.developmentPlanDocument) : null,
+        developmentPlanDocument: data.developmentPlanDocument ? data.developmentPlanDocument : null,
         developmentPlanDocumentMimeType: data.developmentPlanDocumentMimeType ?? null,
-        developmentPlanBudgetDocument: data.developmentPlanBudgetDocument ? hexToBuffer(data.developmentPlanBudgetDocument) : null,
+        developmentPlanBudgetDocument: data.developmentPlanBudgetDocument ? data.developmentPlanBudgetDocument : null,
         developmentPlanBudgetDocumentMimeType: data.developmentPlanBudgetDocumentMimeType ?? null,
         yearOfFundsReceivedByTrust: data.yearOfFundsReceivedByTrust ?? null,
         totalFundsReceivedByTrust: data.totalFundsReceivedByTrust ?? null,
@@ -137,7 +137,7 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         communityLeadershipConsulted: data.communityLeadershipConsulted ?? null,
         attendanceSheet: data.attendanceSheet ?? null,
         distributionMatrixDevelopedBySettlor: data.distributionMatrixDevelopedBySettlor ?? null,
-        trustDistributionMatrixDocument: data.trustDistributionMatrixDocument ? hexToBuffer(data.trustDistributionMatrixDocument) : null,
+        trustDistributionMatrixDocument: data.trustDistributionMatrixDocument ? data.trustDistributionMatrixDocument : null,
         trustDistributionMatrixDocumentMimeType: data.trustDistributionMatrixDocumentMimeType ?? null,
     };
 
@@ -179,18 +179,6 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
 
     return {
         ...trustEstablishmentStatus,
-        cscDocument: trustEstablishmentStatus.cscDocument
-            ? bufferToHex(Buffer.from(trustEstablishmentStatus.cscDocument))
-            : null,
-        developmentPlanDocument: trustEstablishmentStatus.developmentPlanDocument
-            ? bufferToHex(Buffer.from(trustEstablishmentStatus.developmentPlanDocument))
-            : null,
-        developmentPlanBudgetDocument: trustEstablishmentStatus.developmentPlanBudgetDocument
-            ? bufferToHex(Buffer.from(trustEstablishmentStatus.developmentPlanBudgetDocument))
-            : null,
-        trustDistributionMatrixDocument: trustEstablishmentStatus.trustDistributionMatrixDocument
-            ? bufferToHex(Buffer.from(trustEstablishmentStatus.trustDistributionMatrixDocument))
-            : null,
         trustId: trustEstablishmentStatus.trustId as string,
         settlorOperationalExpenditures
     } as ITrustEstablishmentStatus;

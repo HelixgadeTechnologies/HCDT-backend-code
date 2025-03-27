@@ -16,7 +16,7 @@ export const createOrUpdateProject = async (projectData: IProject, isCreate: boo
                 ...projectData,
                 projectTitle: projectData.projectTitle as string,
                 projectId: undefined,
-                projectVideo: projectData.projectVideo ? hexToBuffer(projectData.projectVideo) : null,
+                projectVideo: projectData.projectVideo ? projectData.projectVideo: null,
             },
         });
     } else {
@@ -25,7 +25,7 @@ export const createOrUpdateProject = async (projectData: IProject, isCreate: boo
             where: { projectId: projectData.projectId },
             data: {
                 ...projectData,
-                projectVideo: projectData.projectVideo ? hexToBuffer(projectData.projectVideo) : null,
+                projectVideo: projectData.projectVideo ?projectData.projectVideo: null,
             },
         });
     }
@@ -35,31 +35,14 @@ export const getAllProjectsView = async (): Promise<IProjectClient[]> => {
     const projects = await prisma.$queryRaw<IProjectView[]>`
         SELECT * FROM project_view
     `;
-    return processProject(projects)
+    return projects
 };
-
-const processProject = (projects: IProjectView[]): IProjectClient[] => {
-    if (projects.length == 0) {
-        return [] as IProjectClient[]
-    }
-    // Process each user and convert projectVideo to a hex string if it exists
-    const processedProjects: IProjectClient[] = projects.map((project) => ({
-        ...project,
-        projectVideo: project.projectVideo
-            ? Buffer.isBuffer(project.projectVideo) // Ensure it's a Buffer
-                ? bufferToHex(project.projectVideo)
-                : project.projectVideo // If it's already a string, keep it as is
-            : null,
-    }));
-
-    return processedProjects;
-}
 
 export const getProjectsView = async (projectId: string): Promise<IProjectClient[]> => {
     const projects = await prisma.$queryRaw<IProjectView[]>`
         SELECT * FROM project_view WHERE projectId = ${projectId}
     `;
-    return processProject(projects)
+    return projects
 };
 
 // Get all Project Categories
