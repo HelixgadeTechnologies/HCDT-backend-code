@@ -294,17 +294,17 @@ export const updateProfilePicture = async (userId: string, base64String: string,
   const user = await prisma.user.findUnique({ where: { userId } })
 
   if (user?.profilePic) {
-    await deleteFile(removeFileExtension(user.profilePic))
+    const filePath = getFileName(user.profilePic)
+    await deleteFile(filePath)
   }
 
   let uploadUrl = await uploadFile(base64String, mimeType)
 
-  const filePath = getFileName(uploadUrl)
   // Update user profile picture
   const updatedUser = await prisma.user.update({
     where: { userId },
     data: {
-      profilePic: filePath,
+      profilePic: uploadUrl,
       profilePicMimeType: mimeType,
     },
     select: { userId: true, profilePicMimeType: true, profilePic: true },

@@ -18,7 +18,7 @@ export const getFileName = (url: string) => {
     const path = parts.slice(folderIndex).join("/").replace(/\.[^/.]+$/, ""); // Remove extension
     return path;
 }
-export const removeFileExtension = (filePath:string)=> {
+export const removeFileExtension = (filePath: string): string => {
     return filePath.replace(/\.[^/.]+$/, ""); // Removes the last extension
 }
 
