@@ -20,14 +20,7 @@ export interface ITrust {
     totalPwdManagementCommitteeMembers?: number;
     createAt?: string;
 }
-// export interface IBotDetails {
-//     botDetailsId: string
-//     firstName: string
-//     lastName: string
-//     email: string
-//     phoneNumber: string
-//     trustId: string
-// }
+
 interface IBotDetails {
     botDetailsId: string;
     firstName?: string | null;

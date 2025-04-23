@@ -49,3 +49,74 @@ export const getImpactOptionTwo = async (): Promise<IImpactOptionTwo[]> => {
         throw new Error(`Error fetching economic-impact-related data: ${error}`);
     }
 }
+
+function normalizeBigInts<T>(data: T): T {
+    if (Array.isArray(data)) {
+        return data.map(normalizeBigInts) as any;
+    } else if (typeof data === 'object' && data !== null) {
+        const normalized: any = {};
+        for (const key in data) {
+            const value = (data as any)[key];
+            normalized[key] =
+                typeof value === 'bigint' ? Number(value) : normalizeBigInts(value);
+        }
+        return normalized;
+    }
+    return data;
+}
+// Function to call the stored procedure for a specific option
+async function callProcedure(trustId: string, option: number): Promise<any[]> {
+    const raw = await prisma.$queryRawUnsafe<any[]>(
+        `CALL GetEconomicImpactDashboardDataByTrust(?, ?)`,
+        trustId,
+        option
+    );
+
+    const cleaned = normalizeBigInts(raw);
+    
+    if (option < 4) {
+        return cleaned.map((row: any) => ({
+            ["QUESTION"]: row.f0,
+            ["RESPONSE"]:{
+                ["VERY TRUE"]: row.f1,
+                ["SLIGHTLY"]: row.f2,
+                ["NOT TRUE"]: row.f3,
+            },
+            ["VALUE TYPE"]:"Percentage"
+        }));
+        
+    }else{
+        return cleaned.map((row: any) => ({
+            ["QUESTION"]: row.f0,
+            ["RESPONSE"]:{
+                ["HEALTHCARE"]: row.f1,
+                ["EDUCATION"]: row.f2,
+                ["PORTABLE WATER"]: row.f3,
+                ["ELECTRICITY"]: row.f4,
+                ["GOOD ROADS"]: row.f5,
+                ["MARKET"]: row.f6,
+                ["FAVORABLE BUSINESS ENVIRONMENT"]: row.f7,
+            },
+            ["VALUE TYPE"]:"tOTAL",
+        }));
+    }
+}
+
+export async function getEconomicImpactDataByTrust(trustId: string) {
+    // Optionally return them as a keyed object
+    const keys = [
+        'businessGrowth',
+        'incomeIncrease',
+        'livelihoodImprove',
+        'accessAmenities'
+    ];
+
+    const finalResult: Record<string, any> = {};
+
+    for (let index = 0; index < keys.length; index++) {
+        const result = await callProcedure(trustId, index + 1);
+        finalResult[keys[index]] = result;
+    }
+
+    return finalResult;
+}

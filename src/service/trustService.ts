@@ -70,7 +70,6 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
     }
 };
 
-
 export const getAllTrust = async (): Promise<Array<ITrustView>> => {
 
     const trusts: Array<ITrustView> = await prisma.$queryRaw`
@@ -79,6 +78,7 @@ export const getAllTrust = async (): Promise<Array<ITrustView>> => {
 
     return trusts
 }
+
 export const getTrust = async (trustId: string): Promise<ITrustView | null> => {
     const trusts: ITrustView[] = await prisma.$queryRaw`
         SELECT * FROM trust_view WHERE trustId = ${trustId}

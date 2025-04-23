@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler"; // Custom response handler
-import { getAcsOptionOne, getAcsOptionTwo, getAllAverageCommunitySatisfaction, getAllAverageCommunitySatisfactionByTrust, getAverageCommunitySatisfaction, upsertAverageCommunitySatisfaction } from "../service/averageCommunitySatisfactionService";
+import { getAcsOptionOne, getAcsOptionTwo, getAllAverageCommunitySatisfaction, getAllAverageCommunitySatisfactionByTrust, getAverageCommunitySatisfaction, getCommunitySatisfactionDashboard, upsertAverageCommunitySatisfaction } from "../service/averageCommunitySatisfactionService";
 
 export const createOrUpdateAverageCommunitySatisfaction = async (req: Request, res: Response) => {
     try {
@@ -88,3 +88,18 @@ export const getAllAcsOptionTwo = async (req: Request, res: Response) => {
         res.status(500).json(errorResponse("Error fetching AcsOptionTwo data", error.message));
     }
 };
+
+export const getDashboardData = async (req: Request, res: Response) => {
+    const { trustId } = req.params;
+  
+    if (!trustId) {
+      res.status(404).json(notFoundResponse('trustId is required' ));
+    }
+  
+    try {
+      const data = await getCommunitySatisfactionDashboard(trustId);
+      res.status(200).json(successResponse("CommunitySatisfactionDashboard",data));
+    } catch (error) {
+      res.status(500).json(errorResponse('Failed to load dashboard data', error ));
+    }
+  };

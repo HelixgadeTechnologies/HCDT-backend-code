@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrUpdateEconomicImpact, economicImpactByTrustId, getAllImpactOptionOne, getAllImpactOptionTwo, getEconomicImpact, listEconomicImpacts } from "../controllers/economicImpactController";
+import { createOrUpdateEconomicImpact, economicImpactByTrustId, getAllImpactOptionOne, getAllImpactOptionTwo, getEconomicImpact, getEconomicImpactDashboard, listEconomicImpacts } from "../controllers/economicImpactController";
 
 const economicImpactRouter = Router();
 
@@ -268,4 +268,82 @@ economicImpactRouter.get("/impactOptionOne", getAllImpactOptionOne);
  *               items:
  */
 economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
+
+
+/**
+ * @swagger
+ * /api/economic-impact/dashboard/{trustId}:
+ *   get:
+ *     summary: Retrieve economic impact dashboard data by trust ID
+ *     description: Returns pie chart data for various metrics (infoProjects, communityConsult, etc.) linked to a specific trustId.
+ *       **Note:** At default a dashboard must preview all data, to archive this pass in `ALL` as trustId, then to sort base on trust, pass in the trustId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific trust.
+ *     tags: [Economic Impact]
+ *     parameters:
+ *       - in: path
+ *         name: trustId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Unique ID of the trust to fetch dashboard data for
+ *     responses:
+ *       200:
+ *         description: Economic impact data successfully retrieved
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     businessGrowth:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           Category:
+ *                             type: string
+ *                           Response:
+ *                             type: string
+ *                           Percentage:
+ *                             type: number
+ *                     incomeIncrease:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           Category:
+ *                             type: string
+ *                           Response:
+ *                             type: string
+ *                           Percentage:
+ *                             type: number
+ *                     livelihoodImprove:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           Category:
+ *                             type: string
+ *                           Response:
+ *                             type: string
+ *                           Percentage:
+ *                             type: number
+ *                     accessToAmenities:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           Amenity:
+ *                             type: string
+ *                           AccessCount:
+ *                             type: number
+ *       404:
+ *         description: trustId is required
+ *       500:
+ *         description: Internal server error
+ */
+economicImpactRouter.get("/dashboard/:trustId", getEconomicImpactDashboard);
 export default economicImpactRouter;

@@ -31,6 +31,7 @@ export interface ISignUpAdmin {
     firstName: string | null;
     lastName: string | null;
     email: string;
+    phoneNumber: string;
     roleId: string | null;
     trusts: string | null;
     status?: number | null;
@@ -57,7 +58,8 @@ export interface IDraSignUp {
     lastName: string | null;
     email: string;
     phoneNumber: string | null;
-    trust: string | null;
+    trusts: string | null;
+    status: number | null;
 }
 
 export interface ILogin {

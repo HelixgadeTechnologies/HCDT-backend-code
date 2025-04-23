@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import {IDraSignUp, ILogin, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
+import { IDraSignUp, ILogin, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { JWT_SECRET } from "../secrets";
 import { sendAdminRegistrationEmail } from "../utils/mail";
 import { deleteFile, getFileName, uploadFile } from "../utils/upload";
@@ -61,6 +61,7 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
         firstName: data.firstName || null,
         lastName: data.lastName || null,
         email: data.email,
+        phoneNumber: data.phoneNumber || null,
         roleId: data.roleId || null,
         trusts: data.trusts,
         status: 0,
@@ -75,8 +76,9 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
         lastName: data.lastName || null,
         email: data.email || null,
         roleId: data.roleId || null,
-        trusts: data.trusts,
-        status: 0
+        trusts: data.trusts || null,
+        status: data.status || null,
+        phoneNumber: data.phoneNumber || null
       },
     });
   }
@@ -145,38 +147,47 @@ export const getAllNUPRC = async (): Promise<Array<IUserClient>> => {
 
 export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
 
-  const roles = await prisma.role.findFirst({ where: { roleName: "DRA" } });
+  const role = await prisma.role.findFirst({ where: { roleName: "DRA" } });
+  try {
+    if (isCreate) {
+      const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+      if (existingUser) throw new Error("User with this email already exists");
 
-  if (isCreate) {
-    const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
-    if (existingUser) throw new Error("User with this email already exists");
+      await sendAdminRegistrationEmail(data.email, data.lastName as string, "DRA")
 
-    await sendAdminRegistrationEmail(data.email, data.lastName as string, "DRA")
+      // hash password
+      const hashedPassword = await bcrypt.hash("12345", 10);
+      return prisma.user.create({
+        data: {
+          firstName: data.firstName || null,
+          lastName: data.lastName || null,
+          email: data.email,
+          phoneNumber: data.phoneNumber || null,
+          roleId: role?.roleId || null,
+          // role: { connect: { roleId: role?.roleId } },
+          password: hashedPassword,
+          trusts: data.trusts,
+          status: 0,
+        } as Prisma.UserCreateInput
 
-    // hash password
-    const hashedPassword = await bcrypt.hash("12345", 10);
-    return prisma.user.create({
-      data: {
-        firstName: data.firstName || null,
-        lastName: data.lastName || null,
-        email: data.email,
-        phoneNumber: data.phoneNumber || null,
-        role: roles?.roleId ? { connect: { roleId: roles?.roleId } } : undefined,
-        password: hashedPassword,
-        trusts: data.trust
-      } as Prisma.UserCreateInput
-    });
-  } else {
-    return prisma.user.update({
-      where: { userId: data.userId },
-      data: {
-        firstName: data.firstName || null,
-        lastName: data.lastName || null,
-        email: data.email || null,
-        phoneNumber: data.phoneNumber || null,
-        trusts: data.trust || null
-      }
-    })
+      });
+    } else {
+      return prisma.user.update({
+        where: { userId: data.userId },
+        data: {
+          firstName: data.firstName || null,
+          lastName: data.lastName || null,
+          email: data.email || null,
+          phoneNumber: data.phoneNumber || null,
+          trusts: data.trusts || null,
+          status: data.status || null,
+        }
+      })
+    }
+
+  } catch (error: any) {
+    console.log(error, "error")
+    throw new Error(error.message);
   }
 };
 
@@ -240,15 +251,17 @@ export const getAllRole = async (): Promise<Array<Role>> => {
 
 export const loginUser = async (data: ILogin) => {
 
+  // console.log(data)
+
   const user: IUserView[] = await prisma.$queryRaw`
   SELECT * FROM user_view WHERE email = ${data.email}
 `;
-
+  // console.log(user)
   if (user.length < 1) throw new Error("Invalid credentials");
 
   const isPasswordValid = await bcrypt.compare(data.password, user[0].password as string);
 
-
+  // console.log("IsValid", isPasswordValid)
   if (!isPasswordValid) throw new Error("Invalid credentials");
 
   return jwt.sign(user[0], JWT_SECRET as string, { expiresIn: "1h" });

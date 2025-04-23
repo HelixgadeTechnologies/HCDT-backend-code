@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrUpdateAverageCommunitySatisfaction, getAllAcsOptionOne, getAllAcsOptionTwo, getAverageCommunitySatisfactionById, getAverageCommunitySatisfactionByTrustId, listAverageCommunitySatisfaction } from "../controllers/averageCommunitySatisfactionController";
+import { createOrUpdateAverageCommunitySatisfaction, getAllAcsOptionOne, getAllAcsOptionTwo, getAverageCommunitySatisfactionById, getAverageCommunitySatisfactionByTrustId, getDashboardData, listAverageCommunitySatisfaction } from "../controllers/averageCommunitySatisfactionController";
 
 const averageCommunitySatisfactionRouter = express.Router();
 
@@ -25,7 +25,7 @@ const averageCommunitySatisfactionRouter = express.Router();
  *             properties:
  *               isCreate:
  *                 type: boolean
- *                 description: Determines if the request is for creation (true) or update (false).
+ *                 description: Determines if the request is for creation (true) or update (false). NOTE acsOptionTwo is the option for the first five properties while acsOptionOne goes to the last three.
  *                 example: true
  *               data:
  *                 type: object
@@ -76,7 +76,7 @@ const averageCommunitySatisfactionRouter = express.Router();
  *                     type: integer
  *                     nullable: true
  *                     description: Income generated from the project.
- *                     example: 10000
+ *                     example: 1
  *                   trustId:
  *                     type: string
  *                     nullable: true
@@ -123,7 +123,7 @@ const averageCommunitySatisfactionRouter = express.Router();
  *                       example: 2
  *                     incomeProject:
  *                       type: integer
- *                       example: 10000
+ *                       example: 1
  *                     trustId:
  *                       type: string
  *                       example: "abc123-trust"
@@ -467,4 +467,68 @@ averageCommunitySatisfactionRouter.get("/acsOptionOne", getAllAcsOptionOne);
  *               items:
  */
 averageCommunitySatisfactionRouter.get("/acsOptionTwo", getAllAcsOptionTwo);
+
+
+/**
+ * @swagger
+ * /api/average-community-satisfaction/dashboard/{trustId}:
+ *   get:
+ *     summary: Get community satisfaction dashboard data
+ *     description: Returns pie chart data for various metrics (infoProjects, communityConsult, etc.) linked to a specific trustId.
+ *       **Note:** At default a dashboard must preview all data, to archive this pass in `ALL` as trustId, then to sort base on trust, pass in the trustId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific trust.
+ *     tags:
+ *       - Average Community Satisfaction
+ *     parameters:
+ *       - name: trustId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier for the trust
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved dashboard data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 infoProjects:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 communityConsult:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 localParticipation:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 reportMechanism:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 conflictMinimization:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 projectHandover:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 maintenanceConsult:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 incomeProject:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: trust Id is required
+ *       500:
+ *         description: Internal server error
+ */
+averageCommunitySatisfactionRouter.get('/dashboard/:trustId', getDashboardData);
 export default averageCommunitySatisfactionRouter;

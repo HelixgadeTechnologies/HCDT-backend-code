@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler";
-import { getAllEconomicImpacts, getEconomicImpactById, getEconomicImpactByTrustId, getImpactOptionOne, getImpactOptionTwo, upsertEconomicImpact } from "../service/economicimpactService";
+import { getAllEconomicImpacts, getEconomicImpactById, getEconomicImpactByTrustId, getEconomicImpactDataByTrust, getImpactOptionOne, getImpactOptionTwo, upsertEconomicImpact } from "../service/economicimpactService";
 
 export const createOrUpdateEconomicImpact = async (req: Request, res: Response) => {
     try {
@@ -88,5 +88,19 @@ export const getAllImpactOptionTwo = async (req: Request, res: Response) => {
         res.status(200).json(successResponse("ImpactOptionTwo", impactOptionTwo));
     } catch (error: any) {
         res.status(500).json(errorResponse("Error fetching ImpactOptionTwo data", error.message));
+    }
+};
+
+export const getEconomicImpactDashboard = async (req: Request, res: Response) => {
+    const { trustId } = req.params;
+    if (!trustId) {
+        res.status(404).json(notFoundResponse('trustId is required'));
+    }
+    try {
+        const data = await getEconomicImpactDataByTrust(trustId);
+        res.status(200).json(successResponse("EconomicImpactDataDashboard", data));
+    } catch (error: any) {
+        console.log(error)
+        res.status(500).json(errorResponse('Internal Server Error', error.message));
     }
 };

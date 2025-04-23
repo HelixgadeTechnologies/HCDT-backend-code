@@ -145,6 +145,9 @@ settingsRoute.post("/remove", deleteUser)
  *                   email:
  *                     type: string
  *                     example: "admin@example.com"
+ *                   phoneNumber:
+ *                     type: string
+ *                     example: "0909866"
  *                   roleId:
  *                     type: string
  *                     example: "uuid-role-id"

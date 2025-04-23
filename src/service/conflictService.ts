@@ -87,3 +87,117 @@ export const getCourtLitigationStatuses = async (): Promise<ICourtLitigationStat
         throw new Error(`Error fetching conflict-related data: ${error}`);
     }
 };
+
+function normalizeBigInts<T>(data: T): T {
+    if (Array.isArray(data)) {
+        return data.map(normalizeBigInts) as any;
+    } else if (typeof data === 'object' && data !== null) {
+        const normalized: any = {};
+        for (const key in data) {
+            const value = (data as any)[key];
+            normalized[key] =
+                typeof value === 'bigint' ? Number(value) : normalizeBigInts(value);
+        }
+        return normalized;
+    }
+    return data;
+}
+// Function to call the stored procedure for a specific option
+async function callProcedure(option: number, projectId: string): Promise<any[]> {
+    const raw = await prisma.$queryRawUnsafe<any[]>(
+        `CALL ConflictDashboard(?,?)`,
+        option,
+        projectId
+    );
+
+    const cleaned = normalizeBigInts(raw);
+    if (option == 1) {
+        return cleaned.map((row: any) => ({
+            ["All_CONFLICT"]: row.f0,
+        }));
+    } else if (option == 2) {
+        return cleaned.map((row: any) => ({
+            ["RESOLVED_CONFLICT"]: row.f0,
+        }));
+    } else if (option == 3) {
+        return cleaned.map((row: any) => ({
+            ["PENDING_CONFLICT"]: row.f0,
+        }));
+    } else if (option == 4) {
+        return cleaned.map((row: any) => ({
+            ["CONFLICT_IN COURT"]: row.f0,
+        }));
+    } else if (option == 5) {
+        return cleaned.map((row: any) => ({
+            ["THE_ISSUE_HAS_BEEN_EFFECTIVELY_ADDRESSED"]: row.f1,
+            ["THE_ISSUE_IS_NOT_EFFECTIVELY_ADDRESSED"]: row.f2,
+            ["THE_ISSUE_IS_CURRENTLY_BEING ADDRESSED"]: row.f3,
+            ["THE_ISSUE_IS_YET_TO_BE_ADDRESSED"]: row.f4,
+            ["VALUE_TYPE"]: "Percentage"
+        }));
+    } else if (option == 6) {
+        return cleaned.map((row: any) => ({
+            ["THE_LITIGATION_IS_ONGOING"]: row.f1,
+            ["THE_LITIGATION_HAS_BEEN_WITHDRAWN"]: row.f2,
+            ["THERE_IS_A_COURT_JUDGEMENT"]: row.f3,
+            ["VALUE_TYPE"]: "Percentage"
+        }));
+    } else if (option == 7) {
+        return cleaned.map((row: any) => ({
+            ["MONTH"]: row.f0,
+            ["REPORT_COUNT"]: row.f1,
+            ["VALUE_TYPE"]: "TOTAL",
+        }));
+    } else if (option == 8) {
+        return cleaned.map((row: any) => ({
+            ["LAND_BORDER"]: row.f1,
+            ["CONSTITUTION_OF_BOT"]: row.f2,
+            ["CONSTITUTION_OF_MANAGEMENT_COMMITTEE"]: row.f3,
+            ["CONSTITUTION_OF_ADVISORY_COMMITTEE"]: row.f4,
+            ["PIPELINE_VANDALISM_AND_OIL_SPILL"]: row.f5,
+            ["DISTRIBUTION_MATRIX"]: row.f6,
+            ["LATE RECEIVE_OF_TRUST_FUND"]: row.f7,
+            ["CONTRACTING_AND_PROJECT_DELIVERY"]: row.f8,
+            ["VALUE_TYPE"]: "TOTAL"
+        }));
+    } else if (option == 9) {
+        return cleaned.map((row: any) => ({
+            ["PROJECT_TITLE"]: row.f0,
+            ["USER_EMAIL"]: row.f1,
+            ["DATE_CREATED"]: row.f2
+        }))
+    } else if (option == 10) {
+        return cleaned.map((row: any) => ({
+            ["PROJECT_TITLE"]: row.f0,
+            ["USER_EMAIL"]: row.f1,
+            ["DATE_CREATED"]: row.f2
+        }))
+    } else {
+        return []
+    }
+}
+
+export async function getConflictDashboardData(projectId: string) {
+    // Optionally return them as a keyed object
+    const keys = [
+        'ALL_CONFLICT_REPORT',
+        'RESOLVED_CONFLICT',
+        'PENDING_CONFLICT',
+        'CONFLICTS_IN_COURT',
+        'STATUS_OF_CONFLICT',
+        'CONFLICT_OF_COURT_LITIGATION',
+        'REPORT_FREQUENCY',
+        'CAUSE_OF_CONFLICT',
+        'RESOLVED_CONFLICTS',
+        'UNRESOLVED_CONFLICTS'
+    ];
+
+    const finalResult: Record<string, any> = {};
+
+    for (let index = 0; index < keys.length; index++) {
+        const result = await callProcedure(index + 1, projectId);
+        finalResult[keys[index]] = result;
+    }
+
+    return finalResult;
+}

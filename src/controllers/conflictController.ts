@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler";
-import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve } from "../service/conflictService";
+import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictDashboardData, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve } from "../service/conflictService";
 
 export const handleConflict = async (req: Request, res: Response) => {
     try {
@@ -93,5 +93,19 @@ export const getAllCourtLitigationStatuses = async (req: Request, res: Response)
         res.status(200).json(successResponse("Conflict data retrieved successfully", conflictData));
     } catch (error: any) {
         res.status(500).json(errorResponse("Error fetching conflict data", error.message));
+    }
+};
+export const getConflictDashboard = async (req: Request, res: Response) => {
+    const { projectId } = req.params;
+
+    if (!projectId) {
+        res.status(404).json(notFoundResponse('project Id is required'));
+    }
+
+    try {
+        const data = await getConflictDashboardData(projectId);
+        res.status(200).json(successResponse("ConflictDashboard", data));
+    } catch (error) {
+        res.status(500).json(errorResponse('Failed to load dashboard data', error));
     }
 };

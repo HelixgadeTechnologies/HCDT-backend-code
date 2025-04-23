@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllCauseOfConflict, getAllConflictStatuses, getAllCourtLitigationStatuses, getAllIssuesAddressedBy, getAllPartiesInvolve, getConflict, handleConflict, listConflicts } from "../controllers/conflictController";
+import { getAllCauseOfConflict, getAllConflictStatuses, getAllCourtLitigationStatuses, getAllIssuesAddressedBy, getAllPartiesInvolve, getConflict, getConflictDashboard, handleConflict, listConflicts } from "../controllers/conflictController";
 
 
 const conflictRouter = express.Router();
@@ -244,4 +244,73 @@ conflictRouter.get("/issuesAddressedBy", getAllIssuesAddressedBy);
  *               items:
  */
 conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
+
+/**
+ * @swagger
+ * /api/conflict/dashboard/{projectId}:
+ *   get:
+ *     summary: Get conflict dashboard data
+ *     description: |
+ *       Returns pie chart data for various metrics (conflict status, court litigation, etc.)linked to a specific projectId.  
+ *       **Note:** At default a dashboard must preview all data to archive this pass in `ALL` as projectId, then to sort bse on project id pass in the projectId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific project.
+ *     tags:
+ *       - Conflict
+ *     parameters:
+ *       - name: projectId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier for the project
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved dashboard data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 ALL_CONFLICT_REPORT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 RESOLVED_CONFLICT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 PENDING_CONFLICT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 CONFLICTS_IN_COURT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 STATUS_OF_CONFLICT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 CONFLICT_OF_COURT_LITIGATION:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 CAUSE_OF_CONFLICT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 RESOLVED_CONFLICTS:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 UNRESOLVED_CONFLICTS:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: project Id is required
+ *       500:
+ *         description: Internal server error
+ */
+conflictRouter.get('/dashboard/:projectId', getConflictDashboard);
+
 export default conflictRouter;
