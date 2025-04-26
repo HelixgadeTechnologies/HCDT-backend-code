@@ -123,7 +123,6 @@ economicImpactRouter.get("/economicImpacts", listEconomicImpacts);
  *         required: true
  *         schema:
  *           type: string
- *           format: uuid
  *         description: The ID of the Economic Impact record to retrieve
  *     responses:
  *       200:
@@ -185,7 +184,6 @@ economicImpactRouter.get("/economicImpact/:economicImpactId", getEconomicImpact)
  *         required: true
  *         schema:
  *           type: string
- *           format: uuid
  *         description: The Trust ID of the Economic Impact record to retrieve
  *     responses:
  *       200:

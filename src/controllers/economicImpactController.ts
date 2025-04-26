@@ -28,7 +28,7 @@ export const listEconomicImpacts = async (req: Request, res: Response) => {
         if (economicImpacts.length === 0) {
             res.status(404).json(notFoundResponse("No Economic Impact data found", []));
         }
-
+           
         res.status(200).json(successResponse("Economic Impacts", economicImpacts));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error.message));
@@ -68,7 +68,7 @@ export const economicImpactByTrustId = async (req: Request, res: Response) => {
             res.status(404).json(notFoundResponse("Economic Impact not found", null));
         }
 
-        res.status(200).json(successResponse("Economic Impact", economicImpact[0]));
+        res.status(200).json(successResponse("Economic Impact", economicImpact));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error.message));
     }

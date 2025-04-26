@@ -317,13 +317,15 @@ model AcsOptionTwo {
 }
 
 model EconomicImpact {
-  economicImpactId  String  @id @default(uuid())
+  economicImpactId  String    @id @default(uuid())
   businessGrowth    Int?
   incomeIncrease    Int?
   livelihoodImprove Int?
   accessAmenities   Int?
-  trust             Trust?  @relation(fields: [trustId], references: [trustId])
+  trust             Trust?    @relation(fields: [trustId], references: [trustId])
   trustId           String?
+  createAt          DateTime? @default(now())
+  updateAt          DateTime? @default(now())
 
   @@map("economicimpact")
 }

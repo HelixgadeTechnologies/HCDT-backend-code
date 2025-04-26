@@ -19,6 +19,8 @@ export interface IEconomicImpactView {
     accessAmenitiesStatus?: string | null;
     trustId?: string | null;
     trustName?: string | null;
+    createAt?: string | null;
+
 }
 
 export interface IImpactOptionOne {
