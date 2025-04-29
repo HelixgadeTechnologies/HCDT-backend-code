@@ -266,6 +266,7 @@ averageCommunitySatisfactionRouter.post("/create", createOrUpdateAverageCommunit
  *           type: string
  *           nullable: true
  */
+
 averageCommunitySatisfactionRouter.get("/list", listAverageCommunitySatisfaction);
 
 /**
@@ -282,7 +283,6 @@ averageCommunitySatisfactionRouter.get("/list", listAverageCommunitySatisfaction
  *         required: true
  *         schema:
  *           type: string
- *           format: uuid
  *         description: The unique ID of the Average Community Satisfaction record.
  *     responses:
  *       200:
@@ -364,7 +364,6 @@ averageCommunitySatisfactionRouter.get("/single/:averageCommunitySatisfactionId"
  *         required: true
  *         schema:
  *           type: string
- *           format: uuid
  *         description: The unique ID of the Trust record.
  *     responses:
  *       200:

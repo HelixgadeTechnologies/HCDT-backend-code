@@ -9,6 +9,7 @@ export interface IAverageCommunitySatisfaction {
     maintenanceConsult?: number | null;
     incomeProject?: number | null;
     trustId?: string | null;
+    createAt?: string | null;
 }
 
 export interface IAverageCommunitySatisfactionView {
@@ -34,6 +35,7 @@ export interface IAverageCommunitySatisfactionView {
     incomeProjectStatus?: string | null;
     trustId?: string | null;
     trustName?: string | null;
+    createAt?: string | null;
 }
 
 export interface IAcsOptionOne {

@@ -287,7 +287,7 @@ model CourtLitigationStatus {
 }
 
 model AverageCommunitySatisfaction {
-  averageCommunitySatisfactionId String  @id @default(uuid())
+  averageCommunitySatisfactionId String    @id @default(uuid())
   infoProjects                   Int?
   communityConsult               Int?
   localParticipation             Int?
@@ -296,8 +296,10 @@ model AverageCommunitySatisfaction {
   projectHandover                Int?
   maintenanceConsult             Int?
   incomeProject                  Int?
-  trust                          Trust?  @relation(fields: [trustId], references: [trustId])
+  trust                          Trust?    @relation(fields: [trustId], references: [trustId])
   trustId                        String?
+  createAt                       DateTime? @default(now())
+  updateAt                       DateTime? @default(now())
 
   @@map("averagecommunitysatisfaction")
 }
