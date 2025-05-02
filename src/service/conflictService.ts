@@ -157,13 +157,13 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
         }));
     } else if (option == 4) {
         return cleaned.map((row: any) => ({
-            ["CONFLICT_IN COURT"]: row.f0,
+            ["CONFLICT_IN_COURT"]: row.f0,
         }));
     } else if (option == 5) {
         return cleaned.map((row: any) => ({
             ["THE_ISSUE_HAS_BEEN_EFFECTIVELY_ADDRESSED"]: row.f1,
             ["THE_ISSUE_IS_NOT_EFFECTIVELY_ADDRESSED"]: row.f2,
-            ["THE_ISSUE_IS_CURRENTLY_BEING ADDRESSED"]: row.f3,
+            ["THE_ISSUE_IS_CURRENTLY_BEING_ADDRESSED"]: row.f3,
             ["THE_ISSUE_IS_YET_TO_BE_ADDRESSED"]: row.f4,
             ["VALUE_TYPE"]: "Percentage"
         }));
@@ -188,7 +188,7 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             ["CONSTITUTION_OF_ADVISORY_COMMITTEE"]: row.f4,
             ["PIPELINE_VANDALISM_AND_OIL_SPILL"]: row.f5,
             ["DISTRIBUTION_MATRIX"]: row.f6,
-            ["LATE RECEIVE_OF_TRUST_FUND"]: row.f7,
+            ["LATE_RECEIVE_OF_TRUST_FUND"]: row.f7,
             ["CONTRACTING_AND_PROJECT_DELIVERY"]: row.f8,
             ["VALUE_TYPE"]: "TOTAL"
         }));
