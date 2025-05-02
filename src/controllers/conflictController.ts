@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler";
-import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictDashboardData, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve } from "../service/conflictService";
+import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictByTrustId, getConflictDashboardData, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve } from "../service/conflictService";
 
 export const handleConflict = async (req: Request, res: Response) => {
     try {
@@ -54,6 +54,21 @@ export const getConflict = async (req: Request, res: Response) => {
         res.status(500).json(errorResponse("Internal server error", error));
     }
 };
+export const getConflictViaTrust = async (req: Request, res: Response) => {
+    try {
+        const { trustId } = req.params;
+
+        if (!trustId) {
+            res.status(400).json(notFoundResponse("Trust ID is required", trustId));
+        }
+
+        const conflict = await getConflictByTrustId(trustId);
+
+        res.status(200).json(successResponse("Conflict retrieved successfully", conflict));
+    } catch (error: any) {
+        res.status(500).json(errorResponse("Internal server error", error));
+    }
+};
 
 export const getAllCauseOfConflict = async (req: Request, res: Response) => {
     try {
@@ -96,14 +111,14 @@ export const getAllCourtLitigationStatuses = async (req: Request, res: Response)
     }
 };
 export const getConflictDashboard = async (req: Request, res: Response) => {
-    const { projectId } = req.params;
+    const { trustId } = req.params;
 
-    if (!projectId) {
-        res.status(404).json(notFoundResponse('project Id is required'));
+    if (!trustId) {
+        res.status(404).json(notFoundResponse('Trust Id is required'));
     }
 
     try {
-        const data = await getConflictDashboardData(projectId);
+        const data = await getConflictDashboardData(trustId);
         res.status(200).json(successResponse("ConflictDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

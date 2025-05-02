@@ -46,6 +46,17 @@ export const getConflictById = async (conflictId: string): Promise<IConflictView
         throw new Error("Failed to retrieve conflict");
     }
 };
+export const getConflictByTrustId = async (trustId: string): Promise<Array<IConflictView>> => {
+    try {
+        const conflict = await prisma.$queryRaw<IConflictView[]>`
+            SELECT * FROM conflict_view WHERE trustId = ${trustId}
+        `;
+
+        return conflict;
+    } catch (error) {
+        throw new Error("Failed to retrieve conflict");
+    }
+};
 
 export const getCauseOfConflict = async (): Promise<ICauseOfConflict[]> => {
     try {
@@ -88,10 +99,30 @@ export const getCourtLitigationStatuses = async (): Promise<ICourtLitigationStat
     }
 };
 
+// function normalizeBigInts<T>(data: T): T {
+//     if (Array.isArray(data)) {
+//         return data.map(normalizeBigInts) as any;
+//     } else if (typeof data === 'object' && data !== null) {
+//         const normalized: any = {};
+//         for (const key in data) {
+//             const value = (data as any)[key];
+//             normalized[key] =
+//                 typeof value === 'bigint' ? Number(value) : normalizeBigInts(value);
+//         }
+//         return normalized;
+//     }
+//     return data;
+// }
+
+
 function normalizeBigInts<T>(data: T): T {
     if (Array.isArray(data)) {
         return data.map(normalizeBigInts) as any;
     } else if (typeof data === 'object' && data !== null) {
+        if (data instanceof Date) {
+            return data; // ✅ Leave Date objects untouched
+        }
+
         const normalized: any = {};
         for (const key in data) {
             const value = (data as any)[key];
@@ -103,12 +134,13 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(option: number, projectId: string): Promise<any[]> {
+async function callProcedure(option: number, trustId: string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
         `CALL ConflictDashboard(?,?)`,
         option,
-        projectId
+        trustId
     );
+
 
     const cleaned = normalizeBigInts(raw);
     if (option == 1) {

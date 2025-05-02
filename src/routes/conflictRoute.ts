@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllCauseOfConflict, getAllConflictStatuses, getAllCourtLitigationStatuses, getAllIssuesAddressedBy, getAllPartiesInvolve, getConflict, getConflictDashboard, handleConflict, listConflicts } from "../controllers/conflictController";
+import { getAllCauseOfConflict, getAllConflictStatuses, getAllCourtLitigationStatuses, getAllIssuesAddressedBy, getAllPartiesInvolve, getConflict, getConflictDashboard, getConflictViaTrust, handleConflict, listConflicts } from "../controllers/conflictController";
 
 
 const conflictRouter = express.Router();
@@ -158,6 +158,32 @@ conflictRouter.get("/conflicts", listConflicts);
  *         description: Internal server error
  */
 conflictRouter.get("/conflict-view/:conflictId", getConflict);
+/**
+ * @swagger
+ * /api/conflict/conflict-by-trust/{trustId}:
+ *   get:
+ *     summary: Get a specific trust by ID
+ *     description: Fetches a conflict record from the conflict view by trust ID.
+ *     tags:
+ *       - Conflict
+ *     parameters:
+ *       - in: path
+ *         name: trustId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The unique identifier of the conflict
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved conflict
+ *       400:
+ *         description: Conflict ID is required
+ *       404:
+ *         description: Conflict not found
+ *       500:
+ *         description: Internal server error
+ */
+conflictRouter.get("/conflict-by-trust/:trustId", getConflictViaTrust);
 
 /**
  * @swagger
@@ -245,21 +271,22 @@ conflictRouter.get("/issuesAddressedBy", getAllIssuesAddressedBy);
  */
 conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
 
+
 /**
  * @swagger
- * /api/conflict/dashboard/{projectId}:
+ * /api/conflict/dashboard/{trustId}:
  *   get:
  *     summary: Get conflict dashboard data
  *     description: |
  *       Returns pie chart data for various metrics (conflict status, court litigation, etc.)linked to a specific projectId.  
- *       **Note:** At default a dashboard must preview all data to archive this pass in `ALL` as projectId, then to sort bse on project id pass in the projectId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific project.
+ *       **Note:** At default a dashboard must preview all data to archive this pass in `ALL` as trustId, then to sort bse on project id pass in the trustId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific trust.
  *     tags:
  *       - Conflict
  *     parameters:
- *       - name: projectId
+ *       - name: trustId
  *         in: path
  *         required: true
- *         description: The unique identifier for the project
+ *         description: The unique identifier for the trust
  *         schema:
  *           type: string
  *     responses:
@@ -307,10 +334,10 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
  *                   items:
  *                     type: object
  *       400:
- *         description: project Id is required
+ *         description: trust Id is required
  *       500:
  *         description: Internal server error
  */
-conflictRouter.get('/dashboard/:projectId', getConflictDashboard);
+conflictRouter.get('/dashboard/:trustId', getConflictDashboard);
 
 export default conflictRouter;
