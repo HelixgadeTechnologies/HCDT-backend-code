@@ -4,21 +4,21 @@ import { ICauseOfConflict, IConflict, IConflictStatus, IConflictView, ICourtLiti
 
 const prisma = new PrismaClient();
 
-export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean) => {
+export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean,userId:string) => {
 
     if (isCreate) {
         // Create a new conflict
         return await prisma.conflict.create({
-            data: { ...conflictData, conflictId: undefined },
+            data: { ...conflictData, conflictId: undefined,userId:userId },
         });
     } else {
         // Update existing conflict
         if (!conflictData.conflictId) {
             throw new Error("Conflict ID is required for updating a record.");
         }
-        console.log(conflictData)
+        // console.log(conflictData)
         return await prisma.conflict.update({
-            where: { conflictId: conflictData.conflictId },
+            where: { conflictId: conflictData.conflictId,userId:userId },
             data: conflictData,
         });
     }
@@ -194,16 +194,57 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
         }));
     } else if (option == 9) {
         return cleaned.map((row: any) => ({
-            ["PROJECT_TITLE"]: row.f0,
-            ["USER_EMAIL"]: row.f1,
-            ["DATE_CREATED"]: row.f2
+            conflictId: row.f0,
+            projectId: row.f1,
+            projectTitle: row.f2,
+            userId:row.f3,
+            userFirstName:row.f4,
+            userLastName: row.f5,
+            userEmail: row.f6,
+            userPhoneNumber: row.f7,
+            causeOfConflictId: row.f8,
+            causeOfConflictName: row.f9,
+            partiesInvolveId: row.f10,
+            partiesInvolveName: row.f11,
+            narrateIssues: row.f12,
+            conflictStatusId: row.f13,
+            conflictStatusName: row.f14,
+            issuesAddressById:row.f15,
+            issuesAddressByName:row.f16,
+            courtLitigationStatusId: row.f17,
+            courtLitigationStatusName: row.f18,
+            createAt:row.f19,
+            updateAt: row.f20,
+            trustId: row.f21,
+            projectCreateAt:row.f22
         }))
     } else if (option == 10) {
-        return cleaned.map((row: any) => ({
-            ["PROJECT_TITLE"]: row.f0,
-            ["USER_EMAIL"]: row.f1,
-            ["DATE_CREATED"]: row.f2
-        }))
+        return cleaned.map((row: any) => (
+        {
+            conflictId: row.f0,
+            projectId: row.f1,
+            projectTitle: row.f2,
+            userId:row.f3,
+            userFirstName:row.f4,
+            userLastName: row.f5,
+            userEmail: row.f6,
+            userPhoneNumber: row.f7,
+            causeOfConflictId: row.f8,
+            causeOfConflictName: row.f9,
+            partiesInvolveId: row.f10,
+            partiesInvolveName: row.f11,
+            narrateIssues: row.f12,
+            conflictStatusId: row.f13,
+            conflictStatusName: row.f14,
+            issuesAddressById:row.f15,
+            issuesAddressByName:row.f16,
+            courtLitigationStatusId: row.f17,
+            courtLitigationStatusName: row.f18,
+            createAt:row.f19,
+            updateAt: row.f20,
+            projectCreateAt:row.f21
+        }
+    ))
     } else {
         return []
     }

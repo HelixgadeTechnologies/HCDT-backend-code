@@ -44,6 +44,12 @@ export const getProjectsView = async (projectId: string): Promise<IProjectClient
     `;
     return projects
 };
+export const getProjectsViewByTrust = async (trustId: string): Promise<IProjectClient[]> => {
+    const projects = await prisma.$queryRaw<IProjectView[]>`
+        SELECT * FROM project_view WHERE trustId = ${trustId}
+    `;
+    return projects
+};
 
 // Get all Project Categories
 export const getAllProjectCategories = async (): Promise<IProjectCategory[]> => {

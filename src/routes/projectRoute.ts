@@ -1,5 +1,5 @@
 import express from "express";
-import { addOrUpdateProject, getProject, getProjectCategories, getQualityRatings, getStatusReports, getTypeOfWork, listProjects } from "../controllers/projectController";
+import { addOrUpdateProject, getProject, getProjectByTrust, getProjectCategories, getQualityRatings, getStatusReports, getTypeOfWork, listProjects } from "../controllers/projectController";
 
 
 const projectRouter = express.Router();
@@ -215,6 +215,73 @@ projectRouter.get("/projects", listProjects);
  *                   example: "Unexpected database error"
  */
 projectRouter.get("/project/:projectId", getProject);
+/**
+ * @swagger
+ * /api/project/project-by-trust/{trustId}:
+ *   get:
+ *     summary: Get a project by Trust ID
+ *     description: Retrieve details of a specific project using its trust ID.
+ *     tags:
+ *       - Project
+ *     parameters:
+ *       - in: path
+ *         name: trustId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The unique ID of the trust
+ *     responses:
+ *       200:
+ *         description: Project retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "Project retrieved successfully"
+ *                 data:
+ *                   type: array
+ *                   $ref: '#/components/schemas/ProjectView'
+ *                   
+ *       400:
+ *         description: Project not found or invalid ID provided
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Project ID is required"
+ *                 data:
+ *                   type: array
+ *                   example: []
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: "Internal server error"
+ *                 error:
+ *                   type: string
+ *                   example: "Unexpected database error"
+ */
+projectRouter.get("/project-by-trust/:trustId", getProjectByTrust);
 
 /**
  * @swagger

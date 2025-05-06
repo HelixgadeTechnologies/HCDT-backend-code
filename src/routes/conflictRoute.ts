@@ -38,10 +38,6 @@ const conflictRouter = express.Router();
  *                     type: string
  *                     description: The ID of the related project.
  *                     example: "abc123"
- *                   userId:
- *                     type: string
- *                     description: The ID of the user reporting the conflict.
- *                     example: "user456"
  *                   causeOfConflictId:
  *                     type: integer
  *                     description: The ID of the cause of the conflict.

@@ -34,6 +34,8 @@ export interface IConflictView {
     courtLitigationStatusName?: string | null;
     createAt?: Date | null;
     updateAt?: Date | null;
+    trustId?: string | null;
+    projectCreateAt: Date | null;
 }
 
 export interface ICauseOfConflict {

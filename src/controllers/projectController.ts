@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectsView } from "../service/projectService";
+import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectsView, getProjectsViewByTrust } from "../service/projectService";
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 
 export const addOrUpdateProject = async (req: Request, res: Response) => {
@@ -46,6 +46,22 @@ export const getProject = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Project not found", null));
         }
         res.status(200).json(successResponse("Project", projects[0]));
+    } catch (error: any) {
+        res.status(500).json(errorResponse("Internal server error", error));
+    }
+};
+export const getProjectByTrust = async (req: Request, res: Response) => {
+    try {
+        const { trustId } = req.params;
+        if (!trustId) {
+            res.status(400).json(notFoundResponse("Trust ID is required", trustId));
+        }
+
+        const projects = await getProjectsViewByTrust(trustId);
+        if (projects.length == 0) {
+            res.status(400).json(notFoundResponse("Project not found", null));
+        }
+        res.status(200).json(successResponse("Project", projects));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));
     }

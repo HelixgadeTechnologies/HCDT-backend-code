@@ -5,6 +5,7 @@ import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflic
 export const handleConflict = async (req: Request, res: Response) => {
     try {
         const { isCreate, data } = req.body;
+        const userId = req.user?.userId; // Assuming user ID is available from auth middleware
 
         if (!isCreate && !data.projectId) {
             res.status(400).json(errorResponse("Conflict ID is required for updating."));
@@ -14,7 +15,7 @@ export const handleConflict = async (req: Request, res: Response) => {
             res.status(400).json(errorResponse("isCreate must be a boolean value"));
         }
 
-        const result = await createOrUpdateConflict(data, isCreate);
+        const result = await createOrUpdateConflict(data, isCreate,userId);
         const message = isCreate ? "Conflict created successfully" : "Conflict updated successfully";
 
         res.status(200).json(successResponse(message, result));
