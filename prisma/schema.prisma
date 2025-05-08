@@ -91,8 +91,7 @@ model Trust {
   botDetailsTwoEmail                    String?
   botDetailsTwoPhoneNumber              String?
   createAt                              DateTime?                      @default(now())
-  updateAt                              DateTime?                      @default(now())
-  // botDetails                            BotDetails[]
+  updateAt                              DateTime?
   trustEstablishmentStatus              TrustEstablishmentStatus[]
   project                               Project[]
   averageCommunitySatisfaction          AverageCommunitySatisfaction[]
@@ -100,18 +99,6 @@ model Trust {
 
   @@map("trust")
 }
-
-// model BotDetails {
-//   botDetailsId String  @id @default(uuid())
-//   firstName    String?
-//   lastName     String?
-//   email        String?
-//   phoneNumber  String?
-//   trust        Trust   @relation(fields: [trustId], references: [trustId])
-//   trustId      String
-
-//   @@map("botdetails")
-// }
 
 //Trust Management
 
