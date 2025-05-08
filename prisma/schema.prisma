@@ -82,9 +82,17 @@ model Trust {
   totalMaleManagementCommitteeMembers   Int?
   totalFemaleManagementCommitteeMembers Int?
   totalPwdManagementCommitteeMembers    Int?
+  botDetailsOneFirstName                String?
+  botDetailsOneLastName                 String?
+  botDetailsOneEmail                    String?
+  botDetailsOnePhoneNumber              String?
+  botDetailsTwoFirstName                String?
+  botDetailsTwoLastName                 String?
+  botDetailsTwoEmail                    String?
+  botDetailsTwoPhoneNumber              String?
   createAt                              DateTime?                      @default(now())
   updateAt                              DateTime?                      @default(now())
-  botDetails                            BotDetails[]
+  // botDetails                            BotDetails[]
   trustEstablishmentStatus              TrustEstablishmentStatus[]
   project                               Project[]
   averageCommunitySatisfaction          AverageCommunitySatisfaction[]
@@ -93,17 +101,17 @@ model Trust {
   @@map("trust")
 }
 
-model BotDetails {
-  botDetailsId String  @id @default(uuid())
-  firstName    String?
-  lastName     String?
-  email        String?
-  phoneNumber  String?
-  trust        Trust   @relation(fields: [trustId], references: [trustId])
-  trustId      String
+// model BotDetails {
+//   botDetailsId String  @id @default(uuid())
+//   firstName    String?
+//   lastName     String?
+//   email        String?
+//   phoneNumber  String?
+//   trust        Trust   @relation(fields: [trustId], references: [trustId])
+//   trustId      String
 
-  @@map("botdetails")
-}
+//   @@map("botdetails")
+// }
 
 //Trust Management
 

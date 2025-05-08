@@ -39,13 +39,13 @@ const trustRoutes: Router = Router();
  *                     example: "My Trust"
  *                   settlorId:
  *                     type: string
- *                     example: "uuid-settlor-id"
+ *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
  *                   nameOfOmls:
  *                     type: string
  *                     example: "OML-1, OML-2"
  *                   userId:
  *                     type: string
- *                     example: "uuid-user-id"
+ *                     example: "241f4f14-0d24-429c-82c6-aa4a505ff3b8"
  *                   country:
  *                     type: string
  *                     example: "Nigeria"
@@ -58,10 +58,30 @@ const trustRoutes: Router = Router();
  *                   trustCommunities:
  *                     type: string
  *                     example: "Community A, Community B"
- *                   botDetails:
- *                     type: array
- *                     items:
- *                       $ref: "#/components/schemas/BotDetails"
+ *                   botDetailsOneFirstName:
+ *                     type: string
+ *                     example: "joe"
+ *                   botDetailsOneLastName:
+ *                     type: string
+ *                     example: "Ben"
+ *                   botDetailsOneEmail:
+ *                     type: string
+ *                     example: "joe@example.com"
+ *                   botDetailsOnePhoneNumber:
+ *                     type: string
+ *                     example: "09036103607"
+ *                   botDetailsTwoFirstName:
+ *                     type: string
+ *                     example: "Sam"
+ *                   botDetailsTwoLastName:
+ *                     type: string
+ *                     example: "Davis"
+ *                   botDetailsTwoEmail:
+ *                     type: string
+ *                     example: "sam@example.com"
+ *                   botDetailsTwoPhoneNumber:
+ *                     type: string
+ *                     example: "09036103607"
  *                   totalMaleBotMembers:
  *                     type: integer
  *                     example: 10

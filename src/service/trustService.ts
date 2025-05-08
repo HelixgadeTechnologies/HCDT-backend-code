@@ -23,6 +23,14 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
         totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers || null,
         totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers || null,
         totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers || null,
+        botDetailsOneFirstName: data.botDetailsOneFirstName || null,
+        botDetailsOneLastName: data.botDetailsOneLastName || null,
+        botDetailsOneEmail: data.botDetailsOneEmail || null,
+        botDetailsOnePhoneNumber: data.botDetailsTwoPhoneNumber || null,
+        botDetailsTwoFirstName: data.botDetailsTwoFirstName || null,
+        botDetailsTwoLastName: data.botDetailsTwoLastName || null,
+        botDetailsTwoEmail: data.botDetailsTwoEmail || null,
+        botDetailsTwoPhoneNumber: data.botDetailsTwoPhoneNumber || null,
     };
 
     // Handle the foreign key for `settlorId`
@@ -34,11 +42,8 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
     let trust;
 
     if (isCreate) {
-        // Use upsert to avoid redundant findUnique()
-        trust = await prisma.trust.upsert({
-            where: { trustName: data.trustName },
-            update: {},
-            create: trustData,
+        trust = await prisma.trust.create({
+            data: trustData
         });
     } else {
         let uniqueTrust = await prisma.trust.findUnique({ where: { trustId: data.trustId } })
@@ -51,22 +56,6 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
             where: { trustId: data.trustId },
             data: trustData,
         });
-    }
-
-    // Handle botDetails efficiently
-    if (data.botDetails.length > 0) {
-        const botDetails: IBotDetailsInsert[] = data.botDetails.map((botDetail) => ({
-            firstName: botDetail.firstName,
-            lastName: botDetail.lastName,
-            email: botDetail.email,
-            phoneNumber: botDetail.phoneNumber,
-            trustId: trust.trustId,
-        }));
-
-        await prisma.$transaction([
-            prisma.botDetails.deleteMany({ where: { trustId: trust.trustId } }),
-            prisma.botDetails.createMany({ data: botDetails, skipDuplicates: true }),
-        ]);
     }
 };
 
@@ -86,13 +75,7 @@ export const getTrust = async (trustId: string): Promise<ITrustView | null> => {
 
     if (!trusts.length) return null; // Return null if trust is not found
 
-    const trust = trusts[0];
-
-    const botDetails = await prisma.botDetails.findMany({
-        where: { trustId: trust.trustId },
-    });
-
-    return { ...trust, botDetails: botDetails.length > 0 ? botDetails : [] } as ITrustView;
+    return trusts[0] as ITrustView;
 };
 
 export const removeTrust = async (trustId: string): Promise<Trust> => {

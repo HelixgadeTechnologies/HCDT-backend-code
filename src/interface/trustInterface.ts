@@ -8,7 +8,16 @@ export interface ITrust {
     state?: string;
     localGovernmentArea?: string;
     trustCommunities?: string;
-    botDetails: IBotDetails[];
+    // botDetails: IBotDetails[];
+    botDetailsOneFirstName?: string;
+    botDetailsOneLastName?: string;
+    botDetailsOneEmail?: string;
+    botDetailsOnePhoneNumber?: string;
+    botDetailsTwoFirstName?: string;
+    botDetailsTwoLastName?: string;
+    botDetailsTwoEmail?: string;
+    botDetailsTwoPhoneNumber?: string;
+
     totalMaleBotMembers?: number;
     totalFemaleBotMembers?: number;
     totalPwdBotMembers?: number;
@@ -49,7 +58,15 @@ export interface ITrustView {
     state: string;
     localGovernmentArea: string;
     trustCommunities: string;
-    botDetails: IBotDetails[];
+    botDetailsOneFirstName: string;
+    botDetailsOneLastName: string;
+    botDetailsOneEmail: string;
+    botDetailsOnePhoneNumber: string;
+    botDetailsTwoFirstName: string;
+    botDetailsTwoLastName: string;
+    botDetailsTwoEmail: string;
+    botDetailsTwoPhoneNumber: string;
+
     totalMaleBotMembers: number;
     totalFemaleBotMembers: number;
     totalPwdBotMembers: number;

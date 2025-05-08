@@ -16,10 +16,13 @@ export const createTrust = async (req: Request, res: Response) => {
         if (!isCreate && !data.trustId) {
             res.status(400).json(errorResponse("Trust ID is required for updating."));
         }
+        
         const trust = await createOrUpdateTrust(data, isCreate);
         res.status(201).json(successResponse(`Trust ${isCreate ? "created" : "updated"} successfully`, trust));
     } catch (error: any) {
-        res.status(500).json(errorResponse("Internal server error", error));
+        let errorMessage: string = error.message
+        let isTrustExist = errorMessage.includes("Unique constraint failed on the constraint: `trust_trustName_key`")
+        res.status(500).json(errorResponse("Internal server error", isTrustExist ? "Trust with this name already exist" : error));
     }
 
 };
