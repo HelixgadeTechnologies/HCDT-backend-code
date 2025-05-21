@@ -1,5 +1,5 @@
 import express from "express";
-import { addOrUpdateProject, getProject, getProjectByTrust, getProjectCategories, getQualityRatings, getStatusReports, getTypeOfWork, listProjects } from "../controllers/projectController";
+import { addOrUpdateProject, getProject, getProjectByTrust, getProjectCategories, getProjectDashboard, getQualityRatings, getStatusReports, getTypeOfWork, listProjects } from "../controllers/projectController";
 
 
 const projectRouter = express.Router();
@@ -354,5 +354,66 @@ projectRouter.get("/status-reports", getStatusReports);
  *               items:
  */
 projectRouter.get("/type-of-work", getTypeOfWork);
+
+/**
+ * @swagger
+ * /api/project/dashboard/{trustId}:
+ *   get:
+ *     summary: Get project dashboard data
+ *     description: |
+ *       Returns pie chart data for various metrics (project status, project category, etc.)linked to a specific projectId.  
+ *       **Note:** At default a dashboard must preview all data to archive this pass in `ALL` as trustId, then to sort base on project id pass in the trustId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific trust.
+ *     tags:
+ *       - Project
+ *     parameters:
+ *       - name: trustId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier for the trust
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved dashboard data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 TOTAL_BUDGET:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 TOTAL_ANNUAL_BUDGET:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 BENEFITS:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 EMPLOYMENT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 CATEGORY:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 STATUS_OF_CONFLICT:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 STATUS:
+ *                   type: array
+ *                   items:
+ *                     type: object
+
+ *       400:
+ *         description: trust Id is required
+ *       500:
+ *         description: Internal server error
+ */
+projectRouter.get('/dashboard/:trustId', getProjectDashboard);
 
 export default projectRouter;

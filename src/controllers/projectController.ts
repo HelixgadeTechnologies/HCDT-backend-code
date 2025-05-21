@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectsView, getProjectsViewByTrust } from "../service/projectService";
+import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectDashboardData, getProjectsView, getProjectsViewByTrust } from "../service/projectService";
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 
 export const addOrUpdateProject = async (req: Request, res: Response) => {
@@ -100,5 +100,20 @@ export const getTypeOfWork = async (req: Request, res: Response) => {
         res.status(200).json(successResponse("Types of work retrieved", typesOfWork));
     } catch (error) {
         res.status(500).json(errorResponse("Failed to retrieve types of work", error));
+    }
+};
+
+export const getProjectDashboard = async (req: Request, res: Response) => {
+    const { trustId } = req.params;
+
+    if (!trustId) {
+        res.status(404).json(notFoundResponse('Trust Id is required'));
+    }
+
+    try {
+        const data = await getProjectDashboardData(trustId);
+        res.status(200).json(successResponse("ProjectDashboard", data));
+    } catch (error) {
+        res.status(500).json(errorResponse('Failed to load dashboard data', error));
     }
 };
