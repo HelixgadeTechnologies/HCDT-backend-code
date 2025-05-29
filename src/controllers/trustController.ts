@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
-import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getTrust, getTrustEstablishment, removeTrust } from "../service/trustService";
+import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getTrust, getTrustEstablishment, removeTrust } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
 import { PrismaClient } from "@prisma/client";
 
@@ -79,4 +79,19 @@ export const getSpecificTrustEstablishmentST = async (req: Request, res: Respons
         res.status(500).json(errorResponse("Internal server error", error));
     }
 
+};
+
+export const trustEstablishmentDashboard = async (req: Request, res: Response) => {
+    const { trustId } = req.params;
+
+    if (!trustId) {
+        res.status(404).json(notFoundResponse('Trust Id is required'));
+    }
+
+    try {
+        const data = await getEstablishmentDashboardData(trustId);
+        res.status(200).json(successResponse("TrustEstablishmentDashboard", data));
+    } catch (error) {
+        res.status(500).json(errorResponse('Failed to load dashboard data', error));
+    }
 };

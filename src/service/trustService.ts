@@ -166,3 +166,86 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
         settlorOperationalExpenditures
     } as ITrustEstablishmentStatus;
 };
+
+function normalizeBigInts<T>(data: T): T {
+    if (Array.isArray(data)) {
+      return data.map(normalizeBigInts) as any;
+    } else if (typeof data === 'object' && data !== null) {
+      if (data instanceof Date) {
+        return data;
+      }
+  
+      const normalized: any = {};
+      for (const key in data) {
+        const value = (data as any)[key];
+  
+        if (typeof value === 'bigint') {
+          normalized[key] = Number(value);
+        } else if (typeof value === 'string') {
+          normalized[key] = value; // ✅ preserve strings like URLs
+        } else {
+          normalized[key] = normalizeBigInts(value);
+        }
+      }
+      return normalized;
+    }
+  
+    return data;
+  }
+  
+async function callProcedure(option: number, trustId: string): Promise<void | any[]> {
+    const raw = await prisma.$queryRawUnsafe<any[]>(
+        `CALL GetTrustEstablishmentDashboard(?,?)`,
+        option,
+        trustId
+    );
+    // console.log(raw)
+    // console.log(raw[0].f4)
+
+    const cleaned = normalizeBigInts(raw);
+    if (option == 1) {
+        return cleaned.map((row: any) => ({
+            ["totalFundsReceivedByTrust"]: Number(row.f0),
+            ["capitalExpenditure"]: Number(row.f1),
+            ["reserve"]: Number(row.f2),
+            ["trustRegisteredWithCAC"]: Number(row.f3),
+            ["cscDocument"]: row.f4,
+            ["yearDeveloped"]: Number(row.f5),
+            ["yearExpired"]: Number(row.f6),
+            ["communityLeadershipConsulted"]: Number(row.f7),
+            ["communityYouthsConsulted"]: Number(row.f8),
+            ["communityWomenConsulted"]: Number(row.f9),
+            ["pwDsConsulted"]: Number(row.f10),
+            ["yearOfNeedsAssessment"]: Number(row.f11),
+            ["trustDistributionMatrixDocument"]: row.f12,
+        }));
+    } else if (option == 2) {
+        return cleaned.map((row: any) => ({
+            ["settlorOperationalExpenditureYear"]: Number(row.f0),
+            ["settlorOperationalExpenditure"]: Number(row.f1),
+        }));
+    } else if (option == 3) {
+        return cleaned.map((row: any) => ({
+            ["trustDevPlanProgress"]: Number(row.f0),
+        }));
+    } else {
+        return []
+    }
+}
+export async function getEstablishmentDashboardData(projectId: string) {
+    // Optionally return them as a keyed object
+    const keys = [
+        'SUB_FIELDS',
+        'TRENDS',
+        'OPERATION_YEAR',
+    ];
+
+    const finalResult: Record<string, any> = {};
+
+    for (let index = 0; index < keys.length; index++) {
+        const result = await callProcedure(index + 1, projectId);
+        finalResult[keys[index]] = result;
+    }
+
+    return finalResult;
+}

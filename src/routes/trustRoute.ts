@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTrustEstablishmentST, createTrust, deleteTrust, getAll, getSpecificTrustEstablishmentST, getTrustInfo } from "../controllers/trustController";
+import { addTrustEstablishmentST, createTrust, deleteTrust, getAll, getSpecificTrustEstablishmentST, getTrustInfo, trustEstablishmentDashboard } from "../controllers/trustController";
 const trustRoutes: Router = Router();
 
 /**
@@ -493,5 +493,51 @@ trustRoutes.post("/addEstablishmentStatus", addTrustEstablishmentST);
  *         description: Internal server error.
  */
 trustRoutes.get("/establishmentStatus/:trustId", getSpecificTrustEstablishmentST);
+
+
+/**
+ * @swagger
+ * /api/trust/dashboard/{trustId}:
+ *   get:
+ *     summary: Get project dashboard data
+ *     description: |
+ *       Returns pie chart data for various metrics for trust establishment dashboard.  
+ *       **Note:** Pass in the trustId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific trust.
+ *     tags:
+ *       - Trust
+ *     parameters:
+ *       - name: trustId
+ *         in: path
+ *         required: true
+ *         description: The unique identifier for the trust
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved dashboard data
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 SUB_FIELDS:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 OPERATION_YEAR:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                 TRENDS:
+ *                   type: array
+ *                   items:
+ *                     type: object
+
+ *       400:
+ *         description: trust Id is required
+ *       500:
+ *         description: Internal server error
+ */
+trustRoutes.get('/dashboard/:trustId', trustEstablishmentDashboard);
 
 export default trustRoutes

@@ -109,16 +109,14 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             ["totalMales"]: Number(row.f0),
             ["totalFemales"]: Number(row.f1),
             ["totalPwDs"]: Number(row.f2),
-            ["totalBeneficiaries"]: Number(row.f3),
-            ["valueType"]: "Total"
+            ["totalBeneficiaries"]: Number(row.f3)
         }));
     } else if (option == 4) {
         return cleaned.map((row: any) => ({
             ["totalMales"]: Number(row.f0),
             ["totalFemales"]: Number(row.f1),
             ["totalPwDs"]: Number(row.f2),
-            ["totalEmployees"]: Number(row.f3),
-            ["valueType"]: "Total"
+            ["totalEmployees"]: Number(row.f3)
         }));
     } else if (option == 5) {
         return cleaned.map((row: any) => ({
@@ -128,8 +126,7 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             ["ROAD"]: Number(row.f4),
             ["WATER"]: Number(row.f5),
             ["INFORMATION_TECHNOLOGY"]: Number(row.f6),
-            ["AGRICULTURE"]: Number(row.f7),
-            ["VALUE_TYPE"]: "Percentage",
+            ["AGRICULTURE"]: Number(row.f7)
         }));
     } else if (option == 6) {
         return cleaned.map((row: any) => ({
@@ -137,8 +134,7 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             ["IN_PROGRESS"]: Number(row.f2),
             ["GOOD"]: Number(row.f3),
             ["COMPLETED"]: Number(row.f4),
-            ["ABANDONED"]: Number(row.f5),
-            ["VALUE_TYPE"]: "Percentage"
+            ["ABANDONED"]: Number(row.f5)
         }));
     } else {
         return []
