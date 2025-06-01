@@ -10,6 +10,7 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
     const trustData: Prisma.TrustCreateInput = {
         trustName: data.trustName as string,
         nameOfOmls: data.nameOfOmls || null,
+        settlor: data.settlor || null,
         country: data.country || null,
         state: data.state || null,
         localGovernmentArea: data.localGovernmentArea || null,
@@ -34,8 +35,7 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
     };
 
     // Handle the foreign key for `settlorId`
-    if (data.settlorId && data.userId) {
-        trustData["settlor"] = { connect: { settlorId: data.settlorId } };
+    if (data.userId) {
         trustData["user"] = { connect: { userId: data.userId } };
     }
 
@@ -78,15 +78,11 @@ export const getTrust = async (trustId: string): Promise<ITrustView | null> => {
     return trusts[0] as ITrustView;
 };
 
-export const removeTrust = async (trustId: string): Promise<Trust> => {
-    let trust = await prisma.trust.findUnique({ where: { trustId } })
-
-    if (trust == null) {
-        throw new Error(`Invalid trust ID`);
-    }
-
-    let deletedTrust = await prisma.trust.delete({ where: { trustId } })
-    return deletedTrust
+export const removeTrust = async (trustId: string): Promise<void> => {
+    await prisma.$queryRawUnsafe<any[]>(
+        `CALL DeleteTrust(?)`,
+        trustId
+    );
 }
 export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatus) => {
 
@@ -169,30 +165,30 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
 
 function normalizeBigInts<T>(data: T): T {
     if (Array.isArray(data)) {
-      return data.map(normalizeBigInts) as any;
+        return data.map(normalizeBigInts) as any;
     } else if (typeof data === 'object' && data !== null) {
-      if (data instanceof Date) {
-        return data;
-      }
-  
-      const normalized: any = {};
-      for (const key in data) {
-        const value = (data as any)[key];
-  
-        if (typeof value === 'bigint') {
-          normalized[key] = Number(value);
-        } else if (typeof value === 'string') {
-          normalized[key] = value; // ✅ preserve strings like URLs
-        } else {
-          normalized[key] = normalizeBigInts(value);
+        if (data instanceof Date) {
+            return data;
         }
-      }
-      return normalized;
+
+        const normalized: any = {};
+        for (const key in data) {
+            const value = (data as any)[key];
+
+            if (typeof value === 'bigint') {
+                normalized[key] = Number(value);
+            } else if (typeof value === 'string') {
+                normalized[key] = value; // ✅ preserve strings like URLs
+            } else {
+                normalized[key] = normalizeBigInts(value);
+            }
+        }
+        return normalized;
     }
-  
+
     return data;
-  }
-  
+}
+
 async function callProcedure(option: number, trustId: string): Promise<void | any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
         `CALL GetTrustEstablishmentDashboard(?,?)`,

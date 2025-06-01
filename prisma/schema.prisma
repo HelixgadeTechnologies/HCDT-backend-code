@@ -56,7 +56,6 @@ model Settlor {
   contactName        String?
   contactEmail       String?
   contactPhoneNumber String?
-  trust              Trust[]
 
   @@map("settlor")
 }
@@ -64,9 +63,8 @@ model Settlor {
 model Trust {
   trustId                               String                         @id @default(uuid())
   trustName                             String                         @unique
-  settlor                               Settlor?                       @relation(fields: [settlorId], references: [settlorId])
   nameOfOmls                            String?
-  settlorId                             String?
+  settlor                               String?
   user                                  User?                          @relation(fields: [userId], references: [userId])
   userId                                String?
   country                               String?

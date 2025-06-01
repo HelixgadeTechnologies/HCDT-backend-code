@@ -16,7 +16,7 @@ export const createTrust = async (req: Request, res: Response) => {
         if (!isCreate && !data.trustId) {
             res.status(400).json(errorResponse("Trust ID is required for updating."));
         }
-        
+
         const trust = await createOrUpdateTrust(data, isCreate);
         res.status(201).json(successResponse(`Trust ${isCreate ? "created" : "updated"} successfully`, trust));
     } catch (error: any) {
@@ -54,8 +54,8 @@ export const deleteTrust = async (req: Request, res: Response) => {
         if (!trustId) {
             res.status(400).json(notFoundResponse("Trust ID is required", trustId));
         }
-        const user = await removeTrust(req.body.trustId);
-        res.status(201).json(successResponse("Trust removed successfully", user));
+        await removeTrust(req.body.trustId);
+        res.status(201).json(successResponse("Trust removed successfully", null));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));
     }

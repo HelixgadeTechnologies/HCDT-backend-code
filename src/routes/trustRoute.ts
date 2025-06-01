@@ -37,9 +37,9 @@ const trustRoutes: Router = Router();
  *                   trustName:
  *                     type: string
  *                     example: "My Trust"
- *                   settlorId:
+ *                   settlor:
  *                     type: string
- *                     example: "17b5914e-092d-46ad-a851-5c01f795265e"
+ *                     example: "Oando,NNPC2"
  *                   nameOfOmls:
  *                     type: string
  *                     example: "OML-1, OML-2"

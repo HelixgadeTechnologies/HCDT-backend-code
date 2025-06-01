@@ -1,7 +1,7 @@
 export interface ITrust {
     trustId: string;
     trustName?: string;
-    settlorId?: string;
+    settlor?: string;
     nameOfOmls?: string;
     userId?: string;
     country?: string;
@@ -48,8 +48,7 @@ export interface IBotDetailsInsert {
 export interface ITrustView {
     trustId: string;
     trustName: string;
-    settlorId: string;
-    settlorName: string;
+    settlor: string;
     nameOfOmls: string;
     userId: string;
     userFirstName: string;
