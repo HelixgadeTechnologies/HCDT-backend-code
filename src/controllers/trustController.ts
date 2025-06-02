@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
-import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getTrust, getTrustEstablishment, removeTrust } from "../service/trustService";
+import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
 import { PrismaClient } from "@prisma/client";
 
@@ -80,6 +80,30 @@ export const getSpecificTrustEstablishmentST = async (req: Request, res: Respons
     }
 
 };
+
+export const deleteMatrixFile = async (req: Request, res: Response) => {
+    const { establishmentId } = req.params;
+  
+    try {
+      await removeMatrixFile(establishmentId);
+      res.status(200).json({ message: 'Matrix file removed successfully.' });
+    } catch (error) {
+      console.error('Error removing matrix file:', error);
+      res.status(500).json({ message: 'Failed to remove matrix file.', error });
+    }
+  };
+
+  export const deleteCACFile = async (req: Request, res: Response) => {
+    const { establishmentId } = req.params;
+  
+    try {
+      await removeCACFile(establishmentId);
+      res.status(200).json({ message: 'CAC file removed successfully.' });
+    } catch (error) {
+      console.error('Error removing CAC file:', error);
+      res.status(500).json({ message: 'Failed to remove CAC file.', error });
+    }
+  };
 
 export const trustEstablishmentDashboard = async (req: Request, res: Response) => {
     const { trustId } = req.params;

@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { upload } from "../controllers/authController";
+import { destroyCloudFile, upload } from "../controllers/authController";
 
 const uploadRoutes: Router = Router();
 /**
@@ -54,5 +54,31 @@ const uploadRoutes: Router = Router();
  *                   description: The error message.
  */
 uploadRoutes.post("/file-upload", upload);
+/**
+ * @swagger
+ * /api/upload/file-destroy:
+ *   post:
+ *     summary: Destroy a file
+ *     tags: [Upload] 
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url:
+ *                 type: string
+ *                 example: "https://res.cloudinary.com/d..."
+ *                 description: The url of the file.
+ *     responses:
+ *       '200':
+ *         description: Successful upload
+ *       '500':
+ *         description: Bad request
+ */
+uploadRoutes.post("/file-destroy", destroyCloudFile);
 
 export default uploadRoutes

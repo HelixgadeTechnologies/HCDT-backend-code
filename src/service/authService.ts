@@ -323,3 +323,14 @@ export const updateProfilePicture = async (userId: string, base64String: string,
 
   return { message: "Profile picture updated successfully.", data: updatedUser };
 };
+export const deleteCloudFile = async (url: string) => {
+  try {
+    if (url) {
+      const filePath = getFileName(url)
+      await deleteFile(filePath)
+    }
+  } catch (error: any) {
+    // console.error("Error deleting file:", error);
+    throw new Error("Error deleting file");
+  }
+};

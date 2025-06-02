@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTrustEstablishmentST, createTrust, deleteTrust, getAll, getSpecificTrustEstablishmentST, getTrustInfo, trustEstablishmentDashboard } from "../controllers/trustController";
+import { addTrustEstablishmentST, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, getAll, getSpecificTrustEstablishmentST, getTrustInfo, trustEstablishmentDashboard } from "../controllers/trustController";
 const trustRoutes: Router = Router();
 
 /**
@@ -493,6 +493,58 @@ trustRoutes.post("/addEstablishmentStatus", addTrustEstablishmentST);
  *         description: Internal server error.
  */
 trustRoutes.get("/establishmentStatus/:trustId", getSpecificTrustEstablishmentST);
+
+/**
+ * @swagger
+ * /api/trust/remove-cac-file/{establishmentId}:
+ *   delete:
+ *     summary: Remove the CAC file for a trust establishment.
+ *     description: Sets the cscDocument and its MIME type to null for the given trust establishment.
+ *     tags:
+ *       - Trust
+ *     parameters:
+ *       - in: path
+ *         name: establishmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the trust establishment.
+ *     responses:
+ *       200:
+ *         description: CAC file removed successfully.
+ *       500:
+ *         description: Server error while removing the CAC file.
+ */
+trustRoutes.delete('/remove-cac-file/:establishmentId', deleteCACFile);
+
+
+
+/**
+ * @swagger
+ * /api/trust/remove-matrix-file/{establishmentId}:
+ *   delete:
+ *     summary: Remove the matrix file for a trust establishment.
+ *     description: Sets the trustDistributionMatrixDocument and its MIME type to null for the given trust establishment.
+ *     tags:
+ *       - Trust
+ *     parameters:
+ *       - in: path
+ *         name: establishmentId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the trust establishment.
+ *     responses:
+ *       200:
+ *         description: Matrix file removed successfully.
+ *       500:
+ *         description: Server error while removing the matrix file.
+ */
+trustRoutes.delete('/remove-matrix-file/:establishmentId', deleteMatrixFile);
+
+
+
+
 
 
 /**

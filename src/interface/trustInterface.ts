@@ -112,6 +112,7 @@ export interface ITrustEstablishmentStatus {
     trustDistributionMatrixDocumentMimeType?: string | null;
     settlorOperationalExpenditures?: IOperationalExpenditure[];
     trustId?: string;
+    completionStatus: number | null;
     createAt?: Date | null;
     updateAt?: Date | null;
 }

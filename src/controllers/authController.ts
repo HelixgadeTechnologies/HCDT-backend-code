@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture, getSettlor } from "../service/authService"
+import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture, getSettlor, deleteCloudFile } from "../service/authService"
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
@@ -226,6 +226,22 @@ export const upload = async (req: Request, res: Response) => {
         res.status(200).json(successResponse("uploadUrl", uploadUrl));
     } catch (error: any) {
         res.status(400).json(errorResponse(error.message));
+    }
+};
+export const destroyCloudFile = async (req: Request, res: Response) => {
+    try {
+        const { url } = req.body;
+
+        if (!url) {
+            res.status(400).json(errorResponse("File url required."));
+        }
+        // Assuming the URL is the public ID of the file in Cloudinary
+        await deleteCloudFile(url);
+        // If the deletion is successful, return a success response
+
+        res.status(200).json(successResponse("destroyed",null));
+    } catch (error: any) {
+        res.status(500).json(errorResponse(error.message));
     }
 };
 export const test = async (req: Request, res: Response) => {

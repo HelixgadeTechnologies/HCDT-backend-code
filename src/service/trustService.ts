@@ -1,6 +1,7 @@
 import { Prisma, PrismaClient, Trust, TrustEstablishmentStatus } from "@prisma/client";
 import { IBotDetailsInsert, IOperationalExpenditureInsert, ITrust, ITrustEstablishmentStatus, ITrustView } from "../interface/trustInterface";
 import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
+import exp from "constants";
 
 const prisma = new PrismaClient();
 
@@ -118,6 +119,7 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         distributionMatrixDevelopedBySettlor: data.distributionMatrixDevelopedBySettlor ?? null,
         trustDistributionMatrixDocument: data.trustDistributionMatrixDocument ? data.trustDistributionMatrixDocument : null,
         trustDistributionMatrixDocumentMimeType: data.trustDistributionMatrixDocumentMimeType ?? null,
+        completionStatus: data.completionStatus ?? null,
     };
 
     let trustEstablishmentStatus;
@@ -163,6 +165,39 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
     } as ITrustEstablishmentStatus;
 };
 
+export const removeCACFile = async (establishmentId: string): Promise<void> => {
+    // Update cscDocument
+    const completionStatus = await prisma.trustEstablishmentStatus.findUnique({
+        where: { trustEstablishmentStatusId: establishmentId }
+    })
+    if (completionStatus) {
+
+        await prisma.trustEstablishmentStatus.update({
+            where: { trustEstablishmentStatusId: establishmentId },
+            data: {
+                cscDocument: null,
+                cscDocumentMimeType: null,
+                completionStatus: completionStatus.completionStatus! - 6,
+            },
+        });
+    }
+}
+export const removeMatrixFile = async (establishmentId: string): Promise<void> => {
+    const completionStatus = await prisma.trustEstablishmentStatus.findUnique({
+        where: { trustEstablishmentStatusId: establishmentId }
+    })
+    // Update trustDistributionMatrixDocument
+    if (completionStatus) {
+        await prisma.trustEstablishmentStatus.update({
+            where: { trustEstablishmentStatusId: establishmentId },
+            data: {
+                trustDistributionMatrixDocument: null,
+                trustDistributionMatrixDocumentMimeType: null,
+                completionStatus: completionStatus.completionStatus! - 6,
+            },
+        });
+    }
+}
 function normalizeBigInts<T>(data: T): T {
     if (Array.isArray(data)) {
         return data.map(normalizeBigInts) as any;
@@ -214,6 +249,8 @@ async function callProcedure(option: number, trustId: string): Promise<void | an
             ["pwDsConsulted"]: Number(row.f10),
             ["yearOfNeedsAssessment"]: Number(row.f11),
             ["trustDistributionMatrixDocument"]: row.f12,
+            ["completionStatus"]: row.f13,
+            ["updateAt"]: row.f14,
         }));
     } else if (option == 2) {
         return cleaned.map((row: any) => ({

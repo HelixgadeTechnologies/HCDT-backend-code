@@ -133,6 +133,7 @@ model TrustEstablishmentStatus {
   distributionMatrixDevelopedBySettlor         Boolean?
   trustDistributionMatrixDocument              String?
   trustDistributionMatrixDocumentMimeType      String?
+  completionStatus                             Int?
   operationalExpenditure                       OperationalExpenditure[]
   trust                                        Trust?                   @relation(fields: [trustId], references: [trustId])
   trustId                                      String?                  @unique
