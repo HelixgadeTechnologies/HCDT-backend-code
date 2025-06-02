@@ -58,9 +58,7 @@ export const getProjectByTrust = async (req: Request, res: Response) => {
         }
 
         const projects = await getProjectsViewByTrust(trustId);
-        if (projects.length == 0) {
-            res.status(400).json(notFoundResponse("Project not found", null));
-        }
+       
         res.status(200).json(successResponse("Project", projects));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));
