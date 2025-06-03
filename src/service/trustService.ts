@@ -33,6 +33,7 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
         botDetailsTwoLastName: data.botDetailsTwoLastName || null,
         botDetailsTwoEmail: data.botDetailsTwoEmail || null,
         botDetailsTwoPhoneNumber: data.botDetailsTwoPhoneNumber || null,
+        completionStatus: data.completionStatus ?? null,
     };
 
     // Handle the foreign key for `settlorId`

@@ -28,6 +28,7 @@ export interface ITrust {
     totalFemaleManagementCommitteeMembers?: number;
     totalPwdManagementCommitteeMembers?: number;
     createAt?: string;
+    completionStatus:number;
 }
 
 interface IBotDetails {
@@ -76,6 +77,7 @@ export interface ITrustView {
     totalFemaleManagementCommitteeMembers: number;
     totalPwdManagementCommitteeMembers: number;
     createAt: string;
+    completionStatus:number;
 }
 
 export interface ITrustEstablishmentStatus {
