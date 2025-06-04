@@ -2,6 +2,8 @@ import { Prisma, PrismaClient } from "@prisma/client";
 import { IProject, IProjectCategory, IProjectClient, IProjectView, IQualityRating, IStatusReport, ITypeOfWork } from "../interface/projectInterface";
 import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
 const prisma = new PrismaClient();
+
+
 export const createOrUpdateProject = async (projectData: IProject, isCreate: boolean) => {
     if (isCreate) {
         let existingProject = await prisma.project.findUnique({ where: { projectTitle: projectData.projectTitle } })
@@ -25,6 +27,7 @@ export const createOrUpdateProject = async (projectData: IProject, isCreate: boo
             where: { projectId: projectData.projectId },
             data: {
                 ...projectData,
+                completeAt: projectData.projectStatus == 4 ? new Date().toISOString() : null,
                 projectVideo: projectData.projectVideo ? projectData.projectVideo : null,
             },
         });

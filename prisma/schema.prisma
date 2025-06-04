@@ -180,6 +180,7 @@ model Project {
   numberOfPwDsBenefited                 Int?
   trust                                 Trust?           @relation(fields: [trustId], references: [trustId])
   trustId                               String?
+  completeAt                            DateTime?
   createAt                              DateTime?        @default(now())
   updateAt                              DateTime?        @default(now())
   conflict                              Conflict[]
