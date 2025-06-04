@@ -16,6 +16,7 @@ export const createOrUpdateProject = async (projectData: IProject, isCreate: boo
         return await prisma.project.create({
             data: {
                 ...projectData,
+                completeAt: projectData.projectStatus == 4 ? new Date().toISOString() : null,
                 projectTitle: projectData.projectTitle as string,
                 projectId: undefined,
                 projectVideo: projectData.projectVideo ? projectData.projectVideo : null,
