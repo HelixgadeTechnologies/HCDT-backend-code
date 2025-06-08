@@ -7,6 +7,7 @@ import averageCommunitySatisfactionRouter from "./averageCommunitySatisfactionRo
 import economicImpactRouter from "./economicImpactRoute";
 import settingsRoute from "./settingsRoute";
 import uploadRoutes from "./uploadRoute";
+import generalRouter from "./generalDashboardRoute";
 
 const rootRoutes: Router = Router();
 
@@ -19,6 +20,7 @@ rootRoutes.use("/conflict", conflictRouter);
 rootRoutes.use("/average-community-satisfaction", averageCommunitySatisfactionRouter);
 rootRoutes.use("/economic-impact", economicImpactRouter);
 rootRoutes.use("/upload", uploadRoutes);
+rootRoutes.use("/dashboard", generalRouter);
 
 
 
