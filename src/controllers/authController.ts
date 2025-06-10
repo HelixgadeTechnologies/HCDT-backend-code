@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture, getSettlor, deleteCloudFile } from "../service/authService"
+import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture, getSettlor, deleteCloudFile, updateLoginUser } from "../service/authService"
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
@@ -66,6 +66,15 @@ export const addAdmin = async (req: Request, res: Response) => {
 
         const admin = await registerAdmin(req.body.data, req.body.isCreate);
         res.status(201).json(successResponse(`Admin ${req.body.isCreate ? "created" : "updated"} successfully`, admin));
+    } catch (error: any) {
+        res.status(400).json(errorResponse("Internal server error", error));
+    }
+};
+
+export const updateLogInUser = async (req: Request, res: Response) => {
+    try {
+        const admin = await updateLoginUser(req.body);
+        res.status(201).json(successResponse(`Update successfully`, admin));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }

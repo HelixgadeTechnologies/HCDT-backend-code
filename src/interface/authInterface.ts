@@ -36,6 +36,14 @@ export interface ISignUpAdmin {
     trusts: string | null;
     status?: number | null;
 }
+export interface ILoginUpdate {
+    userId: string;
+    phoneNumber?: string | null;
+    community?: string | null;
+    state?: string | null;
+    localGovernmentArea?: string | null;
+    trusts: string | null;
+}
 
 export interface ISignUpNUPRC {
     userId: string;

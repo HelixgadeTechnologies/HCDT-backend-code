@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { IDraSignUp, ILogin, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
+import { IDraSignUp, ILogin, ILoginUpdate, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { JWT_SECRET } from "../secrets";
 import { sendAdminRegistrationEmail } from "../utils/mail";
 import { deleteFile, getFileName, uploadFile } from "../utils/upload";
@@ -79,9 +79,27 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
         trusts: data.trusts || null,
         status: data.status || null,
         phoneNumber: data.phoneNumber || null
+
       },
     });
   }
+};
+export const updateLoginUser = async (data: ILoginUpdate) => {
+  try {
+    await prisma.user.update({
+      where: { userId: data.userId },
+      data: {
+        phoneNumber: data.phoneNumber || null,
+        state: data.state || null,
+        localGovernmentArea: data.localGovernmentArea || null,
+        community: data.community || null,
+        trusts: data.trusts || null,
+      },
+    });
+  } catch (error) {
+    throw error
+  }
+
 };
 
 export const getUserById = async (userId: string): Promise<Array<IUserView>> => {
@@ -259,12 +277,14 @@ export const loginUser = async (data: ILogin) => {
   // console.log(user)
   if (user.length < 1) throw new Error("Invalid credentials");
 
+  if (user[0].status == 0) throw new Error("Your Account is not approved, pleas contact the admin");
+
   const isPasswordValid = await bcrypt.compare(data.password, user[0].password as string);
 
   // console.log("IsValid", isPasswordValid)
   if (!isPasswordValid) throw new Error("Invalid credentials");
 
-  return jwt.sign(user[0], JWT_SECRET as string, { expiresIn: "1h" });
+  return jwt.sign(user[0], JWT_SECRET as string, { expiresIn: "2h" });
 };
 
 export const changePassword = async (userId: string, oldPassword: string, newPassword: string, confirmPassword: string) => {

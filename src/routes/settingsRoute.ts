@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addAdmin, addDRA, addNuprc, addSettlor, changeUserPassword, deleteSettlor, deleteUser, getRoles, getUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, updateUserProfilePicture } from "../controllers/authController";
+import { addAdmin, addDRA, addNuprc, addSettlor, changeUserPassword, deleteSettlor, deleteUser, getRoles, getUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, updateLogInUser, updateUserProfilePicture } from "../controllers/authController";
 
 const settingsRoute: Router = Router();
 /**
@@ -59,6 +59,45 @@ const settingsRoute: Router = Router();
  *         description: Internal server error
  */
 settingsRoute.get("/getUser/:userId", getUser)
+
+/**
+ * @swagger
+ * /api/setting/update-login:
+ *   put:
+ *     summary: Update login user profile information
+ *     tags: [Setting]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               data:
+ *                 type: object
+ *                 required:
+ *                   - userId
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                   phoneNumber:
+ *                     type: string
+ *                   community:
+ *                     type: string
+ *                   state:
+ *                     type: string
+ *                   localGovernmentArea:
+ *                     type: string
+ *                   trusts:
+ *                     type: string
+ *     responses:
+ *       201:
+ *         description: Successfully updated user
+ *       400:
+ *         description: Internal server error
+ */
+settingsRoute.put('/update-login', updateLogInUser);
+
 
 /**
  * @swagger

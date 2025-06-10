@@ -25,7 +25,7 @@ setupSwagger(app);
 // Apply JWT middleware for all protected POST requests
 app.use((req, res, next) => {
     // Define routes to exclude from authentication
-    const excludedRoutes = ["/api/auth/signIn", "/api/auth/signUp"];
+    const excludedRoutes = ["/api/auth/signIn", "/api/auth/signUp","/api/setting/addDRA"];
 
     if (excludedRoutes.includes(req.path)) {
         return next(); // Skip authentication for these routes
