@@ -87,6 +87,37 @@ const options: swaggerJSDoc.Options = {
             }
           }
         },
+        FundsReceived: {
+          type: "object",
+          properties: {
+            fundsReceivedId: {
+              type: "string",
+              format: "uuid",
+              example: "d3f8a2b4-12f5-4e7a-9f93-34f85d763b87"
+            },
+            yearReceived: {
+              type: "int",
+              example: 2025
+            },
+            reserveReceived: {
+              type: "int",
+              example: 2000
+            },
+            capitalExpenditureReceived: {
+              type: "int",
+              example: 2000
+            },
+            paymentCheck: {
+              type: "int",
+              example: 2000
+            },
+            trustEstablishmentStatusId: {
+              type: "string",
+              format: "uuid",
+              example: "d3f8a2b4-12f5-4e7a-9f93-34f85d763b87"
+            }
+          }
+        },
         ProjectView: {
           type: "object",
           properties: {

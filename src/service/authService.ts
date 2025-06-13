@@ -85,7 +85,6 @@ export const registerAdmin = async (data: ISignUpAdmin, isCreate: boolean) => {
   }
 };
 export const updateLoginUser = async (data: ILoginUpdate) => {
-  try {
     await prisma.user.update({
       where: { userId: data.userId },
       data: {
@@ -96,10 +95,6 @@ export const updateLoginUser = async (data: ILoginUpdate) => {
         trusts: data.trusts || null,
       },
     });
-  } catch (error) {
-    throw error
-  }
-
 };
 
 export const getUserById = async (userId: string): Promise<Array<IUserView>> => {

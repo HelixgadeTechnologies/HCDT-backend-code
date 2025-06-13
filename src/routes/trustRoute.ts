@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTrustEstablishmentST, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, getAll, getSpecificTrustEstablishmentST, getTrustInfo, trustEstablishmentDashboard } from "../controllers/trustController";
+import { addTrustEstablishmentST, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, fundsDashboard, getAll, getSpecificTrustEstablishmentST, getTrustInfo, trustEstablishmentDashboard } from "../controllers/trustController";
 const trustRoutes: Router = Router();
 
 /**
@@ -372,14 +372,7 @@ trustRoutes.post("/remove", deleteTrust);
  *               developmentPlanBudgetDocumentMimeType:
  *                 type: string
  *                 description: The MIME type of the development plan budget document.
- *               yearOfFundsReceivedByTrust:
- *                 type: integer
- *               totalFundsReceivedByTrust:
- *                 type: integer
- *               capitalExpenditure:
- *                 type: integer
- *               reserve:
- *                 type: integer
+
  *               admin:
  *                 type: string
  *                 description: User ID of the admin.
@@ -409,6 +402,10 @@ trustRoutes.post("/remove", deleteTrust);
  *                 type: array
  *                 items:
  *                   $ref: "#/components/schemas/OperationalExpenditure"
+ *               fundsReceive:
+ *                 type: array
+ *                 items:
+ *                   $ref: "#/components/schemas/FundsReceived"
  *     responses:
  *       201:
  *         description: Successfully created or updated the trust establishment status.
@@ -591,5 +588,36 @@ trustRoutes.delete('/remove-matrix-file/:establishmentId', deleteMatrixFile);
  *         description: Internal server error
  */
 trustRoutes.get('/dashboard/:trustId', trustEstablishmentDashboard);
+
+/**
+ * @swagger
+ * /api/trust/fundsDashboard/{trustId}/{year}:
+ *   get:
+ *     summary: Get funds dashboard data for a specific trust and year
+ *     tags:
+ *       - Trust
+ *     parameters:
+ *       - in: path
+ *         name: trustId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the trust
+ *       - in: path
+ *         name: year
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: The year to filter the data (use 0 for all years)
+ *     responses:
+ *       200:
+ *         description: Funds dashboard data retrieved successfully
+ *       404:
+ *         description: Trust ID is required
+ *       500:
+ *         description: Server error while retrieving funds dashboard data
+ */
+trustRoutes.get('/fundsDashboard/:trustId/:year', fundsDashboard);
+
 
 export default trustRoutes

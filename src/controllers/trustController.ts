@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
-import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust } from "../service/trustService";
+import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getFundsSupplyDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
 import { PrismaClient } from "@prisma/client";
 
@@ -114,6 +114,20 @@ export const trustEstablishmentDashboard = async (req: Request, res: Response) =
 
     try {
         const data = await getEstablishmentDashboardData(trustId);
+        res.status(200).json(successResponse("TrustEstablishmentDashboard", data));
+    } catch (error) {
+        res.status(500).json(errorResponse('Failed to load dashboard data', error));
+    }
+};
+export const fundsDashboard = async (req: Request, res: Response) => {
+    const { trustId,year } = req.params;
+
+    if (!trustId) {
+        res.status(404).json(notFoundResponse('Trust Id is required'));
+    }
+
+    try {
+        const data = await getFundsSupplyDashboardData(trustId,Number(year));
         res.status(200).json(successResponse("TrustEstablishmentDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

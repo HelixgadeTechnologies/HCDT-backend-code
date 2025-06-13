@@ -28,7 +28,17 @@ export interface ITrust {
     totalFemaleManagementCommitteeMembers?: number;
     totalPwdManagementCommitteeMembers?: number;
     createAt?: string;
-    completionStatus:number;
+    completionStatus: number;
+}
+
+export interface IFundsReceived {
+    fundsReceivedByTrustId?: string;
+    yearReceived?: number;
+    reserveReceived?: number;
+    capitalExpenditureReceived?: number;
+    totalFundsReceived?: number;
+    paymentCheck?: number;
+    trustEstablishmentStatusId?: string;
 }
 
 interface IBotDetails {
@@ -77,7 +87,7 @@ export interface ITrustView {
     totalFemaleManagementCommitteeMembers: number;
     totalPwdManagementCommitteeMembers: number;
     createAt: string;
-    completionStatus:number;
+    completionStatus: number;
 }
 
 export interface ITrustEstablishmentStatus {
@@ -97,10 +107,7 @@ export interface ITrustEstablishmentStatus {
     developmentPlanDocumentMimeType?: string | null;
     developmentPlanBudgetDocument?: string | null;
     developmentPlanBudgetDocumentMimeType?: string | null;
-    yearOfFundsReceivedByTrust?: number | null;
-    totalFundsReceivedByTrust?: number | null;
-    capitalExpenditure?: number | null;
-    reserve?: number | null;
+
     admin?: string | null;
     yearOfNeedsAssessment?: number | null;
     statusOfNeedAssessment?: number | null;
@@ -113,6 +120,7 @@ export interface ITrustEstablishmentStatus {
     trustDistributionMatrixDocument?: string | null;
     trustDistributionMatrixDocumentMimeType?: string | null;
     settlorOperationalExpenditures?: IOperationalExpenditure[];
+    fundsReceive?: IFundsReceived[];
     trustId?: string;
     completionStatus: number | null;
     createAt?: Date | null;

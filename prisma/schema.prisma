@@ -102,7 +102,7 @@ model Trust {
 //Trust Management
 
 model TrustEstablishmentStatus {
-  trustEstablishmentStatusId                   String                   @id @default(uuid())
+  trustEstablishmentStatusId                   String  @id @default(uuid())
   trustRegisteredWithCAC                       Int?
   cscDocument                                  String?
   cscDocumentMimeType                          String?
@@ -118,28 +118,26 @@ model TrustEstablishmentStatus {
   developmentPlanDocumentMimeType              String?
   developmentPlanBudgetDocument                String?
   developmentPlanBudgetDocumentMimeType        String?
-  yearOfFundsReceivedByTrust                   Int?
-  totalFundsReceivedByTrust                    Int?
-  capitalExpenditure                           Int?
-  reserve                                      Int?
-  user                                         User?                    @relation(fields: [admin], references: [userId])
-  admin                                        String?
-  yearOfNeedsAssessment                        Int?
-  statusOfNeedAssessment                       Int?
-  communityWomenConsulted                      Int?
-  pwDsConsulted                                Int?
-  communityYouthsConsulted                     Int?
-  communityLeadershipConsulted                 Int?
-  attendanceSheet                              Int?
-  distributionMatrixDevelopedBySettlor         Boolean?
-  trustDistributionMatrixDocument              String?
-  trustDistributionMatrixDocumentMimeType      String?
-  completionStatus                             Int?
-  operationalExpenditure                       OperationalExpenditure[]
-  trust                                        Trust?                   @relation(fields: [trustId], references: [trustId])
-  trustId                                      String?                  @unique
-  createAt                                     DateTime?                @default(now())
-  updateAt                                     DateTime?                @default(now())
+
+  user                                    User?                    @relation(fields: [admin], references: [userId])
+  admin                                   String?
+  yearOfNeedsAssessment                   Int?
+  statusOfNeedAssessment                  Int?
+  communityWomenConsulted                 Int?
+  pwDsConsulted                           Int?
+  communityYouthsConsulted                Int?
+  communityLeadershipConsulted            Int?
+  attendanceSheet                         Int?
+  distributionMatrixDevelopedBySettlor    Boolean?
+  trustDistributionMatrixDocument         String?
+  trustDistributionMatrixDocumentMimeType String?
+  completionStatus                        Int?
+  operationalExpenditure                  OperationalExpenditure[]
+  fundsReceivedByTrust                    FundsReceivedByTrust[]
+  trust                                   Trust?                   @relation(fields: [trustId], references: [trustId])
+  trustId                                 String?                  @unique
+  createAt                                DateTime?                @default(now())
+  updateAt                                DateTime?                @default(now())
 
   @@map("trustestablishmentstatus")
 }
@@ -152,6 +150,19 @@ model OperationalExpenditure {
   trustEstablishmentStatusId        String?
 
   @@map("operationalexpenditure")
+}
+
+model FundsReceivedByTrust {
+  fundsReceivedByTrustId     String                    @id @default(uuid())
+  yearReceived               Int?
+  reserveReceived            Int?
+  capitalExpenditureReceived Int?
+  totalFundsReceived         Int?
+  paymentCheck               Int?
+  TrustEstablishmentStatus   TrustEstablishmentStatus? @relation(fields: [trustEstablishmentStatusId], references: [trustEstablishmentStatusId])
+  trustEstablishmentStatusId String?
+
+  @@map("fundsreceivedbytrust")
 }
 
 model Project {

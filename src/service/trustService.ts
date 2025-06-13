@@ -1,5 +1,5 @@
-import { Prisma, PrismaClient} from "@prisma/client";
-import {IOperationalExpenditureInsert, ITrust, ITrustEstablishmentStatus, ITrustView } from "../interface/trustInterface";
+import { Prisma, PrismaClient } from "@prisma/client";
+import { IFundsReceived, IOperationalExpenditureInsert, ITrust, ITrustEstablishmentStatus, ITrustView } from "../interface/trustInterface";
 
 
 const prisma = new PrismaClient();
@@ -104,10 +104,6 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         developmentPlanDocumentMimeType: data.developmentPlanDocumentMimeType ?? null,
         developmentPlanBudgetDocument: data.developmentPlanBudgetDocument ? data.developmentPlanBudgetDocument : null,
         developmentPlanBudgetDocumentMimeType: data.developmentPlanBudgetDocumentMimeType ?? null,
-        yearOfFundsReceivedByTrust: data.yearOfFundsReceivedByTrust ?? null,
-        totalFundsReceivedByTrust: data.totalFundsReceivedByTrust ?? null,
-        capitalExpenditure: data.capitalExpenditure ?? null,
-        reserve: data.reserve ?? null,
         admin: data.admin ?? null,
         yearOfNeedsAssessment: data.yearOfNeedsAssessment ?? null,
         statusOfNeedAssessment: data.statusOfNeedAssessment ?? null,
@@ -131,8 +127,21 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         create: trustOperationalEstablishmentData,
     });
 
-    //  Handle settlorOperationalExpenditures efficiently
-    if (data.settlorOperationalExpenditures!.length > 0) {
+
+    //  Handle settlorOperationalExpenditures and Funds Received  efficiently
+    if (data.settlorOperationalExpenditures!.length > 0 && data.fundsReceive!.length > 0) {
+
+        const fundsReceivedInput: IFundsReceived[] = data.fundsReceive!.map((f) => ({
+            yearReceived: f?.yearReceived,
+            reserveReceived: f?.reserveReceived,
+            capitalExpenditureReceived: f?.capitalExpenditureReceived,
+            paymentCheck: f?.paymentCheck,
+            totalFundsReceived: f?.totalFundsReceived,
+            trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
+        }));
+
+        // console.log(fundsReceivedInput)
+
         const operationalExpenditureInsert: IOperationalExpenditureInsert[] = data.settlorOperationalExpenditures!.map((ope) => ({
             settlorOperationalExpenditureYear: ope.settlorOperationalExpenditureYear,
             settlorOperationalExpenditure: ope.settlorOperationalExpenditure,
@@ -140,6 +149,8 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         }));
 
         await prisma.$transaction([
+            prisma.fundsReceivedByTrust.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
+            prisma.fundsReceivedByTrust.createMany({ data: fundsReceivedInput, skipDuplicates: true }),
             prisma.operationalExpenditure.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
             prisma.operationalExpenditure.createMany({ data: operationalExpenditureInsert, skipDuplicates: true }),
         ]);
@@ -158,10 +169,15 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
         where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId },
     });
 
+    const fundsReceive = await prisma.fundsReceivedByTrust.findMany({
+        where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId },
+    });
+
     return {
         ...trustEstablishmentStatus,
         trustId: trustEstablishmentStatus.trustId as string,
-        settlorOperationalExpenditures
+        settlorOperationalExpenditures,
+        fundsReceive
     } as ITrustEstablishmentStatus;
 };
 
@@ -265,6 +281,25 @@ async function callProcedure(option: number, trustId: string): Promise<void | an
         return []
     }
 }
+async function callProcedure2( trustId: string,year: number): Promise<void | any[]> {
+    const raw = await prisma.$queryRawUnsafe<any[]>(
+        `CALL GetFundsReceivedByTrust(?,?)`,
+        trustId,
+        year,
+    );
+    // console.log(raw)
+    // console.log(raw[0].f4)
+
+    const cleaned = normalizeBigInts(raw);
+        return cleaned.map((row: any) => ({
+            ["totalFundsReceived"]: Number(row.f0),
+            ["capitalExpenditureReceived"]: Number(row.f1),
+            ["reserveReceived"]: Number(row.f2),
+            ["capitalPercentage"]: Number(row.f3),
+            ["reservePercentage"]: Number(row.f4),
+        }));
+    
+}
 export async function getEstablishmentDashboardData(projectId: string) {
     // Optionally return them as a keyed object
     const keys = [
@@ -279,6 +314,20 @@ export async function getEstablishmentDashboardData(projectId: string) {
         const result = await callProcedure(index + 1, projectId);
         finalResult[keys[index]] = result;
     }
+
+    return finalResult;
+}
+export async function getFundsSupplyDashboardData(trustId: string,year:number) {
+    // Optionally return them as a keyed object
+    const keys = [
+        'FINANCIAL_SUMMARY',
+    ];
+
+    const finalResult: Record<string, any> = {};
+    const result = await callProcedure2(trustId, year);
+    finalResult[keys[0]] = result;
+
+  
 
     return finalResult;
 }
