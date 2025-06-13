@@ -102,27 +102,27 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
     const cleaned = normalizeBigInts(raw);
     if (option == 1) {
         return cleaned.map((row: any) => ({
-            ["totalBudget"]: Number(row.f0),
+            ["trustName"]: row.f0,
+            ["projectTitle"]: row.f1,
+            ["community"]: row.f2,
+            ["createAt"]: row.f3,
+            ["rating"]: Number(row.f4)
         }));
     } else if (option == 2) {
-        return cleaned.map((row: any) => ({
-            ["annualApprovedBudget"]: Number(row.f0),
-        }));
-    } else if (option == 3) {
         return cleaned.map((row: any) => ({
             ["totalMales"]: Number(row.f0),
             ["totalFemales"]: Number(row.f1),
             ["totalPwDs"]: Number(row.f2),
             ["totalBeneficiaries"]: Number(row.f3)
         }));
-    } else if (option == 4) {
+    } else if (option == 3) {
         return cleaned.map((row: any) => ({
             ["totalMales"]: Number(row.f0),
             ["totalFemales"]: Number(row.f1),
             ["totalPwDs"]: Number(row.f2),
             ["totalEmployees"]: Number(row.f3)
         }));
-    } else if (option == 5) {
+    } else if (option == 4) {
         return cleaned.map((row: any) => ({
             ["EDUCATION"]: Number(row.f1),
             ["HEALTH"]: Number(row.f2),
@@ -132,7 +132,7 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             ["INFORMATION_TECHNOLOGY"]: Number(row.f6),
             ["AGRICULTURE"]: Number(row.f7)
         }));
-    } else if (option == 6) {
+    } else if (option == 5) {
         return cleaned.map((row: any) => ({
             ["YET_TO_START"]: Number(row.f1),
             ["IN_PROGRESS"]: Number(row.f2),
@@ -147,8 +147,7 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
 export async function getProjectDashboardData(projectId: string) {
     // Optionally return them as a keyed object
     const keys = [
-        'TOTAL_BUDGET',
-        'TOTAL_ANNUAL_BUDGET',
+        'TOP_PROJECT',
         'BENEFITS',
         'EMPLOYMENT',
         'CATEGORY',
