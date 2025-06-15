@@ -159,6 +159,10 @@ async function callProcedure(option: number): Promise<void | any[]> {
             ["numberOfFemaleEmployedByContractor"]: Number(row.f2),
             ["numberOfPwDsEmployedByContractor"]: Number(row.f3),
         }));
+    } else if (option == 14) {
+        return cleaned.map((row: any) => ({
+            ["fully_received_percentage"]: Number(row.f0),
+        }));
     } else {
         return []
     }
@@ -179,7 +183,7 @@ export async function getGeneralDashboardData() {
         'CONFLICT_RESOLUTION_DETAILS',
         'TOTAL_WORKER_IN_PROJECT',
         'EMPLOYEE_PER_PROJECT',
-
+        'STATISTICS_PERCENTAGE',
     ];
 
     const finalResult: Record<string, any> = {};
