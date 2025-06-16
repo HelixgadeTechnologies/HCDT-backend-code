@@ -163,6 +163,14 @@ async function callProcedure(option: number): Promise<void | any[]> {
         return cleaned.map((row: any) => ({
             ["fully_received_percentage"]: Number(row.f0),
         }));
+    } else if (option == 15) {
+        return cleaned.map((row: any) => ({
+            ["total_complete"]: Number(row.f0),
+        }));
+    } else if (option == 16) {
+        return cleaned.map((row: any) => ({
+            ["distinct_community_count"]: Number(row.f0),
+        }));
     } else {
         return []
     }
@@ -184,6 +192,8 @@ export async function getGeneralDashboardData() {
         'TOTAL_WORKER_IN_PROJECT',
         'EMPLOYEE_PER_PROJECT',
         'STATISTICS_PERCENTAGE',
+        'DISTRIBUTION_MATRIX',
+        'NEEDS_ASSESSMENT_COMMUNITY_COUNT',
     ];
 
     const finalResult: Record<string, any> = {};
