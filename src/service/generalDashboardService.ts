@@ -185,6 +185,12 @@ async function callProcedure(option: number): Promise<void | any[]> {
             ["totalFemaleManagementCommitteeMembers"]: Number(row.f7),
             ["totalPwdManagementCommitteeMembers"]: Number(row.f8),
         }));
+    } else if (option == 18) {
+        return cleaned.map((row: any) => ({
+            ["partiesInvolveId"]: Number(row.f0),
+            ["partyName"]: row.f1,
+            ["percentage"]: Number(row.f2),
+        }));
     } else {
         return []
     }
@@ -209,6 +215,7 @@ export async function getGeneralDashboardData() {
         'DISTRIBUTION_MATRIX',
         'NEEDS_ASSESSMENT_COMMUNITY_COUNT',
         'BOT_DISPLAY',
+        'CONFLICT_RESOLUTION_OVER',
     ];
 
     const finalResult: Record<string, any> = {};
