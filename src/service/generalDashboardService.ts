@@ -171,6 +171,20 @@ async function callProcedure(option: number): Promise<void | any[]> {
         return cleaned.map((row: any) => ({
             ["distinct_community_count"]: Number(row.f0),
         }));
+    } else if (option == 17) {
+        return cleaned.map((row: any) => ({
+            ["totalMaleBotMembers"]: Number(row.f0),
+            ["totalFemaleBotMembers"]: Number(row.f1),
+            ["totalPwdBotMembers"]: Number(row.f2),
+
+            ["totalMaleAdvisoryCommitteeMembers"]: Number(row.f3),
+            ["totalFemaleAdvisoryCommitteeMembers"]: Number(row.f4),
+            ["totalPwdAdvisoryCommitteeMembers"]: Number(row.f5),
+
+            ["totalMaleManagementCommitteeMembers"]: Number(row.f6),
+            ["totalFemaleManagementCommitteeMembers"]: Number(row.f7),
+            ["totalPwdManagementCommitteeMembers"]: Number(row.f8),
+        }));
     } else {
         return []
     }
@@ -194,6 +208,7 @@ export async function getGeneralDashboardData() {
         'STATISTICS_PERCENTAGE',
         'DISTRIBUTION_MATRIX',
         'NEEDS_ASSESSMENT_COMMUNITY_COUNT',
+        'BOT_DISPLAY',
     ];
 
     const finalResult: Record<string, any> = {};
