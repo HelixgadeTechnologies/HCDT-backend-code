@@ -191,6 +191,12 @@ async function callProcedure(option: number): Promise<void | any[]> {
             ["partyName"]: row.f1,
             ["percentage"]: Number(row.f2),
         }));
+    } else if (option == 19) {
+        return cleaned.map((row: any) => ({
+            ["botYesPercentage"]: Number(row.f0),
+            ["managementYesPercentage"]: row.f1,
+            ["advisoryYesPercentage"]: Number(row.f2),
+        }));
     } else {
         return []
     }
@@ -216,6 +222,7 @@ export async function getGeneralDashboardData() {
         'NEEDS_ASSESSMENT_COMMUNITY_COUNT',
         'BOT_DISPLAY',
         'CONFLICT_RESOLUTION_OVER',
+        'BOT_INAUGURATION_CHECK',
     ];
 
     const finalResult: Record<string, any> = {};
