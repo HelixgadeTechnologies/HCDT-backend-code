@@ -270,7 +270,7 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
 
 /**
  * @swagger
- * /api/economic-impact/dashboard/{trustId}:
+ * /api/economic-impact/dashboard/{trustId}/{year}/{state}:
  *   get:
  *     summary: Retrieve economic impact dashboard data by trust ID
  *     description: Returns pie chart data for various metrics (infoProjects, communityConsult, etc.) linked to a specific trustId.
@@ -283,6 +283,18 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
  *           type: string
  *         required: true
  *         description: Unique ID of the trust to fetch dashboard data for
+ *       - in: path
+ *         name: year
+ *         schema:
+ *           type: number
+ *         required: true
+ *         description: Filter base on year
+ *       - in: path
+ *         name: state
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Filter base on state
  *     responses:
  *       200:
  *         description: Economic impact data successfully retrieved
@@ -343,5 +355,5 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
  *       500:
  *         description: Internal server error
  */
-economicImpactRouter.get("/dashboard/:trustId", getEconomicImpactDashboard);
+economicImpactRouter.get("/dashboard/:trustId/:year/:state", getEconomicImpactDashboard);
 export default economicImpactRouter;

@@ -65,11 +65,13 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(trustId: string, option: number): Promise<any[]> {
+async function callProcedure(trustId: string, option: number, selectedYear:number,selectedState:string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
-        `CALL GetEconomicImpactDashboardDataByTrust(?, ?)`,
+        `CALL GetEconomicImpactDashboardDataByTrust(?, ?, ?, ?)`,
         trustId,
-        option
+        option,
+        selectedYear,
+        selectedState
     );
 
     const cleaned = normalizeBigInts(raw);
@@ -102,7 +104,7 @@ async function callProcedure(trustId: string, option: number): Promise<any[]> {
     }
 }
 
-export async function getEconomicImpactDataByTrust(trustId: string) {
+export async function getEconomicImpactDataByTrust(trustId: string,selectedYear:number,selectedState:string) {
     // Optionally return them as a keyed object
     const keys = [
         'businessGrowth',
@@ -114,7 +116,7 @@ export async function getEconomicImpactDataByTrust(trustId: string) {
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(trustId, index + 1);
+        const result = await callProcedure(trustId, index + 1,selectedYear,selectedState);
         finalResult[keys[index]] = result;
     }
 

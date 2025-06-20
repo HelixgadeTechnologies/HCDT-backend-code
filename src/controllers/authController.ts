@@ -51,7 +51,7 @@ export const deleteUser = async (req: Request, res: Response) => {
         const user = await removeUser(req.body.userId);
         res.status(201).json(successResponse("User removed successfully", user));
     } catch (error: any) {
-        console.log(error, "errorr")
+        // console.log(error, "errorr")
         res.status(500).json(errorResponse("Internal server error", error));
     }
 
@@ -119,7 +119,7 @@ export const addDRA = async (req: Request, res: Response) => {
         const DRA = await registerDRA(req.body.data, req.body.isCreate);
         res.status(201).json(successResponse(`DRA successfully ${req.body.isCreate ? "created" : "updated"}`, DRA));
     } catch (error: any) {
-        console.log(error, "error")
+        // console.log(error, "error")
         // Check if the error is a Prisma error and handle it accordingly
         res.status(400).json(errorResponse("Internal server error", error));
     }

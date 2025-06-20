@@ -4,12 +4,12 @@ import { ICauseOfConflict, IConflict, IConflictStatus, IConflictView, ICourtLiti
 
 const prisma = new PrismaClient();
 
-export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean,userId:string) => {
+export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean, userId: string) => {
 
     if (isCreate) {
         // Create a new conflict
         return await prisma.conflict.create({
-            data: { ...conflictData, conflictId: undefined,userId:userId },
+            data: { ...conflictData, conflictId: undefined, userId: userId },
         });
     } else {
         // Update existing conflict
@@ -18,7 +18,7 @@ export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: 
         }
         // console.log(conflictData)
         return await prisma.conflict.update({
-            where: { conflictId: conflictData.conflictId,userId:userId },
+            where: { conflictId: conflictData.conflictId, userId: userId },
             data: conflictData,
         });
     }
@@ -134,11 +134,13 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(option: number, trustId: string): Promise<any[]> {
+async function callProcedure(option: number, trustId: string, selectedYear: number, selectedState: string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
-        `CALL ConflictDashboard(?,?)`,
+        `CALL ConflictDashboard(?,?,?,?)`,
         option,
-        trustId
+        trustId,
+        selectedYear,
+        selectedState
     );
 
 
@@ -197,8 +199,8 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             conflictId: row.f0,
             projectId: row.f1,
             projectTitle: row.f2,
-            userId:row.f3,
-            userFirstName:row.f4,
+            userId: row.f3,
+            userFirstName: row.f4,
             userLastName: row.f5,
             userEmail: row.f6,
             userPhoneNumber: row.f7,
@@ -209,48 +211,48 @@ async function callProcedure(option: number, trustId: string): Promise<any[]> {
             narrateIssues: row.f12,
             conflictStatusId: row.f13,
             conflictStatusName: row.f14,
-            issuesAddressById:row.f15,
-            issuesAddressByName:row.f16,
+            issuesAddressById: row.f15,
+            issuesAddressByName: row.f16,
             courtLitigationStatusId: row.f17,
             courtLitigationStatusName: row.f18,
-            createAt:row.f19,
+            createAt: row.f19,
             updateAt: row.f20,
             trustId: row.f21,
-            projectCreateAt:row.f22
+            projectCreateAt: row.f22
         }))
     } else if (option == 10) {
         return cleaned.map((row: any) => (
-        {
-            conflictId: row.f0,
-            projectId: row.f1,
-            projectTitle: row.f2,
-            userId:row.f3,
-            userFirstName:row.f4,
-            userLastName: row.f5,
-            userEmail: row.f6,
-            userPhoneNumber: row.f7,
-            causeOfConflictId: row.f8,
-            causeOfConflictName: row.f9,
-            partiesInvolveId: row.f10,
-            partiesInvolveName: row.f11,
-            narrateIssues: row.f12,
-            conflictStatusId: row.f13,
-            conflictStatusName: row.f14,
-            issuesAddressById:row.f15,
-            issuesAddressByName:row.f16,
-            courtLitigationStatusId: row.f17,
-            courtLitigationStatusName: row.f18,
-            createAt:row.f19,
-            updateAt: row.f20,
-            projectCreateAt:row.f21
-        }
-    ))
+            {
+                conflictId: row.f0,
+                projectId: row.f1,
+                projectTitle: row.f2,
+                userId: row.f3,
+                userFirstName: row.f4,
+                userLastName: row.f5,
+                userEmail: row.f6,
+                userPhoneNumber: row.f7,
+                causeOfConflictId: row.f8,
+                causeOfConflictName: row.f9,
+                partiesInvolveId: row.f10,
+                partiesInvolveName: row.f11,
+                narrateIssues: row.f12,
+                conflictStatusId: row.f13,
+                conflictStatusName: row.f14,
+                issuesAddressById: row.f15,
+                issuesAddressByName: row.f16,
+                courtLitigationStatusId: row.f17,
+                courtLitigationStatusName: row.f18,
+                createAt: row.f19,
+                updateAt: row.f20,
+                projectCreateAt: row.f21
+            }
+        ))
     } else {
         return []
     }
 }
 
-export async function getConflictDashboardData(projectId: string) {
+export async function getConflictDashboardData(projectId: string, selectedYear: number, selectedState: string) {
     // Optionally return them as a keyed object
     const keys = [
         'ALL_CONFLICT_REPORT',
@@ -268,7 +270,7 @@ export async function getConflictDashboardData(projectId: string) {
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(index + 1, projectId);
+        const result = await callProcedure(index + 1, projectId, selectedYear, selectedState);
         finalResult[keys[index]] = result;
     }
 

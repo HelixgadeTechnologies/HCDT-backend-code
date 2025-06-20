@@ -28,7 +28,7 @@ export const listEconomicImpacts = async (req: Request, res: Response) => {
         if (economicImpacts.length === 0) {
             res.status(404).json(notFoundResponse("No Economic Impact data found", []));
         }
-           
+
         res.status(200).json(successResponse("Economic Impacts", economicImpacts));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error.message));
@@ -92,15 +92,15 @@ export const getAllImpactOptionTwo = async (req: Request, res: Response) => {
 };
 
 export const getEconomicImpactDashboard = async (req: Request, res: Response) => {
-    const { trustId } = req.params;
+    const { trustId, year, state } = req.params;
     if (!trustId) {
         res.status(404).json(notFoundResponse('trustId is required'));
     }
     try {
-        const data = await getEconomicImpactDataByTrust(trustId);
+        const data = await getEconomicImpactDataByTrust(trustId, Number(year), state);
         res.status(200).json(successResponse("EconomicImpactDataDashboard", data));
     } catch (error: any) {
-        console.log(error)
+        // console.log(error)
         res.status(500).json(errorResponse('Internal Server Error', error.message));
     }
 };

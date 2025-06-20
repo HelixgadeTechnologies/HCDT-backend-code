@@ -270,7 +270,7 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
 
 /**
  * @swagger
- * /api/conflict/dashboard/{trustId}:
+ * /api/conflict/dashboard/{trustId}/{year}/{state}:
  *   get:
  *     summary: Get conflict dashboard data
  *     description: |
@@ -278,11 +278,23 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
  *       **Note:** At default a dashboard must preview all data to archive this pass in `ALL` as trustId, then to sort bse on project id pass in the trustId e.g `5792b700-c692-46a4-a5c0-129664cf751f` to interact it base on a specific trust.
  *     tags:
  *       - Conflict
- *     parameters:
+ *     parameters: 
  *       - name: trustId
  *         in: path
  *         required: true
  *         description: The unique identifier for the trust
+ *         schema:
+ *           type: string
+ *       - name: year
+ *         in: path
+ *         required: true
+ *         description: Filter by year
+ *         schema:
+ *           type: number
+ *       - name: state
+ *         in: path
+ *         required: true
+ *         description: Filter by state
  *         schema:
  *           type: string
  *     responses:
@@ -334,6 +346,6 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
  *       500:
  *         description: Internal server error
  */
-conflictRouter.get('/dashboard/:trustId', getConflictDashboard);
+conflictRouter.get('/dashboard/:trustId/:year/:state', getConflictDashboard);
 
 export default conflictRouter;

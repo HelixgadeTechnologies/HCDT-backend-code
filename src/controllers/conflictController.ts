@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler";
 import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictByTrustId, getConflictDashboardData, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve } from "../service/conflictService";
 
+
 export const handleConflict = async (req: Request, res: Response) => {
     try {
         const { isCreate, data } = req.body;
@@ -15,7 +16,7 @@ export const handleConflict = async (req: Request, res: Response) => {
             res.status(400).json(errorResponse("isCreate must be a boolean value"));
         }
 
-        const result = await createOrUpdateConflict(data, isCreate,userId);
+        const result = await createOrUpdateConflict(data, isCreate, userId);
         const message = isCreate ? "Conflict created successfully" : "Conflict updated successfully";
 
         res.status(200).json(successResponse(message, result));
@@ -112,14 +113,14 @@ export const getAllCourtLitigationStatuses = async (req: Request, res: Response)
     }
 };
 export const getConflictDashboard = async (req: Request, res: Response) => {
-    const { trustId } = req.params;
+    const { trustId, year, state } = req.params;
 
     if (!trustId) {
         res.status(404).json(notFoundResponse('Trust Id is required'));
     }
 
     try {
-        const data = await getConflictDashboardData(trustId);
+        const data = await getConflictDashboardData(trustId, Number(year), state);
         res.status(200).json(successResponse("ConflictDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));
