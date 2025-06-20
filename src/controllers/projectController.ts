@@ -102,14 +102,14 @@ export const getTypeOfWork = async (req: Request, res: Response) => {
 };
 
 export const getProjectDashboard = async (req: Request, res: Response) => {
-    const { trustId, year, state } = req.params;
+    const { trustId, year, state, settlor } = req.params;
 
     if (!trustId) {
         res.status(404).json(notFoundResponse('Trust Id is required'));
     }
 
     try {
-        const data = await getProjectDashboardData(trustId, Number(year), state);
+        const data = await getProjectDashboardData(trustId, Number(year), state, settlor);
         res.status(200).json(successResponse("ProjectDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

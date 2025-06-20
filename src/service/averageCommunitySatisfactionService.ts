@@ -86,13 +86,14 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(trustId: string, option: number,selectedYear:number,selectedState:string): Promise<any[]> {
+async function callProcedure(trustId: string, option: number,selectedYear:number,selectedState:string,settlor:string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
-        `CALL GetCommunitySatisfactionDashboard(?, ?, ?, ?)`,
+        `CALL GetCommunitySatisfactionDashboard(?, ?, ?, ?,?)`,
         trustId,
         option,
         selectedYear,
-        selectedState
+        selectedState,
+        settlor
     );
 
     const cleaned = normalizeBigInts(raw);
@@ -123,7 +124,7 @@ async function callProcedure(trustId: string, option: number,selectedYear:number
 }
 
 // Function to call all options in parallel
-export async function getCommunitySatisfactionDashboard(trustId: string,selectedYear:number,selectedState:string) {
+export async function getCommunitySatisfactionDashboard(trustId: string,selectedYear:number,selectedState:string,settlor:string) {
     // Optionally return them as a keyed object
     const keys = [
         'infoProjects',
@@ -139,7 +140,7 @@ export async function getCommunitySatisfactionDashboard(trustId: string,selected
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(trustId, index + 1,selectedYear,selectedState);
+        const result = await callProcedure(trustId, index + 1,selectedYear,selectedState,settlor);
         finalResult[keys[index]] = result;
     }
 

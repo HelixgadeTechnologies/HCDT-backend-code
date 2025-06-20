@@ -90,14 +90,14 @@ export const getAllAcsOptionTwo = async (req: Request, res: Response) => {
 };
 
 export const getDashboardData = async (req: Request, res: Response) => {
-    const { trustId, year, state } = req.params;
+    const { trustId, year, state, settlor } = req.params;
 
     if (!trustId) {
         res.status(404).json(notFoundResponse('trustId is required'));
     }
 
     try {
-        const data = await getCommunitySatisfactionDashboard(trustId, Number(year), state);
+        const data = await getCommunitySatisfactionDashboard(trustId, Number(year), state, settlor);
         res.status(200).json(successResponse("CommunitySatisfactionDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

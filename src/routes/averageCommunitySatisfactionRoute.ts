@@ -470,7 +470,7 @@ averageCommunitySatisfactionRouter.get("/acsOptionTwo", getAllAcsOptionTwo);
 
 /**
  * @swagger
- * /api/average-community-satisfaction/dashboard/{trustId}/{year}/{state}:
+ * /api/average-community-satisfaction/dashboard/{trustId}/{year}/{state}/{settlor}:
  *   get:
  *     summary: Get community satisfaction dashboard data
  *     description: Returns pie chart data for various metrics (infoProjects, communityConsult, etc.) linked to a specific trustId.
@@ -494,6 +494,12 @@ averageCommunitySatisfactionRouter.get("/acsOptionTwo", getAllAcsOptionTwo);
  *         in: path
  *         required: true
  *         description: Filter by state
+ *         schema:
+ *           type: string
+ *       - name: settlor
+ *         in: path
+ *         required: true
+ *         description: Filter by settlor
  *         schema:
  *           type: string
  *     responses:
@@ -541,5 +547,5 @@ averageCommunitySatisfactionRouter.get("/acsOptionTwo", getAllAcsOptionTwo);
  *       500:
  *         description: Internal server error
  */
-averageCommunitySatisfactionRouter.get('/dashboard/:trustId/:year/:state', getDashboardData);
+averageCommunitySatisfactionRouter.get('/dashboard/:trustId/:year/:state/:settlor', getDashboardData);
 export default averageCommunitySatisfactionRouter;

@@ -270,7 +270,7 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
 
 /**
  * @swagger
- * /api/economic-impact/dashboard/{trustId}/{year}/{state}:
+ * /api/economic-impact/dashboard/{trustId}/{year}/{state}/{settlor}:
  *   get:
  *     summary: Retrieve economic impact dashboard data by trust ID
  *     description: Returns pie chart data for various metrics (infoProjects, communityConsult, etc.) linked to a specific trustId.
@@ -295,6 +295,12 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
  *           type: string
  *         required: true
  *         description: Filter base on state
+ *       - in: path
+ *         name: settlor
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: Filter base on settlor
  *     responses:
  *       200:
  *         description: Economic impact data successfully retrieved
@@ -355,5 +361,5 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
  *       500:
  *         description: Internal server error
  */
-economicImpactRouter.get("/dashboard/:trustId/:year/:state", getEconomicImpactDashboard);
+economicImpactRouter.get("/dashboard/:trustId/:year/:state/:settlor", getEconomicImpactDashboard);
 export default economicImpactRouter;

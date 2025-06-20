@@ -270,7 +270,7 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
 
 /**
  * @swagger
- * /api/conflict/dashboard/{trustId}/{year}/{state}:
+ * /api/conflict/dashboard/{trustId}/{year}/{state}/{settlor}:
  *   get:
  *     summary: Get conflict dashboard data
  *     description: |
@@ -295,6 +295,12 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
  *         in: path
  *         required: true
  *         description: Filter by state
+ *         schema:
+ *           type: string
+ *       - name: settlor
+ *         in: path
+ *         required: true
+ *         description: Filter by settlor
  *         schema:
  *           type: string
  *     responses:
@@ -346,6 +352,6 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
  *       500:
  *         description: Internal server error
  */
-conflictRouter.get('/dashboard/:trustId/:year/:state', getConflictDashboard);
+conflictRouter.get('/dashboard/:trustId/:year/:state/:settlor', getConflictDashboard);
 
 export default conflictRouter;

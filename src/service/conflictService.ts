@@ -134,13 +134,14 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(option: number, trustId: string, selectedYear: number, selectedState: string): Promise<any[]> {
+async function callProcedure(option: number, trustId: string, selectedYear: number, selectedState: string,settlor:string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
-        `CALL ConflictDashboard(?,?,?,?)`,
+        `CALL ConflictDashboard(?,?,?,?,?)`,
         option,
         trustId,
         selectedYear,
-        selectedState
+        selectedState,
+        settlor
     );
 
 
@@ -252,7 +253,7 @@ async function callProcedure(option: number, trustId: string, selectedYear: numb
     }
 }
 
-export async function getConflictDashboardData(projectId: string, selectedYear: number, selectedState: string) {
+export async function getConflictDashboardData(projectId: string, selectedYear: number, selectedState: string,settlor:string) {
     // Optionally return them as a keyed object
     const keys = [
         'ALL_CONFLICT_REPORT',
@@ -270,7 +271,7 @@ export async function getConflictDashboardData(projectId: string, selectedYear: 
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(index + 1, projectId, selectedYear, selectedState);
+        const result = await callProcedure(index + 1, projectId, selectedYear, selectedState,settlor);
         finalResult[keys[index]] = result;
     }
 

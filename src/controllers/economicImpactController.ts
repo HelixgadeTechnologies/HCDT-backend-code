@@ -92,12 +92,12 @@ export const getAllImpactOptionTwo = async (req: Request, res: Response) => {
 };
 
 export const getEconomicImpactDashboard = async (req: Request, res: Response) => {
-    const { trustId, year, state } = req.params;
+    const { trustId, year, state, settlor } = req.params;
     if (!trustId) {
         res.status(404).json(notFoundResponse('trustId is required'));
     }
     try {
-        const data = await getEconomicImpactDataByTrust(trustId, Number(year), state);
+        const data = await getEconomicImpactDataByTrust(trustId, Number(year), state, settlor);
         res.status(200).json(successResponse("EconomicImpactDataDashboard", data));
     } catch (error: any) {
         // console.log(error)

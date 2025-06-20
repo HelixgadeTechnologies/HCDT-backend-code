@@ -357,7 +357,7 @@ projectRouter.get("/type-of-work", getTypeOfWork);
 
 /**
  * @swagger
- * /api/project/dashboard/{trustId}/{year}/{state}:
+ * /api/project/dashboard/{trustId}/{year}/{state}/{settlor}:
  *   get:
  *     summary: Get project dashboard data
  *     description: |
@@ -382,6 +382,12 @@ projectRouter.get("/type-of-work", getTypeOfWork);
  *         in: path
  *         required: true
  *         description: Filter by state
+ *         schema:
+ *           type: string
+ *       - name: settlor
+ *         in: path
+ *         required: true
+ *         description: Filter by settlor
  *         schema:
  *           type: string
  *     responses:
@@ -426,6 +432,6 @@ projectRouter.get("/type-of-work", getTypeOfWork);
  *       500:
  *         description: Internal server error
  */
-projectRouter.get('/dashboard/:trustId/:year/:state', getProjectDashboard);
+projectRouter.get('/dashboard/:trustId/:year/:state/:settlor', getProjectDashboard);
 
 export default projectRouter;
