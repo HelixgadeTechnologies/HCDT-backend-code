@@ -5,6 +5,8 @@ export interface IAverageCommunitySatisfaction {
     localParticipation?: number | null;
     reportMechanism?: number | null;
     conflictMinimization?: number | null;
+    settlorAction?: number | null,
+    nuprcAction?: number | null,
     projectHandover?: number | null;
     maintenanceConsult?: number | null;
     incomeProject?: number | null;
@@ -19,12 +21,16 @@ export interface IAverageCommunitySatisfactionView {
     localParticipation?: number | null;
     reportMechanism?: number | null;
     conflictMinimization?: number | null;
+    settlorAction?: number | null,
+    nuprcAction?: number | null,
 
     infoProjectsStatus?: string | null;
     communityConsultStatus?: string | null;
     localParticipationStatus?: string | null;
     reportMechanismStatus?: string | null;
     conflictMinimizationStatus?: string | null;
+    settlorActionStatus?: number | null,
+    nuprcActionStatus?: number | null,
 
     projectHandover?: number | null;
     maintenanceConsult?: number | null;

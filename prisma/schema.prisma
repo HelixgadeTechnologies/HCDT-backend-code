@@ -300,6 +300,8 @@ model AverageCommunitySatisfaction {
   localParticipation             Int?
   reportMechanism                Int?
   conflictMinimization           Int?
+  settlorAction                  Int?
+  nuprcAction                    Int?
   projectHandover                Int?
   maintenanceConsult             Int?
   incomeProject                  Int?

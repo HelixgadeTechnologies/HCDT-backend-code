@@ -86,7 +86,7 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(trustId: string, option: number,selectedYear:number,selectedState:string,settlor:string): Promise<any[]> {
+async function callProcedure(trustId: string, option: number, selectedYear: number, selectedState: string, settlor: string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
         `CALL GetCommunitySatisfactionDashboard(?, ?, ?, ?,?)`,
         trustId,
@@ -97,34 +97,34 @@ async function callProcedure(trustId: string, option: number,selectedYear:number
     );
 
     const cleaned = normalizeBigInts(raw);
-    if (option < 6) {
+    if (option < 8) {
         return cleaned.map((row: any) => ({
             ["QUESTION"]: row.f0,
-            ["RESPONSE"]:{
+            ["RESPONSE"]: {
                 ["STRONGLY DISAGREE"]: row.f1,
                 ["DISAGREE"]: row.f2,
                 ["SLIGHTLY AGREE"]: row.f3,
                 ["AGREE"]: row.f4,
                 ["STRONGLY AGREE"]: row.f5,
             },
-            ["VALUE TYPE"]:"Total"
+            ["VALUE TYPE"]: "Total"
         }));
-    }else{
+    } else {
         return cleaned.map((row: any) => ({
             ["QUESTION"]: row.f0,
-            ["RESPONSE"]:{
+            ["RESPONSE"]: {
                 ["TRUE"]: row.f1,
                 ["IN PROGRESS"]: row.f2,
                 ["NOT TRUE"]: row.f3,
                 ["PROJECT YET TO BE IMPLEMENTED IN MY COMMUNITY"]: row.f4,
             },
-            ["VALUE TYPE"]:"Percentage"
+            ["VALUE TYPE"]: "Percentage"
         }));
     }
 }
 
 // Function to call all options in parallel
-export async function getCommunitySatisfactionDashboard(trustId: string,selectedYear:number,selectedState:string,settlor:string) {
+export async function getCommunitySatisfactionDashboard(trustId: string, selectedYear: number, selectedState: string, settlor: string) {
     // Optionally return them as a keyed object
     const keys = [
         'infoProjects',
@@ -132,17 +132,21 @@ export async function getCommunitySatisfactionDashboard(trustId: string,selected
         'localParticipation',
         'reportMechanism',
         'conflictMinimization',
+        'settlorAction',
+        'nuprcAction',
         'projectHandover',
         'maintenanceConsult',
         'incomeProject',
     ];
 
+
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(trustId, index + 1,selectedYear,selectedState,settlor);
+        const result = await callProcedure(trustId, index + 1, selectedYear, selectedState, settlor);
         finalResult[keys[index]] = result;
     }
+    
 
     return finalResult;
 }
