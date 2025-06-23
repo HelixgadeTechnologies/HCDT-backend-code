@@ -8,10 +8,6 @@ export const handleConflict = async (req: Request, res: Response) => {
         const { isCreate, data } = req.body;
         const userId = req.user?.userId; // Assuming user ID is available from auth middleware
 
-        if (!isCreate && !data.projectId) {
-            res.status(400).json(errorResponse("Conflict ID is required for updating."));
-        }
-
         if (typeof isCreate !== "boolean") {
             res.status(400).json(errorResponse("isCreate must be a boolean value"));
         }

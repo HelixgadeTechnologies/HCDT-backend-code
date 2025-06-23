@@ -1,6 +1,6 @@
 export interface IConflict {
     conflictId: string;
-    projectId?: string | null;
+    trustId?: string | null;
     userId?: string | null;
     causeOfConflictId?: number | null;
     partiesInvolveId?: number | null;
@@ -14,8 +14,8 @@ export interface IConflict {
 
 export interface IConflictView {
     conflictId: string;
-    projectId?: string | null;
-    projectTitle?: string | null;
+    trustId?: string | null;
+    trustName?: string | null;
     userId?: string | null;
     userFirstName?: string | null;
     userLastName?: string | null;
@@ -34,8 +34,6 @@ export interface IConflictView {
     courtLitigationStatusName?: string | null;
     createAt?: Date | null;
     updateAt?: Date | null;
-    trustId?: string | null;
-    projectCreateAt: Date | null;
 }
 
 export interface ICauseOfConflict {

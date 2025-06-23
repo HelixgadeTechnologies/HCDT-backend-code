@@ -194,7 +194,6 @@ model Project {
   completeAt                            DateTime?
   createAt                              DateTime?        @default(now())
   updateAt                              DateTime?        @default(now())
-  conflict                              Conflict[]
 
   @@map("project")
 }
@@ -232,8 +231,7 @@ model TypeOfWork {
 
 model Conflict {
   conflictId              String                 @id @default(uuid())
-  project                 Project?               @relation(fields: [projectId], references: [projectId])
-  projectId               String?
+  trustId                 String?
   user                    User?                  @relation(fields: [userId], references: [userId])
   userId                  String?
   causeOfConflict         CauseOfConflict?       @relation(fields: [causeOfConflictId], references: [causeOfConflictId])

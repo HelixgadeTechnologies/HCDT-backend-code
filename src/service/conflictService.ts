@@ -5,7 +5,7 @@ import { ICauseOfConflict, IConflict, IConflictStatus, IConflictView, ICourtLiti
 const prisma = new PrismaClient();
 
 export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean, userId: string) => {
-
+    // Ensure conflictData is not null or undefined
     if (isCreate) {
         // Create a new conflict
         return await prisma.conflict.create({
@@ -134,7 +134,7 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 // Function to call the stored procedure for a specific option
-async function callProcedure(option: number, trustId: string, selectedYear: number, selectedState: string,settlor:string): Promise<any[]> {
+async function callProcedure(option: number, trustId: string, selectedYear: number, selectedState: string, settlor: string): Promise<any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
         `CALL ConflictDashboard(?,?,?,?,?)`,
         option,
@@ -198,54 +198,59 @@ async function callProcedure(option: number, trustId: string, selectedYear: numb
     } else if (option == 9) {
         return cleaned.map((row: any) => ({
             conflictId: row.f0,
-            projectId: row.f1,
-            projectTitle: row.f2,
-            userId: row.f3,
-            userFirstName: row.f4,
-            userLastName: row.f5,
-            userEmail: row.f6,
-            userPhoneNumber: row.f7,
-            causeOfConflictId: row.f8,
-            causeOfConflictName: row.f9,
-            partiesInvolveId: row.f10,
-            partiesInvolveName: row.f11,
-            narrateIssues: row.f12,
-            conflictStatusId: row.f13,
-            conflictStatusName: row.f14,
-            issuesAddressById: row.f15,
-            issuesAddressByName: row.f16,
-            courtLitigationStatusId: row.f17,
-            courtLitigationStatusName: row.f18,
-            createAt: row.f19,
-            updateAt: row.f20,
-            trustId: row.f21,
-            projectCreateAt: row.f22
+            userId: row.f1,
+            userFirstName: row.f2,
+            userLastName: row.f3,
+            userEmail: row.f4,
+            userPhoneNumber: row.f5,
+            causeOfConflictId: row.f6,
+            causeOfConflictName: row.f7,
+            partiesInvolveId: row.f8,
+            partiesInvolveName: row.f9,
+            narrateIssues: row.f10,
+            conflictStatusId: row.f11,
+            conflictStatusName: row.f12,
+            issuesAddressById: row.f13,
+            issuesAddressByName: row.f14,
+            courtLitigationStatusId: row.f15,
+            courtLitigationStatusName: row.f16,
+            createAt: row.f17,
+            updateAt: row.f28,
+            trustId: row.f19,
+            community: row.f20,
+            stateFromTrust: row.f21,
+            createAtFromTrust: row.f22,
+            settlor: row.f23,
+            trustName: row.f24
         }))
     } else if (option == 10) {
         return cleaned.map((row: any) => (
             {
                 conflictId: row.f0,
-                projectId: row.f1,
-                projectTitle: row.f2,
-                userId: row.f3,
-                userFirstName: row.f4,
-                userLastName: row.f5,
-                userEmail: row.f6,
-                userPhoneNumber: row.f7,
-                causeOfConflictId: row.f8,
-                causeOfConflictName: row.f9,
-                partiesInvolveId: row.f10,
-                partiesInvolveName: row.f11,
-                narrateIssues: row.f12,
-                conflictStatusId: row.f13,
-                conflictStatusName: row.f14,
-                issuesAddressById: row.f15,
-                issuesAddressByName: row.f16,
-                courtLitigationStatusId: row.f17,
-                courtLitigationStatusName: row.f18,
-                createAt: row.f19,
-                updateAt: row.f20,
-                projectCreateAt: row.f21
+                userId: row.f1,
+                userFirstName: row.f2,
+                userLastName: row.f3,
+                userEmail: row.f4,
+                userPhoneNumber: row.f5,
+                causeOfConflictId: row.f6,
+                causeOfConflictName: row.f7,
+                partiesInvolveId: row.f8,
+                partiesInvolveName: row.f9,
+                narrateIssues: row.f10,
+                conflictStatusId: row.f11,
+                conflictStatusName: row.f12,
+                issuesAddressById: row.f13,
+                issuesAddressByName: row.f14,
+                courtLitigationStatusId: row.f15,
+                courtLitigationStatusName: row.f16,
+                createAt: row.f17,
+                updateAt: row.f28,
+                trustId: row.f19,
+                community: row.f20,
+                stateFromTrust: row.f21,
+                createAtFromTrust: row.f22,
+                settlor: row.f23,
+                trustName: row.f24
             }
         ))
     } else {
@@ -253,7 +258,7 @@ async function callProcedure(option: number, trustId: string, selectedYear: numb
     }
 }
 
-export async function getConflictDashboardData(projectId: string, selectedYear: number, selectedState: string,settlor:string) {
+export async function getConflictDashboardData(projectId: string, selectedYear: number, selectedState: string, settlor: string) {
     // Optionally return them as a keyed object
     const keys = [
         'ALL_CONFLICT_REPORT',
@@ -271,7 +276,7 @@ export async function getConflictDashboardData(projectId: string, selectedYear: 
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(index + 1, projectId, selectedYear, selectedState,settlor);
+        const result = await callProcedure(index + 1, projectId, selectedYear, selectedState, settlor);
         finalResult[keys[index]] = result;
     }
 
