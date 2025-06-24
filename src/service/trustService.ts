@@ -277,11 +277,17 @@ async function callProcedure(option: number, trustId: string): Promise<void | an
         return cleaned.map((row: any) => ({
             ["trustDevPlanProgress"]: Number(row.f0),
         }));
+    } else if (option == 4) {
+        return cleaned.map((row: any) => ({
+            ["botYesPercentage"]: Number(row.f0),
+            ["managementYesPercentage"]: Number(row.f1),
+            ["advisoryYesPercentage"]: Number(row.f2),
+        }));
     } else {
         return []
     }
 }
-async function callProcedure2( trustId: string,year: number): Promise<void | any[]> {
+async function callProcedure2(trustId: string, year: number): Promise<void | any[]> {
     const raw = await prisma.$queryRawUnsafe<any[]>(
         `CALL GetFundsReceivedByTrust(?,?)`,
         trustId,
@@ -291,14 +297,14 @@ async function callProcedure2( trustId: string,year: number): Promise<void | any
     // console.log(raw[0].f4)
 
     const cleaned = normalizeBigInts(raw);
-        return cleaned.map((row: any) => ({
-            ["totalFundsReceived"]: Number(row.f0),
-            ["capitalExpenditureReceived"]: Number(row.f1),
-            ["reserveReceived"]: Number(row.f2),
-            ["capitalPercentage"]: Number(row.f3),
-            ["reservePercentage"]: Number(row.f4),
-        }));
-    
+    return cleaned.map((row: any) => ({
+        ["totalFundsReceived"]: Number(row.f0),
+        ["capitalExpenditureReceived"]: Number(row.f1),
+        ["reserveReceived"]: Number(row.f2),
+        ["capitalPercentage"]: Number(row.f3),
+        ["reservePercentage"]: Number(row.f4),
+    }));
+
 }
 export async function getEstablishmentDashboardData(projectId: string) {
     // Optionally return them as a keyed object
@@ -306,6 +312,7 @@ export async function getEstablishmentDashboardData(projectId: string) {
         'SUB_FIELDS',
         'TRENDS',
         'OPERATION_YEAR',
+        'BOT_INAUGURATION_CHECK'
     ];
 
     const finalResult: Record<string, any> = {};
@@ -317,7 +324,7 @@ export async function getEstablishmentDashboardData(projectId: string) {
 
     return finalResult;
 }
-export async function getFundsSupplyDashboardData(trustId: string,year:number) {
+export async function getFundsSupplyDashboardData(trustId: string, year: number) {
     // Optionally return them as a keyed object
     const keys = [
         'FINANCIAL_SUMMARY',
@@ -327,7 +334,7 @@ export async function getFundsSupplyDashboardData(trustId: string,year:number) {
     const result = await callProcedure2(trustId, year);
     finalResult[keys[0]] = result;
 
-  
+
 
     return finalResult;
 }

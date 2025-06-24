@@ -197,7 +197,7 @@ async function callProcedure(option: number, selectedYear:number,selectedState:s
     } else if (option == 19) {
         return cleaned.map((row: any) => ({
             ["botYesPercentage"]: Number(row.f0),
-            ["managementYesPercentage"]: row.f1,
+            ["managementYesPercentage"]: Number(row.f1),
             ["advisoryYesPercentage"]: Number(row.f2),
         }));
     } else {
