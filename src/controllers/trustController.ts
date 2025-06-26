@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
-import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getFundsSupplyDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust } from "../service/trustService";
+import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getFundsSupplyDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust, setSurveyAccess } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
 import { PrismaClient } from "@prisma/client";
 
@@ -132,4 +132,21 @@ export const fundsDashboard = async (req: Request, res: Response) => {
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));
     }
+};
+
+export const toggleSurveyAccess = async (req: Request, res: Response) => {
+  try {
+    const { trustId, accessName } = req.body;
+
+    if (!trustId || !accessName) {
+      res.status(400).json({ error: 'trustId and accessName are required' });
+    }
+
+    await setSurveyAccess(trustId, accessName);
+    res.status(200).json({ message: `Successfully toggled ${accessName} access.` });
+
+  } catch (error) {
+    console.error('Error toggling survey access:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 };

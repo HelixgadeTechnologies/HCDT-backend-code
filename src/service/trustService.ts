@@ -181,6 +181,38 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
     } as ITrustEstablishmentStatus;
 };
 
+export const setSurveyAccess = async (trustId: string, accessName: string): Promise<void> => {
+    const trust = await prisma.trust.findUnique({
+        where: { trustId: trustId }
+    })
+    // console.log(trust)
+
+    if (trust) {
+        if (accessName === "CONFLICT") {
+            await prisma.trust.update({
+                where: { trustId: trustId },
+                data: {
+                    disableConflictSurvey: trust.disableConflictSurvey ? false : true,
+                },
+            });
+        } else if (accessName === "SATISFACTION") {
+            await prisma.trust.update({
+                where: { trustId: trustId },
+                data: {
+                    disableSatisfactionSurvey: trust.disableSatisfactionSurvey ? false : true,
+                },
+            });
+        } else if (accessName === "ECONOMIC") {
+            await prisma.trust.update({
+                where: { trustId: trustId },
+                data: {
+                    disableEconomicImpactSurvey: trust.disableEconomicImpactSurvey ? false : true,
+
+                },
+            });
+        }
+    }
+}
 export const removeCACFile = async (establishmentId: string): Promise<void> => {
     // Update cscDocument
     const completionStatus = await prisma.trustEstablishmentStatus.findUnique({

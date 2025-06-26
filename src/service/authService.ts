@@ -199,7 +199,7 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
     }
 
   } catch (error: any) {
-    console.log(error, "error")
+    // console.log(error, "error")
     throw new Error(error.message);
   }
 };

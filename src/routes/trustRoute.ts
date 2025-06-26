@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addTrustEstablishmentST, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, fundsDashboard, getAll, getSpecificTrustEstablishmentST, getTrustInfo, trustEstablishmentDashboard } from "../controllers/trustController";
+import { addTrustEstablishmentST, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, fundsDashboard, getAll, getSpecificTrustEstablishmentST, getTrustInfo, toggleSurveyAccess, trustEstablishmentDashboard } from "../controllers/trustController";
 const trustRoutes: Router = Router();
 
 /**
@@ -618,6 +618,68 @@ trustRoutes.get('/dashboard/:trustId', trustEstablishmentDashboard);
  *         description: Server error while retrieving funds dashboard data
  */
 trustRoutes.get('/fundsDashboard/:trustId/:year', fundsDashboard);
+
+/**
+ * @swagger
+ * /api/trust/toggle-survey-access:
+ *   post:
+ *     summary: Toggle access to a specific survey type for a trust
+ *     description: Enables or disables access to a survey (Conflict, Satisfaction, or Economic) by toggling a flag in the trust record.
+ *     tags:
+ *       - Trust
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - trustId
+ *               - accessName
+ *             properties:
+ *               trustId:
+ *                 type: string
+ *                 example: "abc123-trust-id"
+ *               accessName:
+ *                 type: string
+ *                 enum: [CONFLICT, SATISFACTION, ECONOMIC]
+ *                 example: "SATISFACTION"
+ *     responses:
+ *       200:
+ *         description: Access toggled successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Successfully toggled SATISFACTION access.
+ *       400:
+ *         description: Missing or invalid parameters
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: trustId and accessName are required
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Internal server error
+ */
+
+trustRoutes.post('/toggle-survey-access', toggleSurveyAccess);
 
 
 export default trustRoutes

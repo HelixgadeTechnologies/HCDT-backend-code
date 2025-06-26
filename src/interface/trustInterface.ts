@@ -28,7 +28,11 @@ export interface ITrust {
     totalFemaleManagementCommitteeMembers?: number;
     totalPwdManagementCommitteeMembers?: number;
     createAt?: string;
-    completionStatus: number;
+    completionStatus?: number;
+
+    disableConflictSurvey?: boolean;
+    disableSatisfactionSurvey?: boolean;
+    disableEconomicImpactSurvey?: boolean;
 }
 
 export interface IFundsReceived {
@@ -88,6 +92,9 @@ export interface ITrustView {
     totalPwdManagementCommitteeMembers: number;
     createAt: string;
     completionStatus: number;
+    disableConflictSurvey: boolean;
+    disableSatisfactionSurvey: boolean;
+    disableEconomicImpactSurvey: boolean;
 }
 
 export interface ITrustEstablishmentStatus {

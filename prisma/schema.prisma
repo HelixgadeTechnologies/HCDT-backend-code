@@ -89,6 +89,9 @@ model Trust {
   botDetailsTwoEmail                    String?
   botDetailsTwoPhoneNumber              String?
   completionStatus                      Int?
+  disableConflictSurvey                 Boolean?                       @default(false)
+  disableSatisfactionSurvey             Boolean?                       @default(false)
+  disableEconomicImpactSurvey           Boolean?                       @default(false)
   createAt                              DateTime?                      @default(now())
   updateAt                              DateTime?
   trustEstablishmentStatus              TrustEstablishmentStatus[]
