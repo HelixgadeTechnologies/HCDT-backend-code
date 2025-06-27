@@ -112,6 +112,12 @@ export const getAllAdmin = async (): Promise<Array<IUserView>> => {
   `;
   return users;
 }
+export const getAllAdminByTrustId = async (trustId:string): Promise<Array<IUserView>> => {
+  const users: IUserView[] = await prisma.$queryRaw`
+    SELECT * FROM user_view WHERE role IN(${"SUPER ADMIN"},${"ADMIN"}) AND trusts = ${trustId}
+  `;
+  return users;
+}
 
 
 
@@ -207,6 +213,12 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
 export const getAllDRA = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
    SELECT * FROM user_view WHERE role IN(${"DRA"})
+ `;
+  return users;
+}
+export const getAllDRAByTrustId = async (trustId:string): Promise<Array<IUserClient>> => {
+  const users: IUserView[] = await prisma.$queryRaw`
+   SELECT * FROM user_view WHERE role IN(${"DRA"} AND trusts = ${trustId})
  `;
   return users;
 }

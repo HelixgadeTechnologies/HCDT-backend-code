@@ -1,26 +1,59 @@
 import { PrismaClient } from "@prisma/client";
 import { ICauseOfConflict, IConflict, IConflictStatus, IConflictView, ICourtLitigationStatus, IIssuesAddressBy, IPartiesInvolve } from "../interface/conflictInterface";
+import { sendConflictReportEmail } from "../utils/mail";
+import { getAllAdminByTrustId, getAllDRAByTrustId, getAllNUPRC } from "./authService";
 
 
 const prisma = new PrismaClient();
 
+export const getEmailsFronDraAndNUPRC = async (trustId: string): Promise<string[]> => {
+    const dra = await getAllDRAByTrustId(trustId);
+    const nuprc = await getAllNUPRC();
+
+    const emails = [...dra, ...nuprc]
+        .map(user => user.email)
+        .filter(email => typeof email === 'string' && email.trim() !== '');
+
+    // Remove duplicates
+    return [...new Set(emails)] as string[];
+};
+export const getEmailsFromDraAndAdmin = async (trustId: string): Promise<string[]> => {
+    const dra = await getAllDRAByTrustId(trustId);
+    const admin = await getAllAdminByTrustId(trustId);
+
+    const emails = [...dra, ...admin]
+        .map(user => user.email)
+        .filter(email => typeof email === 'string' && email.trim() !== '');
+
+    // Remove duplicates
+    return [...new Set(emails)] as string[];
+};
+
 export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean, userId: string) => {
-    // Ensure conflictData is not null or undefined
-    if (isCreate) {
-        // Create a new conflict
-        return await prisma.conflict.create({
-            data: { ...conflictData, conflictId: undefined, userId: userId },
-        });
-    } else {
-        // Update existing conflict
-        if (!conflictData.conflictId) {
-            throw new Error("Conflict ID is required for updating a record.");
-        }
-        // console.log(conflictData)
-        return await prisma.conflict.update({
-            where: { conflictId: conflictData.conflictId, userId: userId },
-            data: conflictData,
-        });
+    try {
+        // Ensure conflictData is not null or undefined
+        const emails = await getEmailsFronDraAndNUPRC(conflictData.trustId as string);
+        if (isCreate) {
+            await sendConflictReportEmail(emails, "Conflict");
+            // Create a new conflict
+            return await prisma.conflict.create({
+                data: { ...conflictData, conflictId: undefined, userId: userId },
+            });
+        } else {
+            // Update existing conflict
+            if (!conflictData.conflictId) {
+                throw new Error("Conflict ID is required for updating a record.");
+            }
+            // console.log(conflictData)
+            return await prisma.conflict.update({
+                where: { conflictId: conflictData.conflictId, userId: userId },
+                data: conflictData,
+            });
+            
+        } 
+    } catch (error) {
+        throw new Error(`Error creating or updating conflict: ${error}`);
+        
     }
 };
 

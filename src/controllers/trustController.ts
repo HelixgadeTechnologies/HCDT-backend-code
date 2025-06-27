@@ -136,13 +136,13 @@ export const fundsDashboard = async (req: Request, res: Response) => {
 
 export const toggleSurveyAccess = async (req: Request, res: Response) => {
   try {
-    const { trustId, accessName } = req.body;
+    const { trustId, accessName, url} = req.body;
 
     if (!trustId || !accessName) {
       res.status(400).json({ error: 'trustId and accessName are required' });
     }
-
-    await setSurveyAccess(trustId, accessName);
+    
+    await setSurveyAccess(trustId, accessName,url);
     res.status(200).json({ message: `Successfully toggled ${accessName} access.` });
 
   } catch (error) {

@@ -1,5 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { IAcsOptionOne, IAcsOptionTwo, IAverageCommunitySatisfaction, IAverageCommunitySatisfactionView } from "../interface/averageCommunitySatisfactionInterface";
+import { getEmailsFronDraAndNUPRC } from "./conflictService";
+import { sendConflictReportEmail } from "../utils/mail";
 
 const prisma = new PrismaClient();
 
@@ -7,19 +9,27 @@ export const upsertAverageCommunitySatisfaction = async (
     data: IAverageCommunitySatisfaction,
     isCreate: boolean
 ) => {
-    if (isCreate) {
-        return await prisma.averageCommunitySatisfaction.create({
-            data: { ...data, averageCommunitySatisfactionId: undefined },
-        });
-    } else {
-        if (!data.averageCommunitySatisfactionId) {
-            throw new Error("averageCommunitySatisfactionId is required for updating.");
+    try {
+        const emails = await getEmailsFronDraAndNUPRC(data.trustId as string);
+        if (isCreate) {
+            await sendConflictReportEmail(emails, "Average Community Satisfaction");
+            return await prisma.averageCommunitySatisfaction.create({
+                data: { ...data, averageCommunitySatisfactionId: undefined },
+            });
+        } else {
+            if (!data.averageCommunitySatisfactionId) {
+                throw new Error("averageCommunitySatisfactionId is required for updating.");
+            }
+
+            return await prisma.averageCommunitySatisfaction.update({
+                where: { averageCommunitySatisfactionId: data.averageCommunitySatisfactionId },
+                data,
+            });
         }
 
-        return await prisma.averageCommunitySatisfaction.update({
-            where: { averageCommunitySatisfactionId: data.averageCommunitySatisfactionId },
-            data,
-        });
+    } catch (error) {
+        throw new Error(`Error in upsertAverageCommunitySatisfaction: ${error}`);
+
     }
 };
 
@@ -146,7 +156,7 @@ export async function getCommunitySatisfactionDashboard(trustId: string, selecte
         const result = await callProcedure(trustId, index + 1, selectedYear, selectedState, settlor);
         finalResult[keys[index]] = result;
     }
-    
+
 
     return finalResult;
 }

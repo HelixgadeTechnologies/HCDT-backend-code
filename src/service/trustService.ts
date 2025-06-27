@@ -1,5 +1,7 @@
 import { Prisma, PrismaClient } from "@prisma/client";
 import { IFundsReceived, IOperationalExpenditureInsert, ITrust, ITrustEstablishmentStatus, ITrustView } from "../interface/trustInterface";
+import { sendReportLinkEmail } from "../utils/mail";
+import { getEmailsFromDraAndAdmin } from "./conflictService";
 
 
 const prisma = new PrismaClient();
@@ -181,14 +183,19 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
     } as ITrustEstablishmentStatus;
 };
 
-export const setSurveyAccess = async (trustId: string, accessName: string): Promise<void> => {
+export const setSurveyAccess = async (trustId: string, accessName: string, url: string): Promise<void> => {
     const trust = await prisma.trust.findUnique({
         where: { trustId: trustId }
-    })
-    // console.log(trust)
-
+    });
+    // console.log(url)
+    const emails = await getEmailsFromDraAndAdmin(trustId);
     if (trust) {
         if (accessName === "CONFLICT") {
+            if (trust.disableConflictSurvey == false) {
+                await sendReportLinkEmail(emails, "Conflict", url);
+                // If the survey is already disabled, we do not send an email
+            }
+
             await prisma.trust.update({
                 where: { trustId: trustId },
                 data: {
@@ -196,6 +203,11 @@ export const setSurveyAccess = async (trustId: string, accessName: string): Prom
                 },
             });
         } else if (accessName === "SATISFACTION") {
+            if (trust.disableConflictSurvey == false) {
+                await sendReportLinkEmail(emails, "Average Community Satisfaction", url);
+                // If the survey is already disabled, we do not send an email
+            }
+
             await prisma.trust.update({
                 where: { trustId: trustId },
                 data: {
@@ -203,6 +215,11 @@ export const setSurveyAccess = async (trustId: string, accessName: string): Prom
                 },
             });
         } else if (accessName === "ECONOMIC") {
+            if (trust.disableConflictSurvey == false) {
+                await sendReportLinkEmail(emails, "Economic Impact", url);
+                // If the survey is already disabled, we do not send an email
+            }
+
             await prisma.trust.update({
                 where: { trustId: trustId },
                 data: {

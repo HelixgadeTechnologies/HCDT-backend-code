@@ -646,6 +646,9 @@ trustRoutes.get('/fundsDashboard/:trustId/:year', fundsDashboard);
  *                 type: string
  *                 enum: [CONFLICT, SATISFACTION, ECONOMIC]
  *                 example: "SATISFACTION"
+ *               url:
+ *                 type: string
+ *                 example: "http://example.com/satisfaction-survey"
  *     responses:
  *       200:
  *         description: Access toggled successfully
