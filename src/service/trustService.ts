@@ -316,6 +316,7 @@ async function callProcedure(option: number, trustId: string): Promise<void | an
             ["trustDistributionMatrixDocument"]: row.f12,
             ["completionStatus"]: row.f13,
             ["updateAt"]: row.f14,
+            ["statusOfNeedAssessment"]: Number(row.f15),
         }));
     } else if (option == 2) {
         return cleaned.map((row: any) => ({
@@ -369,6 +370,7 @@ export async function getEstablishmentDashboardData(projectId: string) {
     for (let index = 0; index < keys.length; index++) {
         const result = await callProcedure(index + 1, projectId);
         finalResult[keys[index]] = result;
+   
     }
 
     return finalResult;

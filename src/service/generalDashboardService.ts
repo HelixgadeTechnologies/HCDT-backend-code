@@ -76,7 +76,7 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 
-async function callProcedure(option: number, selectedYear:number,selectedState:string,settlor:string): Promise<void | any[]> {
+async function callProcedure(option: number, selectedYear: number, selectedState: string, settlor: string): Promise<void | any[]> {
     const raws = await prisma.$queryRawUnsafe<any[]>(
         `CALL GetGeneralDashboard(?,?,?,?)`,
         option,
@@ -200,11 +200,24 @@ async function callProcedure(option: number, selectedYear:number,selectedState:s
             ["managementYesPercentage"]: Number(row.f1),
             ["advisoryYesPercentage"]: Number(row.f2),
         }));
+    } else if (option == 20) {
+        return cleaned.map((row: any) => ({
+            ["communityLeadershipPercentage"]: Number(row.f0),
+            ["communityYouthsPercentage"]: Number(row.f1),
+            ["communityWomenPercentage"]: Number(row.f2),
+            ["pwDsPercentage"]: Number(row.f3),
+        }));
+    } else if (option == 21) {
+        return cleaned.map((row: any) => ({
+            ["percentage_status_1"]: Number(row.f0),
+            ["percentage_status_2"]: Number(row.f1),
+            ["percentage_status_3"]: Number(row.f2)
+        }));
     } else {
         return []
     }
 }
-export async function getGeneralDashboardData(year:number,state:string,settlor:string) {
+export async function getGeneralDashboardData(year: number, state: string, settlor: string) {
     // const result = await callProcedure(2);
     const keys = [
         'FIELDS_COMPLETION',
@@ -226,13 +239,19 @@ export async function getGeneralDashboardData(year:number,state:string,settlor:s
         'BOT_DISPLAY',
         'CONFLICT_RESOLUTION_OVER',
         'BOT_INAUGURATION_CHECK',
+        'COMMUNITY_LEADERSHIP_PERCENTAGE',
+        'NEEDS_ASSESSMENT_PERCENTAGE',
     ];
 
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(index + 1,year,state,settlor);
+        const result = await callProcedure(index + 1, year, state, settlor);
         finalResult[keys[index]] = result;
+
+        // if(index == 19 || index == 20) {
+        //     console.log(result)
+        // }
     }
     // console.log("result", finalResult)
     return finalResult;
