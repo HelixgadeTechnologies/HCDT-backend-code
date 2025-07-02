@@ -5,12 +5,18 @@ const generalRouter = express.Router();
 
 /**
  * @swagger
- * /api/dashboard/general/{year}/{state}/{settlor}:
+ * /api/dashboard/general/{trustId}/{year}/{state}/{settlor}:
  *   get:
  *     summary: Get general dashboard data
  *     tags:
  *       - Dashboard
  *     parameters:
+ *       - in: path
+ *         name: trustId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Trust ID for the general dashboard
  *       - in: path
  *         name: year
  *         required: true
@@ -35,6 +41,6 @@ const generalRouter = express.Router();
  *       500:
  *         description: Server error while retrieving dashboard data
  */
-generalRouter.get('/general/:year/:state/:settlor', generalDashboard);
+generalRouter.get('/general/:trustId/:year/:state/:settlor', generalDashboard);
 
 export default generalRouter;

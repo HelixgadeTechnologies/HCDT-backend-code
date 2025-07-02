@@ -76,10 +76,11 @@ function normalizeBigInts<T>(data: T): T {
     return data;
 }
 
-async function callProcedure(option: number, selectedYear: number, selectedState: string, settlor: string): Promise<void | any[]> {
+async function callProcedure(option: number,trustId:string, selectedYear: number, selectedState: string, settlor: string): Promise<void | any[]> {
     const raws = await prisma.$queryRawUnsafe<any[]>(
-        `CALL GetGeneralDashboard(?,?,?,?)`,
+        `CALL GetGeneralDashboard(?,?,?,?,?)`,
         option,
+        trustId,
         selectedYear,
         selectedState,
         settlor
@@ -217,7 +218,7 @@ async function callProcedure(option: number, selectedYear: number, selectedState
         return []
     }
 }
-export async function getGeneralDashboardData(year: number, state: string, settlor: string) {
+export async function getGeneralDashboardData(trustId:string,year: number, state: string, settlor: string) {
     // const result = await callProcedure(2);
     const keys = [
         'FIELDS_COMPLETION',
@@ -246,7 +247,7 @@ export async function getGeneralDashboardData(year: number, state: string, settl
     const finalResult: Record<string, any> = {};
 
     for (let index = 0; index < keys.length; index++) {
-        const result = await callProcedure(index + 1, year, state, settlor);
+        const result = await callProcedure(index + 1,trustId, year, state, settlor);
         finalResult[keys[index]] = result;
 
         // if(index == 19 || index == 20) {
