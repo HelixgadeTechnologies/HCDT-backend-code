@@ -306,17 +306,18 @@ async function callProcedure(option: number, trustId: string): Promise<void | an
             ["reserve"]: Number(row.f2),
             ["trustRegisteredWithCAC"]: Number(row.f3),
             ["cscDocument"]: row.f4,
-            ["yearDeveloped"]: Number(row.f5),
-            ["yearExpired"]: Number(row.f6),
-            ["communityLeadershipConsulted"]: Number(row.f7),
-            ["communityYouthsConsulted"]: Number(row.f8),
-            ["communityWomenConsulted"]: Number(row.f9),
-            ["pwDsConsulted"]: Number(row.f10),
-            ["yearOfNeedsAssessment"]: Number(row.f11),
-            ["trustDistributionMatrixDocument"]: row.f12,
-            ["completionStatus"]: row.f13,
-            ["updateAt"]: row.f14,
-            ["statusOfNeedAssessment"]: Number(row.f15),
+            ["yearIncorporated"]: Number(row.f5),
+            ["yearDeveloped"]: Number(row.f6),
+            ["yearExpired"]: Number(row.f7),
+            ["communityLeadershipConsulted"]: Number(row.f8),
+            ["communityYouthsConsulted"]: Number(row.f9),
+            ["communityWomenConsulted"]: Number(row.f10),
+            ["pwDsConsulted"]: Number(row.f11),
+            ["yearOfNeedsAssessment"]: Number(row.f12),
+            ["trustDistributionMatrixDocument"]: row.f13,
+            ["completionStatus"]: row.f14,
+            ["updateAt"]: row.f15,
+            ["statusOfNeedAssessment"]: Number(row.f16),
         }));
     } else if (option == 2) {
         return cleaned.map((row: any) => ({
@@ -356,6 +357,21 @@ async function callProcedure2(trustId: string, year: number): Promise<void | any
     }));
 
 }
+async function callProcedure3(trustId: string): Promise<void | any[]> {
+    const raw = await prisma.$queryRawUnsafe<any[]>(
+        `CALL GetFundsReceivedStatusByTrust(?)`,
+        trustId
+    );
+    // console.log(raw)
+    // console.log(raw[0].f4)
+
+    const cleaned = normalizeBigInts(raw);
+    return cleaned.map((row: any) => ({
+        ["yearReceived"]: Number(row.f0),
+        ["paymentCheck"]: Number(row.f1),
+    }));
+
+}
 export async function getEstablishmentDashboardData(projectId: string) {
     // Optionally return them as a keyed object
     const keys = [
@@ -370,7 +386,7 @@ export async function getEstablishmentDashboardData(projectId: string) {
     for (let index = 0; index < keys.length; index++) {
         const result = await callProcedure(index + 1, projectId);
         finalResult[keys[index]] = result;
-   
+
     }
 
     return finalResult;
@@ -384,8 +400,16 @@ export async function getFundsSupplyDashboardData(trustId: string, year: number)
     const finalResult: Record<string, any> = {};
     const result = await callProcedure2(trustId, year);
     finalResult[keys[0]] = result;
+    return finalResult;
+}
+export async function getFundsSupplyStatusDashboardData(trustId: string) {
+    // Optionally return them as a keyed object
+    const keys = [
+        'FINANCIAL_SUMMARY',
+    ];
 
-
-
+    const finalResult: Record<string, any> = {};
+    const result = await callProcedure3(trustId);
+    finalResult[keys[0]] = result;
     return finalResult;
 }
