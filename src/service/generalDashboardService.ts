@@ -214,10 +214,18 @@ async function callProcedure(option: number,trustId:string, selectedYear: number
             ["percentage_status_2"]: Number(row.f1),
             ["percentage_status_3"]: Number(row.f2)
         }));
+    } else if (option == 22) {
+        return cleaned.map((row: any) => ({
+            ["yearReceived"]: Number(row.f0),
+            ["pct_paymentCheck_1"]: Number(row.f1),
+            ["pct_paymentCheck_2"]: Number(row.f2),
+            ["pct_paymentCheck_3"]: Number(row.f3)
+        }));
     } else {
         return []
     }
 }
+
 export async function getGeneralDashboardData(trustId:string,year: number, state: string, settlor: string) {
     // const result = await callProcedure(2);
     const keys = [
@@ -242,6 +250,7 @@ export async function getGeneralDashboardData(trustId:string,year: number, state
         'BOT_INAUGURATION_CHECK',
         'COMMUNITY_LEADERSHIP_PERCENTAGE',
         'NEEDS_ASSESSMENT_PERCENTAGE',
+        'FUNDS_DISTRIBUTION_PERCENTAGE'
     ];
 
     const finalResult: Record<string, any> = {};
