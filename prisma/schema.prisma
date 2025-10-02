@@ -71,6 +71,7 @@ model Trust {
   state                                 String?
   localGovernmentArea                   String?
   trustCommunities                      String?
+  numberOfTrustCommunities              Int?
   totalMaleBotMembers                   Int?
   totalFemaleBotMembers                 Int?
   totalPwdBotMembers                    Int?

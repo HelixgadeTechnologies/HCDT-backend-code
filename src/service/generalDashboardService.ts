@@ -103,6 +103,7 @@ async function callProcedure(option: number,trustId:string, selectedYear: number
         return cleaned.map((row: any) => ({
             ["state"]: row.f0,
             ["community_count"]: Number(row.f1),
+            ["numberOfTrustCommunities"]: Number(row.f1),
         }));
     } else if (option == 4) {
         return cleaned.map((row: any) => ({
