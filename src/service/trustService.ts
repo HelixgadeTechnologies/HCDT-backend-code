@@ -582,7 +582,7 @@ export const bulkSaveTrusts = async (trusts: ITrust[], userId: string) => {
           error: error.message,
           data,
         });
-      }trust
+      }
     }
 
     return {
