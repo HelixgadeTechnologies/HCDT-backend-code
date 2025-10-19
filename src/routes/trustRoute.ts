@@ -1,5 +1,6 @@
 import { Router } from "express";
-import { addTrustEstablishmentST, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, fundsDashboard, getAll, getSpecificTrustEstablishmentST, getTrustInfo, toggleSurveyAccess, trustEstablishmentDashboard } from "../controllers/trustController";
+import { addTrustEstablishmentST, bulkUploadTrusts, createTrust, deleteCACFile, deleteMatrixFile, deleteTrust, fundsDashboard, getAll, getSpecificTrustEstablishmentST, getTrustInfo, toggleSurveyAccess, trustEstablishmentDashboard, validateTrustUpload } from "../controllers/trustController";
+import { upload } from "../utils/multerSetup";
 const trustRoutes: Router = Router();
 
 /**
@@ -685,4 +686,165 @@ trustRoutes.get('/fundsDashboard/:trustId/:year', fundsDashboard);
 trustRoutes.post('/toggle-survey-access', toggleSurveyAccess);
 
 
+
+/**
+ * @swagger
+ * /api/trust/validate-upload:
+ *   post:
+ *     summary: Validate an uploaded Trust Excel file
+ *     description: >
+ *       Upload an Excel file (.xlsx or .xls) containing Trust data.  
+ *       This endpoint will read and validate each row against registered settlor.
+ *       It returns a validation summary and all parsed data.
+ *     tags:
+ *       - Trust
+ *     security:
+ *       - bearerAuth: []  # 👈 This enables JWT token authentication in Swagger
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Excel file containing trust data
+ *     responses:
+ *       200:
+ *         description: Validation successful
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Trust validation complete 
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     totalRecords:
+ *                       type: number
+ *                       example: 25
+ *                     totalInvalid:
+ *                       type: number
+ *                       example: 3
+ *                     allTrustData:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                     validationSummary:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           rowNumber:
+ *                             type: number
+ *                             example: 4
+ *                           message:
+ *                             type: string
+ *                             example: Settlor "John Doe" not registered
+ *                           data:
+ *                             type: object
+ *       400:
+ *         description: Invalid file or missing data
+ *       500:
+ *         description: Server error during validation
+ */
+
+trustRoutes.post('/validate-upload', validateTrustUpload);
+
+/**
+ * @swagger
+ * /api/trust/bulk-upload:
+ *   post:
+ *     summary: Bulk upload multiple Trust records
+ *     description: Accepts an array of Trust objects and bulk inserts them into the database after validation. 
+ *     tags:
+ *       - Trust
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - payload
+ *             properties:
+ *               payload:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *                   properties:
+ *                     trustName:
+ *                       type: string
+ *                       example: "Community Trust A"
+ *                     settlor:
+ *                       type: string
+ *                       example: "John Doe Foundation"
+ *                     country:
+ *                       type: string
+ *                       example: "Nigeria"
+ *                     state:
+ *                       type: string
+ *                       example: "Lagos"
+ *                     localGovernmentArea:
+ *                       type: string
+ *                       example: "Ikeja"
+ *                     trustCommunities:
+ *                       type: string
+ *                       example: "Community A, Community B"
+ *                     completionStatus:
+ *                       type: string
+ *                       example: "completed"
+ *     responses:
+ *       200:
+ *         description: Successfully processed all trust records
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: Trust records processed successfully
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     totalRecords:
+ *                       type: integer
+ *                       example: 20
+ *                     totalSuccess:
+ *                       type: integer
+ *                       example: 18
+ *                     totalFailed:
+ *                       type: integer
+ *                       example: 2
+ *                     failed:
+ *                       type: array
+ *                       items:
+ *                         type: object
+ *                         properties:
+ *                           index:
+ *                             type: integer
+ *                             example: 3
+ *                           error:
+ *                             type: string
+ *                             example: "Settlor not found"
+ *       400:
+ *         description: Invalid request payload
+ *       500:
+ *         description: Internal server error
+ */
+trustRoutes.post('/bulk-upload', bulkUploadTrusts);
 export default trustRoutes

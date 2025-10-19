@@ -7,8 +7,27 @@ import authenticateToken from "./middlewares/auth.middleware";
 var cors = require('cors')
 let app: Express = express();
 
-// Enable CORS before body parsers (to handle preflight requests properly)
-app.use(cors());
+// Configure CORS to allow requests from your frontend and enable credentials
+// (Don't use wildcard '*' when requests include credentials)
+const allowedOrigins = [
+    'http://localhost:5173', // Vite / dev frontend
+    // add other allowed origins as needed
+];
+
+app.use(cors({
+    origin: function (origin: any, callback: any) {
+        // Allow requests with no origin (like mobile apps or curl)
+        if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) !== -1) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+}));
 
 // Trust proxy (for Heroku or reverse proxies)
 app.set("trust proxy", 1);

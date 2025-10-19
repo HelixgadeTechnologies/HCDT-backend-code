@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
-import { addTrustEstablishmentStatus, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getFundsSupplyDashboardData, getFundsSupplyStatusDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust, setSurveyAccess } from "../service/trustService";
+import { addTrustEstablishmentStatus, bulkSaveTrusts, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getFundsSupplyDashboardData, getFundsSupplyStatusDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust, setSurveyAccess, validateTrustFile } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
 import { PrismaClient } from "@prisma/client";
 
@@ -150,5 +150,41 @@ export const toggleSurveyAccess = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error toggling survey access:', error);
         res.status(500).json({ error: 'Internal server error' });
+    }
+};
+
+
+
+export const validateTrustUpload = async (req: Request, res: Response) => {
+    try {
+        const {  payload } = req.body;
+
+        if (! payload) {
+            return res.status(400).json(notFoundResponse("No file uploaded"));
+        }
+
+        const result = await validateTrustFile( payload);
+
+        res.status(200).json(successResponse("Trust validation complete", result));
+    } catch (error: any) {
+        console.error("Error during trust file validation", error);
+        res.status(500).json(errorResponse("Internal server error", error));
+    }
+};
+
+
+export const bulkUploadTrusts = async (req: Request, res: Response) => {
+    try {
+        const trusts = req.body.payload;
+
+        if (!Array.isArray(trusts) || trusts.length === 0) {
+            return res.status(400).json(notFoundResponse("Request body must include an array of trust objects"));
+        }
+
+        const result = await bulkSaveTrusts(trusts, req?.user?.userId);
+        res.status(200).json(successResponse("Trust records processed successfully", result));
+
+    } catch (error: any) {
+        res.status(500).json(errorResponse('Internal server error', error));
     }
 };
