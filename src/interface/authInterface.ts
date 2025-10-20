@@ -55,7 +55,7 @@ export interface ISignUpNUPRC {
 export interface ISettlorSignUp {
     settlorId: string
     settlorName: string | null;
-    omlCode: string;
+    rcNumber: string;
     contactName: string | null;
     contactEmail: string | null;
     contactPhoneNumber: string | null;

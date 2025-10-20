@@ -51,8 +51,8 @@ model Role {
 
 model Settlor {
   settlorId          String  @id @default(uuid())
-  settlorName        String?
-  omlCode            String? @unique
+  settlorName        String? @unique
+  rcNumber            String? 
   contactName        String?
   contactEmail       String?
   contactPhoneNumber String?

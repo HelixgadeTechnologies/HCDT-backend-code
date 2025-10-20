@@ -11,8 +11,7 @@ const options: swaggerJSDoc.Options = {
       version: '1.0.0',
       description: 'API documentation for an independent monitoring and evaluation system that aims to promote community participation and effective implementation of the Host Community Development Trust for sustainable development.',
     },
-    servers: [{ url: "https://hcdt-dackend-f2f484af58af.herokuapp.com/" }],
-    // servers: [{ url: "http://localhost:8000/" }],
+    servers: [{ url: "https://hcdt-dackend-f2f484af58af.herokuapp.com/" },{ url: "http://localhost:8000/" }],
     tags: [
       { name: "Auth", description: "Authentication Endpoints" },
       { name: "Upload", description: "Upload Endpoints" },

@@ -226,7 +226,7 @@ export const getAllDRAByTrustId = async (trustId:string): Promise<Array<IUserCli
 export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
   const settlorData = {
     settlorName: data.settlorName ?? null,
-    omlCode: data.omlCode ?? null,
+    rcNumber: data.rcNumber ?? null,
     contactName: data.contactName ?? null,
     contactEmail: data.contactEmail ?? null,
     contactPhoneNumber: data.contactPhoneNumber ?? null,
@@ -234,9 +234,9 @@ export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
 
   if (isCreate) {
     const existingSettlor = await prisma.settlor.findUnique({
-      where: { omlCode: data.omlCode as string },
+      where: { settlorName: data.settlorName as string },
     });
-    if (existingSettlor) throw new Error("Settlor with this OmlCode already exists");
+    if (existingSettlor) throw new Error("Settlor with this name already exists");
 
     return prisma.settlor.create({ data: settlorData });
   }

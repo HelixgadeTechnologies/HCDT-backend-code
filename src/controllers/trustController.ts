@@ -54,7 +54,7 @@ export const deleteTrust = async (req: Request, res: Response) => {
         if (!trustId) {
             res.status(400).json(notFoundResponse("Trust ID is required", trustId));
         }
-        await removeTrust(req.body.trustId);
+        await removeTrust(trustId);
         res.status(201).json(successResponse("Trust removed successfully", null));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));

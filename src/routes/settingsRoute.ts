@@ -571,7 +571,7 @@ settingsRoute.get("/allDra", listAllDRA);
  *                   settlorName:
  *                     type: string
  *                     example: "Oando"
- *                   omlCode:
+ *                   rcNumber:
  *                     type: string
  *                     example: "om-876"
  *                   contactName:
@@ -636,7 +636,7 @@ settingsRoute.post("/addSettlor", addSettlor);
  *                   settlorName:
  *                     type: string
  *                     example: "John Settlor"
- *                   omlCode:
+ *                   rcNumber:
  *                     type: string
  *                     example: "OML-123"
  *                   contactName:
