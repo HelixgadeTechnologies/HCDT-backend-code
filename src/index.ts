@@ -11,6 +11,7 @@ let app: Express = express();
 // (Don't use wildcard '*' when requests include credentials)
 const allowedOrigins = [
     'http://localhost:5173', // Vite / dev frontend
+    "https://hcdt-5ba1c14db2e3.herokuapp.com"
     // add other allowed origins as needed
 ];
 
