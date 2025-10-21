@@ -11,6 +11,7 @@ const prisma = new PrismaClient();
 
 export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
 
+
     // Prepare trust data
     const trustData: Prisma.TrustCreateInput = {
         trustName: data.trustName as string,
@@ -20,6 +21,7 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
         state: data.state || null,
         localGovernmentArea: data.localGovernmentArea || null,
         trustCommunities: data.trustCommunities || null,
+        numberOfTrustCommunities: data.numberOfTrustCommunities || null,
         totalMaleBotMembers: data.totalMaleBotMembers || null,
         totalFemaleBotMembers: data.totalFemaleBotMembers || null,
         totalPwdBotMembers: data.totalPwdBotMembers || null,
@@ -426,6 +428,85 @@ export async function getFundsSupplyStatusDashboardData(trustId: string) {
  * @param base64String - Base64-encoded Excel file content
  * @returns Validation summary including invalid settlors and full data
  */
+// export async function validateTrustFile(base64String: string): Promise<any> {
+//     try {
+//         // Step 1: Decode base64 to buffer
+//         const buffer = Buffer.from(base64String, "base64");
+
+//         // Step 2: Read Excel from buffer
+//         const workbook = XLSX.read(buffer, { type: "buffer" });
+
+//         // Step 3: Check if "Trust" sheet exists
+//         const sheetName = workbook.SheetNames.find(
+//             (name) => name.toLowerCase() === "trust"
+//         );
+//         if (!sheetName) {
+//             throw new Error('Excel file must contain a sheet named "Trust".');
+//         }
+
+//         // Step 4: Convert sheet to JSON
+//         const sheet = workbook.Sheets[sheetName];
+//         const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: null });
+
+//         // Step 5: Fetch registered settlors
+//         const registeredSettlor = await prisma.settlor.findMany({
+//             select: { settlorName: true },
+//         });
+
+//         const settlorNames = registeredSettlor.map((s) =>
+//             s?.settlorName?.toUpperCase().trim()
+//         );
+
+//         // Step 6: Validate each row
+//         const validationSummary: any[] = [];
+
+//         jsonData.forEach((row: any, index: number) => {
+//             const rowNumber = index + 2; // Excel rows start at 2 (headers at 1)
+//             const settlor = row["settlor"]
+//                 ? row["settlor"].toString().trim()
+//                 : null;
+
+//             if (!settlor) {
+//                 validationSummary.push({
+//                     rowNumber,
+//                     message: "Missing settlor name",
+//                     data: row,
+//                 });
+//             } else if (!settlorNames.includes(settlor.toUpperCase())) {
+//                 validationSummary.push({
+//                     rowNumber,
+//                     message: `Settlor "${settlor}" not registered`,
+//                     data: row,
+//                 });
+//             }
+//         });
+
+//         // Step 7: Return structured validation results
+//         return {
+//             totalRecords: jsonData.length,
+//             totalInvalid: validationSummary.length,
+//             allTrustData: jsonData,
+//             validationSummary,
+//         };
+//     } catch (error: any) {
+//         console.error("Error validating trust file:", error);
+//         throw new Error("Failed to process Excel file.");
+//     }
+// }
+
+
+interface ValidationError {
+    rowNumber: number;
+    field: string;
+    message: string;
+    value: any;
+    data: any;
+}
+
+/**
+ * Validates a Trust Excel file provided as a base64 string.
+ * Ensures correct sheet, field data types, and valid settlors.
+ */
 export async function validateTrustFile(base64String: string): Promise<any> {
     try {
         // Step 1: Decode base64 to buffer
@@ -434,7 +515,7 @@ export async function validateTrustFile(base64String: string): Promise<any> {
         // Step 2: Read Excel from buffer
         const workbook = XLSX.read(buffer, { type: "buffer" });
 
-        // Step 3: Check if "Trust" sheet exists
+        // Step 3: Ensure "Trust" sheet exists
         const sheetName = workbook.SheetNames.find(
             (name) => name.toLowerCase() === "trust"
         );
@@ -442,44 +523,115 @@ export async function validateTrustFile(base64String: string): Promise<any> {
             throw new Error('Excel file must contain a sheet named "Trust".');
         }
 
-        // Step 4: Convert sheet to JSON
+        // Step 4: Parse the sheet to JSON
         const sheet = workbook.Sheets[sheetName];
         const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: null });
 
-        // Step 5: Fetch registered settlors
+        // Step 5: Fetch valid settlors
         const registeredSettlor = await prisma.settlor.findMany({
             select: { settlorName: true },
         });
-
         const settlorNames = registeredSettlor.map((s) =>
             s?.settlorName?.toUpperCase().trim()
         );
 
-        // Step 6: Validate each row
-        const validationSummary: any[] = [];
+        // Step 6: Define expected data types
+        const expectedTypes: Record<string, "string" | "number"> = {
+            trustName: "string",
+            settlor: "string",
+            country: "string",
+            state: "string",
+            localGovernmentArea: "string",
+            trustCommunities: "string",
+            numberOfTrustCommunities: "number",
+            totalMaleBotMembers: "number",
+            totalFemaleBotMembers: "number",
+            totalPwdBotMembers: "number",
+            nameOfOmls: "string",
+            totalFemaleAdvisoryCommitteeMembers: "number",
+            totalFemaleManagementCommitteeMembers: "number",
+            totalMaleAdvisoryCommitteeMembers: "number",
+            totalMaleManagementCommitteeMembers: "number",
+            totalPwdAdvisoryCommitteeMembers: "number",
+            totalPwdManagementCommitteeMembers: "number",
+            botDetailsOneFirstName: "string",
+            botDetailsOneLastName: "string",
+            botDetailsOneEmail: "string",
+            botDetailsOnePhoneNumber: "string", // always treated as string
+            botDetailsTwoFirstName: "string",
+            botDetailsTwoLastName: "string",
+            botDetailsTwoEmail: "string",
+            botDetailsTwoPhoneNumber: "string", // always treated as string
+        };
+
+        // Fields to exclude from type validation
+        const excludedFromTypeCheck = [
+            "botDetailsOnePhoneNumber",
+            "botDetailsTwoPhoneNumber",
+        ];
+
+        // Step 7: Validate each record
+        const validationSummary: ValidationError[] = [];
 
         jsonData.forEach((row: any, index: number) => {
-            const rowNumber = index + 2; // Excel rows start at 2 (headers at 1)
+            const rowNumber = index + 2;
+            const errors: ValidationError[] = [];
+
+            // ✅ Settlor validation
             const settlor = row["settlor"]
                 ? row["settlor"].toString().trim()
                 : null;
 
             if (!settlor) {
-                validationSummary.push({
+                errors.push({
                     rowNumber,
+                    field: "settlor",
                     message: "Missing settlor name",
+                    value: null,
                     data: row,
                 });
             } else if (!settlorNames.includes(settlor.toUpperCase())) {
-                validationSummary.push({
+                errors.push({
                     rowNumber,
+                    field: "settlor",
                     message: `Settlor "${settlor}" not registered`,
+                    value: settlor,
                     data: row,
                 });
             }
+
+            // ✅ Data type validation (excluding phone numbers)
+            Object.entries(expectedTypes).forEach(([key, expectedType]) => {
+                const value = row[key];
+
+                if (excludedFromTypeCheck.includes(key)) return; // skip phone numbers
+                if (value === null || value === undefined || value === "") return;
+
+                if (expectedType === "number" && isNaN(Number(value))) {
+                    errors.push({
+                        rowNumber,
+                        field: key,
+                        message: `Invalid type for "${key}". Expected number but got "${value}"`,
+                        value,
+                        data: row,
+                    });
+                }
+
+                if (expectedType === "string" && typeof value !== "string") {
+                    errors.push({
+                        rowNumber,
+                        field: key,
+                        message: `Invalid type for "${key}". Expected string but got ${typeof value}`,
+                        value,
+                        data: row,
+                    });
+                }
+            });
+
+            if (errors.length > 0) validationSummary.push(...errors);
         });
 
-        // Step 7: Return structured validation results
+        // Step 8: Return validation summary
         return {
             totalRecords: jsonData.length,
             totalInvalid: validationSummary.length,
@@ -493,7 +645,6 @@ export async function validateTrustFile(base64String: string): Promise<any> {
 }
 
 
-
 /**
  * Bulk saves multiple trust records to the database.
  * Performs validation to check if a trust with the same trustName already exists.
@@ -502,96 +653,98 @@ export async function validateTrustFile(base64String: string): Promise<any> {
  * @returns Summary of upload results
  */
 export const bulkSaveTrusts = async (trusts: ITrust[], userId: string) => {
-  const failed: any[] = [];
 
-  try {
-    await prisma.$connect();
+    const failed: any[] = [];
 
-    // ✅ Fetch all existing trust names once (normalize for case-insensitive match)
-    const existingTrusts = await prisma.trust.findMany({
-      select: { trustName: true },
-    });
+    try {
+        await prisma.$connect();
 
-    const existingTrustNames = new Set(
-      existingTrusts
-        .filter(t => t.trustName)
-        .map(t => t.trustName.trim().toUpperCase())
-    );
+        // ✅ Fetch all existing trust names once (normalize for case-insensitive match)
+        const existingTrusts = await prisma.trust.findMany({
+            select: { trustName: true },
+        });
 
-    const validatedTrust: Prisma.TrustCreateManyInput[] = [];
+        const existingTrustNames = new Set(
+            existingTrusts
+                .filter(t => t.trustName)
+                .map(t => t.trustName.trim().toUpperCase())
+        );
 
-    for (const [index, data] of trusts.entries()) {
-      try {
-        const normalizedName = data.trustName?.trim().toUpperCase();
+        const validatedTrust: Prisma.TrustCreateManyInput[] = [];
 
-        if (!normalizedName || existingTrustNames.has(normalizedName)) {
-          failed.push({
-            index,
-            message: "Trust already exists or trustName is missing.",
-            trustName: data.trustName || null,
-            data,
-          });
-          continue;
+        for (const [index, data] of trusts.entries()) {
+            try {
+                const normalizedName = data.trustName?.trim().toUpperCase();
+
+                if (!normalizedName || existingTrustNames.has(normalizedName)) {
+                    failed.push({
+                        index,
+                        message: "Trust already exists or trustName is missing.",
+                        trustName: data.trustName || null,
+                        data,
+                    });
+                    continue;
+                }
+
+                // ✅ Prepare trust data
+                const trustData: Prisma.TrustCreateManyInput = {
+                    trustName: data.trustName!,
+                    nameOfOmls: data.nameOfOmls ?? null,
+                    settlor: data.settlor ?? null,
+                    country: data.country ?? null,
+                    state: data.state ?? null,
+                    localGovernmentArea: data.localGovernmentArea ?? null,
+                    trustCommunities: data.trustCommunities ?? null,
+                    numberOfTrustCommunities: data.numberOfTrustCommunities ?? null,
+                    totalMaleBotMembers: data.totalMaleBotMembers ?? null,
+                    totalFemaleBotMembers: data.totalFemaleBotMembers ?? null,
+                    totalPwdBotMembers: data.totalPwdBotMembers ?? null,
+                    totalMaleAdvisoryCommitteeMembers: data.totalMaleAdvisoryCommitteeMembers ?? null,
+                    totalFemaleAdvisoryCommitteeMembers: data.totalFemaleAdvisoryCommitteeMembers ?? null,
+                    totalPwdAdvisoryCommitteeMembers: data.totalPwdAdvisoryCommitteeMembers ?? null,
+                    totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers ?? null,
+                    totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers ?? null,
+                    totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers ?? null,
+                    botDetailsOneFirstName: data.botDetailsOneFirstName ?? null,
+                    botDetailsOneLastName: data.botDetailsOneLastName ?? null,
+                    botDetailsOneEmail: data.botDetailsOneEmail ?? null,
+                    botDetailsOnePhoneNumber: String(data.botDetailsOnePhoneNumber) ?? null,
+                    botDetailsTwoFirstName: data.botDetailsTwoFirstName ?? null,
+                    botDetailsTwoLastName: data.botDetailsTwoLastName ?? null,
+                    botDetailsTwoEmail: data.botDetailsTwoEmail ?? null,
+                    botDetailsTwoPhoneNumber: String(data.botDetailsTwoPhoneNumber) ?? null,
+                    userId, // ✅ Direct field for createMany
+                };
+
+                validatedTrust.push(trustData);
+                existingTrustNames.add(normalizedName); // Prevent duplicates in the same batch
+            } catch (error: any) {
+                failed.push({
+                    index,
+                    error: error.message,
+                    data,
+                });
+            }
         }
 
-        // ✅ Prepare trust data
-        const trustData: Prisma.TrustCreateManyInput = {
-          trustName: data.trustName!,
-          nameOfOmls: data.nameOfOmls ?? null,
-          settlor: data.settlor ?? null,
-          country: data.country ?? null,
-          state: data.state ?? null,
-          localGovernmentArea: data.localGovernmentArea ?? null,
-          trustCommunities: data.trustCommunities ?? null,
-          totalMaleBotMembers: data.totalMaleBotMembers ?? null,
-          totalFemaleBotMembers: data.totalFemaleBotMembers ?? null,
-          totalPwdBotMembers: data.totalPwdBotMembers ?? null,
-          totalMaleAdvisoryCommitteeMembers: data.totalMaleAdvisoryCommitteeMembers ?? null,
-          totalFemaleAdvisoryCommitteeMembers: data.totalFemaleAdvisoryCommitteeMembers ?? null,
-          totalPwdAdvisoryCommitteeMembers: data.totalPwdAdvisoryCommitteeMembers ?? null,
-          totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers ?? null,
-          totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers ?? null,
-          totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers ?? null,
-          botDetailsOneFirstName: data.botDetailsOneFirstName ?? null,
-          botDetailsOneLastName: data.botDetailsOneLastName ?? null,
-          botDetailsOneEmail: data.botDetailsOneEmail ?? null,
-          botDetailsOnePhoneNumber: data.botDetailsOnePhoneNumber ?? null,
-          botDetailsTwoFirstName: data.botDetailsTwoFirstName ?? null,
-          botDetailsTwoLastName: data.botDetailsTwoLastName ?? null,
-          botDetailsTwoEmail: data.botDetailsTwoEmail ?? null,
-          botDetailsTwoPhoneNumber: data.botDetailsTwoPhoneNumber ?? null,
-          userId, // ✅ Direct field for createMany
+        // ✅ Perform bulk insert
+        const uploadResult = validatedTrust.length
+            ? await prisma.trust.createMany({
+                data: validatedTrust,
+                skipDuplicates: true,
+            })
+            : { count: 0 };
+
+        return {
+            totalRecords: trusts.length,
+            totalInserted: uploadResult.count,
+            totalFailed: failed.length,
+            failed,
         };
-
-        validatedTrust.push(trustData);
-        existingTrustNames.add(normalizedName); // Prevent duplicates in the same batch
-      } catch (error: any) {
-        failed.push({
-          index,
-          error: error.message,
-          data,
-        });
-      }
+    } catch (error) {
+        console.error("Bulk upload failed:", error);
+        throw new Error("Bulk trust upload failed");
+    } finally {
+        await prisma.$disconnect();
     }
-
-    // ✅ Perform bulk insert
-    const uploadResult = validatedTrust.length
-      ? await prisma.trust.createMany({
-          data: validatedTrust,
-          skipDuplicates: true,
-        })
-      : { count: 0 };
-
-    return {
-      totalRecords: trusts.length,
-      totalInserted: uploadResult.count,
-      totalFailed: failed.length,
-      failed,
-    };
-  } catch (error) {
-    console.error("Bulk upload failed:", error);
-    throw new Error("Bulk trust upload failed");
-  } finally {
-    await prisma.$disconnect();
-  }
 };

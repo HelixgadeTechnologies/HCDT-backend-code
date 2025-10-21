@@ -8,6 +8,7 @@ export interface ITrust {
     state?: string;
     localGovernmentArea?: string;
     trustCommunities?: string;
+    numberOfTrustCommunities?: number;
     // botDetails: IBotDetails[];
     botDetailsOneFirstName?: string;
     botDetailsOneLastName?: string;
