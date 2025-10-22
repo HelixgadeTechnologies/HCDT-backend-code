@@ -3,7 +3,7 @@ export interface IConflict {
     trustId?: string | null;
     userId?: string | null;
     causeOfConflictId?: number | null;
-    partiesInvolveId?: number | null;
+    partiesInvolve?: string | null;
     narrateIssues?: string | null;
     conflictStatusId?: number | null;
     issuesAddressById?: number | null;
@@ -23,8 +23,7 @@ export interface IConflictView {
     userPhoneNumber?: string | null;
     causeOfConflictId?: number | null;
     causeOfConflictName?: string | null;
-    partiesInvolveId?: number | null;
-    partiesInvolveName?: string | null;
+    partiesInvolve?: string | null;
     narrateIssues?: string | null;
     conflictStatusId?: number | null;
     conflictStatusName?: string | null;

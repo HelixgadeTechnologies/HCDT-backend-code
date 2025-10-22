@@ -240,14 +240,12 @@ model Conflict {
   userId                  String?
   causeOfConflict         CauseOfConflict?       @relation(fields: [causeOfConflictId], references: [causeOfConflictId])
   causeOfConflictId       Int?
-  partiesInvolve          PartiesInvolve?        @relation(fields: [partiesInvolveId], references: [partiesInvolveId])
-  partiesInvolveId        Int?
+  partiesInvolve          String?
   narrateIssues           String?
   conflictStatus          ConflictStatus?        @relation(fields: [conflictStatusId], references: [conflictStatusId])
   conflictStatusId        Int?
   issuesAddressBy         IssuesAddressBy?       @relation(fields: [issuesAddressById], references: [issuesAddressById])
   issuesAddressById       Int?
-  courtLitigationStatus   CourtLitigationStatus? @relation(fields: [courtLitigationStatusId], references: [courtLitigationStatusId])
   courtLitigationStatusId Int?
   createAt                DateTime?              @default(now())
   updateAt                DateTime?              @default(now())
@@ -266,7 +264,6 @@ model CauseOfConflict {
 model PartiesInvolve {
   partiesInvolveId Int        @id @default(autoincrement())
   partiesInvolve   String?
-  conflict         Conflict[]
 
   @@map("partiesinvolve")
 }
@@ -290,7 +287,6 @@ model IssuesAddressBy {
 model CourtLitigationStatus {
   courtLitigationStatusId Int        @id @default(autoincrement())
   courtLitigationStatus   String?
-  conflict                Conflict[]
 
   @@map("courtlitigationstatus")
 }
