@@ -191,30 +191,24 @@ async function callProcedure(option: number, trustId: string, selectedYear: numb
         }));
     } else if (option == 18) {
         return cleaned.map((row: any) => ({
-            ["partiesInvolveId"]: Number(row.f0),
-            ["partyName"]: row.f1,
-            ["percentage"]: Number(row.f2),
-        }));
-    } else if (option == 19) {
-        return cleaned.map((row: any) => ({
             ["botYesPercentage"]: Number(row.f0),
             ["managementYesPercentage"]: Number(row.f1),
             ["advisoryYesPercentage"]: Number(row.f2),
         }));
-    } else if (option == 20) {
+    } else if (option == 19) {
         return cleaned.map((row: any) => ({
             ["communityLeadershipPercentage"]: Number(row.f0),
             ["communityYouthsPercentage"]: Number(row.f1),
             ["communityWomenPercentage"]: Number(row.f2),
             ["pwDsPercentage"]: Number(row.f3),
         }));
-    } else if (option == 21) {
+    } else if (option == 20) {
         return cleaned.map((row: any) => ({
             ["percentage_status_1"]: Number(row.f0),
             ["percentage_status_2"]: Number(row.f1),
             ["percentage_status_3"]: Number(row.f2)
         }));
-    } else if (option == 22) {
+    } else if (option == 21) {
         return cleaned.map((row: any) => ({
             ["yearReceived"]: Number(row.f0),
             ["pct_paymentCheck_1"]: Number(row.f1),
@@ -246,7 +240,6 @@ export async function getGeneralDashboardData(trustId: string, year: number, sta
         'DISTRIBUTION_MATRIX',
         'NEEDS_ASSESSMENT_COMMUNITY_COUNT',
         'BOT_DISPLAY',
-        'CONFLICT_RESOLUTION_OVER',
         'BOT_INAUGURATION_CHECK',
         'COMMUNITY_LEADERSHIP_PERCENTAGE',
         'NEEDS_ASSESSMENT_PERCENTAGE',
@@ -266,3 +259,14 @@ export async function getGeneralDashboardData(trustId: string, year: number, sta
     // console.log("result", finalResult)
     return finalResult;
 }
+
+// else if (option == 18) {
+//         return cleaned.map((row: any) => ({
+//             ["partiesInvolveId"]: Number(row.f0),
+//             ["partyName"]: row.f1,
+//             ["percentage"]: Number(row.f2),
+//         }));
+//     }
+
+
+// 'CONFLICT_RESOLUTION_OVER',
