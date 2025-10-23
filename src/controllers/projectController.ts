@@ -24,16 +24,26 @@ export const addOrUpdateProject = async (req: Request, res: Response) => {
 };
 
 export const listProjects = async (req: Request, res: Response) => {
-    try {
-        const projects = await getAllProjectsView();
-        if (projects.length == 0) {
-            res.status(400).json(notFoundResponse("Projects not found", []));
-        }
-        res.status(200).json(successResponse("Projects retrieved successfully", projects));
-    } catch (error: any) {
-        res.status(500).json(errorResponse("Internal server error", error));
+  try {
+    const projects = await getAllProjectsView();
+
+    if (projects.length === 0) {
+      return res
+        .status(400)
+        .json(notFoundResponse("Projects not found", []));
     }
+
+    return res
+      .status(200)
+      .json(successResponse("Projects retrieved successfully", projects));
+  } catch (error: any) {
+    console.error(error);
+    return res
+      .status(500)
+      .json(errorResponse("Internal server error", error));
+  }
 };
+
 export const getProject = async (req: Request, res: Response) => {
     try {
         const { projectId } = req.params;
