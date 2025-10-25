@@ -118,7 +118,7 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         pwDsConsulted: data.pwDsConsulted ?? null,
         communityYouthsConsulted: data.communityYouthsConsulted ?? null,
         communityLeadershipConsulted: data.communityLeadershipConsulted ?? null,
-        attendanceSheet: data.attendanceSheet ?? null,
+        attendanceSheet: null,
         distributionMatrixDevelopedBySettlor: data.distributionMatrixDevelopedBySettlor ?? null,
         trustDistributionMatrixDocument: data.trustDistributionMatrixDocument ? data.trustDistributionMatrixDocument : null,
         trustDistributionMatrixDocumentMimeType: data.trustDistributionMatrixDocumentMimeType ?? null,
