@@ -660,6 +660,7 @@ function  calculateTrustCompletion(data: Prisma.TrustCreateManyInput): number {
         "totalMaleManagementCommitteeMembers",
         "totalFemaleManagementCommitteeMembers",
         "totalPwdManagementCommitteeMembers",
+        "trustCommunities"
     ];
 
     // Filter out excluded fields
@@ -760,7 +761,7 @@ export const bulkSaveTrusts = async (trusts: ITrust[], userId: string) => {
 
                 // ✅ Calculate completion status
                 trustData.completionStatus = calculateTrustCompletion(trustData);
-                
+
                 validatedTrust.push(trustData);
                 existingTrustNames.add(normalizedName); // Prevent duplicates in the same batch
             } catch (error: any) {
