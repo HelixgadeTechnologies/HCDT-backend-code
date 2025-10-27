@@ -11,7 +11,7 @@ const prisma = new PrismaClient();
 
 export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
 
-
+    console.log("trust data", data)
     // Prepare trust data
     const trustData: Prisma.TrustCreateInput = {
         trustName: data.trustName as string,
@@ -22,15 +22,15 @@ export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
         localGovernmentArea: data.localGovernmentArea || null,
         trustCommunities: data.trustCommunities || null,
         numberOfTrustCommunities: data.numberOfTrustCommunities || null,
-        totalMaleBotMembers: data.totalMaleBotMembers || null,
-        totalFemaleBotMembers: data.totalFemaleBotMembers || null,
-        totalPwdBotMembers: data.totalPwdBotMembers || null,
-        totalMaleAdvisoryCommitteeMembers: data.totalMaleAdvisoryCommitteeMembers || null,
-        totalFemaleAdvisoryCommitteeMembers: data.totalFemaleAdvisoryCommitteeMembers || null,
-        totalPwdAdvisoryCommitteeMembers: data.totalPwdAdvisoryCommitteeMembers || null,
-        totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers || null,
-        totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers || null,
-        totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers || null,
+        totalMaleBotMembers: data.totalMaleBotMembers || 0,
+        totalFemaleBotMembers: data.totalFemaleBotMembers || 0,
+        totalPwdBotMembers: data.totalPwdBotMembers || 0,
+        totalMaleAdvisoryCommitteeMembers: data.totalMaleAdvisoryCommitteeMembers || 0,
+        totalFemaleAdvisoryCommitteeMembers: data.totalFemaleAdvisoryCommitteeMembers || 0,
+        totalPwdAdvisoryCommitteeMembers: data.totalPwdAdvisoryCommitteeMembers || 0,
+        totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers || 0,
+        totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers || 0,
+        totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers || 0,
         botDetailsOneFirstName: data.botDetailsOneFirstName || null,
         botDetailsOneLastName: data.botDetailsOneLastName || null,
         botDetailsOneEmail: data.botDetailsOneEmail || null,
@@ -644,6 +644,48 @@ export async function validateTrustFile(base64String: string): Promise<any> {
     }
 }
 
+function  calculateTrustCompletion(data: Prisma.TrustCreateManyInput): number {
+    const keys = Object.keys(data) as (keyof Prisma.TrustCreateManyInput)[];
+
+    // 🧩 List of fields to exclude from the completion calculation
+    const excludeFields: (keyof Prisma.TrustCreateManyInput)[] = [
+        'completionStatus',
+        'trustId',
+        "totalMaleBotMembers",
+        "totalFemaleBotMembers",
+        "totalPwdBotMembers",
+        "totalMaleAdvisoryCommitteeMembers",
+        "totalFemaleAdvisoryCommitteeMembers",
+        "totalPwdAdvisoryCommitteeMembers",
+        "totalMaleManagementCommitteeMembers",
+        "totalFemaleManagementCommitteeMembers",
+        "totalPwdManagementCommitteeMembers",
+    ];
+
+    // Filter out excluded fields
+    const relevantKeys = keys.filter(key => !excludeFields.includes(key));
+
+    const totalFields = relevantKeys.length;
+
+    const filledFields = relevantKeys.reduce((count, key) => {
+        const value = data[key];
+
+        const isFilled =
+            value !== null &&
+            value !== undefined &&
+            (
+                (typeof value === 'string' && value.trim() !== '') ||
+                (typeof value === 'number') || // include 0 as valid
+                (typeof value === 'boolean') ||
+                (Array.isArray(value) && value.length > 0)
+            );
+
+        return count + (isFilled ? 1 : 0);
+    }, 0);
+
+    const percentage = (filledFields / totalFields) * 100;
+    return Math.round(percentage);
+}
 
 /**
  * Bulk saves multiple trust records to the database.
@@ -696,15 +738,15 @@ export const bulkSaveTrusts = async (trusts: ITrust[], userId: string) => {
                     localGovernmentArea: data.localGovernmentArea ?? null,
                     trustCommunities: data.trustCommunities ?? null,
                     numberOfTrustCommunities: data.numberOfTrustCommunities ?? null,
-                    totalMaleBotMembers: data.totalMaleBotMembers ?? null,
-                    totalFemaleBotMembers: data.totalFemaleBotMembers ?? null,
-                    totalPwdBotMembers: data.totalPwdBotMembers ?? null,
-                    totalMaleAdvisoryCommitteeMembers: data.totalMaleAdvisoryCommitteeMembers ?? null,
-                    totalFemaleAdvisoryCommitteeMembers: data.totalFemaleAdvisoryCommitteeMembers ?? null,
-                    totalPwdAdvisoryCommitteeMembers: data.totalPwdAdvisoryCommitteeMembers ?? null,
-                    totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers ?? null,
-                    totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers ?? null,
-                    totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers ?? null,
+                    totalMaleBotMembers: data.totalMaleBotMembers ?? 0,
+                    totalFemaleBotMembers: data.totalFemaleBotMembers ?? 0,
+                    totalPwdBotMembers: data.totalPwdBotMembers ?? 0,
+                    totalMaleAdvisoryCommitteeMembers: data.totalMaleAdvisoryCommitteeMembers ?? 0,
+                    totalFemaleAdvisoryCommitteeMembers: data.totalFemaleAdvisoryCommitteeMembers ?? 0,
+                    totalPwdAdvisoryCommitteeMembers: data.totalPwdAdvisoryCommitteeMembers ?? 0,
+                    totalMaleManagementCommitteeMembers: data.totalMaleManagementCommitteeMembers ?? 0,
+                    totalFemaleManagementCommitteeMembers: data.totalFemaleManagementCommitteeMembers ?? 0,
+                    totalPwdManagementCommitteeMembers: data.totalPwdManagementCommitteeMembers ?? 0,
                     botDetailsOneFirstName: data.botDetailsOneFirstName ?? null,
                     botDetailsOneLastName: data.botDetailsOneLastName ?? null,
                     botDetailsOneEmail: data.botDetailsOneEmail ?? null,
@@ -716,6 +758,9 @@ export const bulkSaveTrusts = async (trusts: ITrust[], userId: string) => {
                     userId, // ✅ Direct field for createMany
                 };
 
+                // ✅ Calculate completion status
+                trustData.completionStatus = calculateTrustCompletion(trustData);
+                
                 validatedTrust.push(trustData);
                 existingTrustNames.add(normalizedName); // Prevent duplicates in the same batch
             } catch (error: any) {
