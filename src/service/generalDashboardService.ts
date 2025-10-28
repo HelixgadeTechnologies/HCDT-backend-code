@@ -197,10 +197,25 @@ async function callProcedure(option: number, trustId: string, selectedYear: numb
         }));
     } else if (option == 19) {
         return cleaned.map((row: any) => ({
-            ["communityLeadershipPercentage"]: Number(row.f0),
-            ["communityYouthsPercentage"]: Number(row.f1),
-            ["communityWomenPercentage"]: Number(row.f2),
-            ["pwDsPercentage"]: Number(row.f3),
+            ["communityLeadership_opt1_pct"]: Number(row.f0),
+            ["communityLeadership_opt2_pct"]: Number(row.f1),
+            ["communityLeadership_opt3_pct"]: Number(row.f2),
+            ["communityLeadership_opt4_pct"]: Number(row.f3),
+
+            ["communityWomen_opt1_pct"]: Number(row.f4),
+            ["communityWomen_opt2_pct"]: Number(row.f5),
+            ["communityWomen_opt3_pct"]: Number(row.f6),
+            ["communityWomen_opt4_pct"]: Number(row.f7),
+
+            ["communityYouths_opt1_pct"]: Number(row.f8),
+            ["communityYouths_opt2_pct"]: Number(row.f9),
+            ["communityYouths_opt3_pct"]: Number(row.f10),
+            ["communityYouths_opt4_pct"]: Number(row.f11),
+
+            ["pwDs_opt1_pct"]: Number(row.f12),
+            ["pwDs_opt2_pct"]: Number(row.f13),
+            ["pwDs_opt3_pct"]: Number(row.f14),
+            ["pwDs_opt4_pct"]: Number(row.f15),
         }));
     } else if (option == 20) {
         return cleaned.map((row: any) => ({
@@ -252,7 +267,7 @@ export async function getGeneralDashboardData(trustId: string, year: number, sta
         const result = await callProcedure(index + 1, trustId, year, state, settlor);
         finalResult[keys[index]] = result;
 
-        // if(index == 19 || index == 20) {
+        // if (index == 18) {
         //     console.log(result)
         // }
     }
