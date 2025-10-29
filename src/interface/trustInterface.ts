@@ -124,7 +124,7 @@ export interface ITrustEstablishmentStatus {
     communityYouthsConsulted?: number | null;
     communityLeadershipConsulted?: number | null;
     attendanceSheet?: number | null;
-    distributionMatrixDevelopedBySettlor?: boolean | null;
+    distributionMatrixDevelopedBySettlor?: number | null;
     trustDistributionMatrixDocument?: string | null;
     trustDistributionMatrixDocumentMimeType?: string | null;
     settlorOperationalExpenditures?: IOperationalExpenditure[];

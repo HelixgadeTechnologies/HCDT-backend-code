@@ -132,7 +132,7 @@ model TrustEstablishmentStatus {
   communityYouthsConsulted                Int?
   communityLeadershipConsulted            Int?
   attendanceSheet                         Int?
-  distributionMatrixDevelopedBySettlor    Boolean?
+  distributionMatrixDevelopedBySettlor    Int?
   trustDistributionMatrixDocument         String?
   trustDistributionMatrixDocumentMimeType String?
   completionStatus                        Int?
