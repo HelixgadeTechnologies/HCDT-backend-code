@@ -93,6 +93,7 @@ export const removeTrust = async (trustId: string): Promise<void> => {
     );
 }
 export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatus) => {
+    // console.log("funds data", data.fundsReceive)
 
     const trustOperationalEstablishmentData = {
         trustId: data.trustId ?? null,
@@ -136,32 +137,33 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
 
 
     //  Handle settlorOperationalExpenditures and Funds Received  efficiently
-    if (data.settlorOperationalExpenditures!.length > 0 && data.fundsReceive!.length > 0) {
+    
+    const fundsReceivedInput: IFundsReceived[] = data.fundsReceive!.map((f) => ({
+        yearReceived: f?.yearReceived,
+        reserveReceived: f?.reserveReceived,
+        capitalExpenditureReceived: f?.capitalExpenditureReceived,
+        paymentCheck: f?.paymentCheck,
+        totalFundsReceived: f?.totalFundsReceived,
+        trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
+    }));
+    
+    // console.log(fundsReceivedInput)
+    
+    await prisma.$transaction([
+        prisma.fundsReceivedByTrust.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
+        prisma.fundsReceivedByTrust.createMany({ data: fundsReceivedInput, skipDuplicates: true }),
+    ]);
+    // prisma.operationalExpenditure.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
+    // prisma.operationalExpenditure.createMany({ data: operationalExpenditureInsert, skipDuplicates: true }),
 
-        const fundsReceivedInput: IFundsReceived[] = data.fundsReceive!.map((f) => ({
-            yearReceived: f?.yearReceived,
-            reserveReceived: f?.reserveReceived,
-            capitalExpenditureReceived: f?.capitalExpenditureReceived,
-            paymentCheck: f?.paymentCheck,
-            totalFundsReceived: f?.totalFundsReceived,
-            trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
-        }));
+    // if (data.settlorOperationalExpenditures!.length > 0 && data.fundsReceive!.length > 0) {
+    //     const operationalExpenditureInsert: IOperationalExpenditureInsert[] = data.settlorOperationalExpenditures!.map((ope) => ({
+    //         settlorOperationalExpenditureYear: ope.settlorOperationalExpenditureYear,
+    //         settlorOperationalExpenditure: ope.settlorOperationalExpenditure,
+    //         trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
+    //     }));
 
-        // console.log(fundsReceivedInput)
-
-        const operationalExpenditureInsert: IOperationalExpenditureInsert[] = data.settlorOperationalExpenditures!.map((ope) => ({
-            settlorOperationalExpenditureYear: ope.settlorOperationalExpenditureYear,
-            settlorOperationalExpenditure: ope.settlorOperationalExpenditure,
-            trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
-        }));
-
-        await prisma.$transaction([
-            prisma.fundsReceivedByTrust.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
-            prisma.fundsReceivedByTrust.createMany({ data: fundsReceivedInput, skipDuplicates: true }),
-            prisma.operationalExpenditure.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
-            prisma.operationalExpenditure.createMany({ data: operationalExpenditureInsert, skipDuplicates: true }),
-        ]);
-    }
+    // }
 };
 
 
@@ -644,7 +646,7 @@ export async function validateTrustFile(base64String: string): Promise<any> {
     }
 }
 
-function  calculateTrustCompletion(data: Prisma.TrustCreateManyInput): number {
+function calculateTrustCompletion(data: Prisma.TrustCreateManyInput): number {
     const keys = Object.keys(data) as (keyof Prisma.TrustCreateManyInput)[];
 
     // 🧩 List of fields to exclude from the completion calculation
