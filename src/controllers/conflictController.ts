@@ -41,7 +41,7 @@ export const getConflict = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Conflict ID is required", conflictId));
         }
 
-        const conflict = await getConflictById(conflictId);
+        const conflict = await getConflictById(Array.isArray(conflictId) ? conflictId[0] : conflictId);
 
         if (!conflict) {
             res.status(404).json(notFoundResponse("Conflict not found", null));
@@ -60,7 +60,7 @@ export const getConflictViaTrust = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Trust ID is required", trustId));
         }
 
-        const conflict = await getConflictByTrustId(trustId);
+        const conflict = await getConflictByTrustId(Array.isArray(trustId) ? trustId[0] : trustId);
 
         res.status(200).json(successResponse("Conflict retrieved successfully", conflict));
     } catch (error: any) {
@@ -116,7 +116,11 @@ export const getConflictDashboard = async (req: Request, res: Response) => {
     }
 
     try {
-        const data = await getConflictDashboardData(trustId, Number(year), state, settlor);
+        const trustIdStr = Array.isArray(trustId) ? trustId[0] : trustId;
+        const yearStr = Array.isArray(year) ? year[0] : year;
+        const stateStr = Array.isArray(state) ? state[0] : state;
+        const settlorStr = Array.isArray(settlor) ? settlor[0] : settlor;
+        const data = await getConflictDashboardData(trustIdStr, Number(yearStr), stateStr, settlorStr);
         res.status(200).json(successResponse("ConflictDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

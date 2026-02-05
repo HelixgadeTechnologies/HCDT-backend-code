@@ -24,24 +24,24 @@ export const addOrUpdateProject = async (req: Request, res: Response) => {
 };
 
 export const listProjects = async (req: Request, res: Response) => {
-  try {
-    const projects = await getAllProjectsView();
+    try {
+        const projects = await getAllProjectsView();
 
-    if (projects.length === 0) {
-      return res
-        .status(400)
-        .json(notFoundResponse("Projects not found", []));
+        if (projects.length === 0) {
+            return res
+                .status(400)
+                .json(notFoundResponse("Projects not found", []));
+        }
+
+        return res
+            .status(200)
+            .json(successResponse("Projects retrieved successfully", projects));
+    } catch (error: any) {
+        console.error(error);
+        return res
+            .status(500)
+            .json(errorResponse("Internal server error", error));
     }
-
-    return res
-      .status(200)
-      .json(successResponse("Projects retrieved successfully", projects));
-  } catch (error: any) {
-    console.error(error);
-    return res
-      .status(500)
-      .json(errorResponse("Internal server error", error));
-  }
 };
 
 export const getProject = async (req: Request, res: Response) => {
@@ -51,7 +51,7 @@ export const getProject = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Project ID is required", projectId));
         }
 
-        const projects = await getProjectsView(projectId);
+        const projects = await getProjectsView(Array.isArray(projectId) ? projectId[0] : projectId);
         if (projects.length == 0) {
             res.status(400).json(notFoundResponse("Project not found", null));
         }
@@ -67,7 +67,7 @@ export const getProjectByTrust = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Trust ID is required", trustId));
         }
 
-        const projects = await getProjectsViewByTrust(trustId);
+        const projects = await getProjectsViewByTrust(Array.isArray(trustId) ? trustId[0] : trustId);
 
         res.status(200).json(successResponse("Project", projects));
     } catch (error: any) {
@@ -119,7 +119,11 @@ export const getProjectDashboard = async (req: Request, res: Response) => {
     }
 
     try {
-        const data = await getProjectDashboardData(trustId, Number(year), state, settlor);
+        const trustIdStr = Array.isArray(trustId) ? trustId[0] : trustId;
+        const yearStr = Array.isArray(year) ? year[0] : year;
+        const stateStr = Array.isArray(state) ? state[0] : state;
+        const settlorStr = Array.isArray(settlor) ? settlor[0] : settlor;
+        const data = await getProjectDashboardData(trustIdStr, Number(yearStr), stateStr, settlorStr);
         res.status(200).json(successResponse("ProjectDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

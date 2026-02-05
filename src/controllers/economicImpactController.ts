@@ -43,7 +43,7 @@ export const getEconomicImpact = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Economic Impact ID is required", null));
         }
 
-        const economicImpact = await getEconomicImpactById(economicImpactId);
+        const economicImpact = await getEconomicImpactById(Array.isArray(economicImpactId) ? economicImpactId[0] : economicImpactId);
 
         if (!economicImpact || economicImpact.length === 0) {
             res.status(404).json(notFoundResponse("Economic Impact not found", null));
@@ -62,7 +62,7 @@ export const economicImpactByTrustId = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("Trust ID is required", null));
         }
 
-        const economicImpact = await getEconomicImpactByTrustId(trustId);
+        const economicImpact = await getEconomicImpactByTrustId(Array.isArray(trustId) ? trustId[0] : trustId);
 
         if (!economicImpact || economicImpact.length === 0) {
             res.status(404).json(notFoundResponse("Economic Impact not found", null));
@@ -97,7 +97,11 @@ export const getEconomicImpactDashboard = async (req: Request, res: Response) =>
         res.status(404).json(notFoundResponse('trustId is required'));
     }
     try {
-        const data = await getEconomicImpactDataByTrust(trustId, Number(year), state, settlor);
+        const trustIdStr = Array.isArray(trustId) ? trustId[0] : trustId;
+        const yearStr = Array.isArray(year) ? year[0] : year;
+        const stateStr = Array.isArray(state) ? state[0] : state;
+        const settlorStr = Array.isArray(settlor) ? settlor[0] : settlor;
+        const data = await getEconomicImpactDataByTrust(trustIdStr, Number(yearStr), stateStr, settlorStr);
         res.status(200).json(successResponse("EconomicImpactDataDashboard", data));
     } catch (error: any) {
         // console.log(error)

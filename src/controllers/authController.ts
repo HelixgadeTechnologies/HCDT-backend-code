@@ -24,7 +24,7 @@ export const getUser = async (req: Request, res: Response) => {
             res.status(400).json(notFoundResponse("User ID is required", userId));
         }
 
-        const user = await getUserById(userId);
+        const user = await getUserById(Array.isArray(userId) ? userId[0] : userId);
 
         if (user.length == 0) {
             res.status(400).json(notFoundResponse("User not found", {}));

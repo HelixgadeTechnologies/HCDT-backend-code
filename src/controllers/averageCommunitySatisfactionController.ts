@@ -41,7 +41,7 @@ export const getAverageCommunitySatisfactionById = async (req: Request, res: Res
             res.status(400).json(notFoundResponse("Average Community Satisfaction ID is required", averageCommunitySatisfactionId));
         }
 
-        const averageCommunitySatisfaction = await getAverageCommunitySatisfaction(averageCommunitySatisfactionId);
+        const averageCommunitySatisfaction = await getAverageCommunitySatisfaction(Array.isArray(averageCommunitySatisfactionId) ? averageCommunitySatisfactionId[0] : averageCommunitySatisfactionId);
 
         if (!averageCommunitySatisfaction) {
             res.status(404).json(notFoundResponse("Average Community Satisfaction not found", null));
@@ -60,7 +60,7 @@ export const getAverageCommunitySatisfactionByTrustId = async (req: Request, res
             res.status(400).json(notFoundResponse("Trust ID is required", trustId));
         }
 
-        const averageCommunitySatisfaction = await getAllAverageCommunitySatisfactionByTrust(trustId);
+        const averageCommunitySatisfaction = await getAllAverageCommunitySatisfactionByTrust(Array.isArray(trustId) ? trustId[0] : trustId);
 
         if (averageCommunitySatisfaction.length == 0) {
             res.status(404).json(notFoundResponse("Average Community Satisfaction not found", []));
@@ -97,7 +97,11 @@ export const getDashboardData = async (req: Request, res: Response) => {
     }
 
     try {
-        const data = await getCommunitySatisfactionDashboard(trustId, Number(year), state, settlor);
+        const trustIdStr = Array.isArray(trustId) ? trustId[0] : trustId;
+        const yearStr = Array.isArray(year) ? year[0] : year;
+        const stateStr = Array.isArray(state) ? state[0] : state;
+        const settlorStr = Array.isArray(settlor) ? settlor[0] : settlor;
+        const data = await getCommunitySatisfactionDashboard(trustIdStr, Number(yearStr), stateStr, settlorStr);
         res.status(200).json(successResponse("CommunitySatisfactionDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));

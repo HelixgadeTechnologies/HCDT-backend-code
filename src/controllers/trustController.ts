@@ -39,7 +39,7 @@ export const getTrustInfo = async (req: Request, res: Response) => {
     try {
         const { trustId } = req.params;
 
-        const trust = await getTrust(trustId);
+        const trust = await getTrust(Array.isArray(trustId) ? trustId[0] : trustId);
 
         res.status(201).json(successResponse("Trust", trust));
     } catch (error: any) {
@@ -73,7 +73,7 @@ export const addTrustEstablishmentST = async (req: Request, res: Response) => {
 export const getSpecificTrustEstablishmentST = async (req: Request, res: Response) => {
     try {
         const { trustId } = req.params;
-        const tes = await getTrustEstablishment(trustId);
+        const tes = await getTrustEstablishment(Array.isArray(trustId) ? trustId[0] : trustId);
         res.status(201).json(successResponse("Trust Establishment Status", tes));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error));
@@ -85,7 +85,7 @@ export const deleteMatrixFile = async (req: Request, res: Response) => {
     const { establishmentId } = req.params;
 
     try {
-        await removeMatrixFile(establishmentId);
+        await removeMatrixFile(Array.isArray(establishmentId) ? establishmentId[0] : establishmentId);
         res.status(200).json({ message: 'Matrix file removed successfully.' });
     } catch (error) {
         console.error('Error removing matrix file:', error);
@@ -97,7 +97,7 @@ export const deleteCACFile = async (req: Request, res: Response) => {
     const { establishmentId } = req.params;
 
     try {
-        await removeCACFile(establishmentId);
+        await removeCACFile(Array.isArray(establishmentId) ? establishmentId[0] : establishmentId);
         res.status(200).json({ message: 'CAC file removed successfully.' });
     } catch (error) {
         console.error('Error removing CAC file:', error);
@@ -113,7 +113,7 @@ export const trustEstablishmentDashboard = async (req: Request, res: Response) =
     }
 
     try {
-        const data = await getEstablishmentDashboardData(trustId);
+        const data = await getEstablishmentDashboardData(Array.isArray(trustId) ? trustId[0] : trustId);
         res.status(200).json(successResponse("TrustEstablishmentDashboard", data));
     } catch (error) {
         res.status(500).json(errorResponse('Failed to load dashboard data', error));
@@ -127,8 +127,10 @@ export const fundsDashboard = async (req: Request, res: Response) => {
     }
 
     try {
-        const data = await getFundsSupplyDashboardData(trustId, Number(year));
-        const data2 = await getFundsSupplyStatusDashboardData(trustId);
+        const trustIdStr = Array.isArray(trustId) ? trustId[0] : trustId;
+        const yearStr = Array.isArray(year) ? year[0] : year;
+        const data = await getFundsSupplyDashboardData(trustIdStr, Number(yearStr));
+        const data2 = await getFundsSupplyStatusDashboardData(trustIdStr);
         // console.log({ data, data2 })
         res.status(200).json(successResponse("TrustEstablishmentDashboard", { data, data2 }));
     } catch (error) {
@@ -157,13 +159,13 @@ export const toggleSurveyAccess = async (req: Request, res: Response) => {
 
 export const validateTrustUpload = async (req: Request, res: Response) => {
     try {
-        const {  payload } = req.body;
+        const { payload } = req.body;
 
-        if (! payload) {
+        if (!payload) {
             return res.status(400).json(notFoundResponse("No file uploaded"));
         }
 
-        const result = await validateTrustFile( payload);
+        const result = await validateTrustFile(payload);
 
         res.status(200).json(successResponse("Trust validation complete", result));
     } catch (error: any) {
