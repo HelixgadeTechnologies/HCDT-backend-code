@@ -137,7 +137,7 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
 
 
     //  Handle settlorOperationalExpenditures and Funds Received  efficiently
-    
+
     const fundsReceivedInput: IFundsReceived[] = data.fundsReceive!.map((f) => ({
         yearReceived: f?.yearReceived,
         reserveReceived: f?.reserveReceived,
@@ -146,9 +146,9 @@ export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatu
         totalFundsReceived: f?.totalFundsReceived,
         trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
     }));
-    
+
     // console.log(fundsReceivedInput)
-    
+
     await prisma.$transaction([
         prisma.fundsReceivedByTrust.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
         prisma.fundsReceivedByTrust.createMany({ data: fundsReceivedInput, skipDuplicates: true }),
