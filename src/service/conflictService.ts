@@ -33,27 +33,36 @@ export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: 
     try {
         // Ensure conflictData is not null or undefined
         const emails = await getEmailsFronDraAndNUPRC(conflictData.trustId as string);
+
+        // Normalize issuesAddressById: set to null if 0 or empty
+        const normalizedData = {
+            ...conflictData,
+            issuesAddressById: conflictData.issuesAddressById && conflictData.issuesAddressById !== 0
+                ? conflictData.issuesAddressById
+                : null
+        };
+
         if (isCreate) {
             await sendConflictReportEmail(emails, "Conflict");
             // Create a new conflict
             return await prisma.conflict.create({
-                data: { ...conflictData, conflictId: undefined, userId: userId },
+                data: { ...normalizedData, conflictId: undefined, userId: userId },
             });
         } else {
             // Update existing conflict
-            if (!conflictData.conflictId) {
+            if (!normalizedData.conflictId) {
                 throw new Error("Conflict ID is required for updating a record.");
             }
-            // console.log(conflictData)
+            // console.log(normalizedData)
             return await prisma.conflict.update({
-                where: { conflictId: conflictData.conflictId, userId: userId },
-                data: conflictData,
+                where: { conflictId: normalizedData.conflictId, userId: userId },
+                data: normalizedData,
             });
-            
-        } 
+
+        }
     } catch (error) {
         throw new Error(`Error creating or updating conflict: ${error}`);
-        
+
     }
 };
 

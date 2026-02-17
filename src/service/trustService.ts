@@ -584,14 +584,8 @@ export async function validateTrustFile(base64String: string): Promise<any> {
                 ? row["settlor"].toString().trim()
                 : null;
 
-            if (!settlor) {
-                errors.push({
-                    rowNumber,
-                    field: "settlor",
-                    message: "Missing settlor name",
-                    value: null,
-                    data: row,
-                });
+            if (settlor === null || settlor === "") {
+                // Skip validation if settlor is empty
             } else if (!settlorNames.includes(settlor.toUpperCase())) {
                 errors.push({
                     rowNumber,
