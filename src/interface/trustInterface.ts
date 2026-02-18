@@ -37,13 +37,13 @@ export interface ITrust {
 }
 
 export interface IFundsReceived {
-    fundsReceivedByTrustId?: string;
-    yearReceived?: number;
-    reserveReceived?: number;
-    capitalExpenditureReceived?: number;
-    totalFundsReceived?: number;
-    paymentCheck?: number;
-    trustEstablishmentStatusId?: string;
+    fundsReceivedByTrustId?: string | null;
+    yearReceived?: number | null;
+    reserveReceived?: number | null;
+    capitalExpenditureReceived?: number | null;
+    totalFundsReceived?: number | null;
+    paymentCheck?: number | null;
+    trustEstablishmentStatusId?: string | null;
 }
 
 interface IBotDetails {

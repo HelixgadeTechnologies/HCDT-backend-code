@@ -92,78 +92,81 @@ export const removeTrust = async (trustId: string): Promise<void> => {
         trustId
     );
 }
+const toNullOrEmpty = (val: any) => (val === "" || val === null || val === undefined ? undefined : val);
+const toNumOrNull = (val: any) => {
+    const sanitized = toNullOrEmpty(val);
+    return sanitized === undefined ? undefined : Number(sanitized);
+};
+const toNumOrUndefined = (val: any) => {
+    const sanitized = toNullOrEmpty(val);
+    return sanitized === undefined ? undefined : Number(sanitized);
+};
+
 export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatus) => {
-    // console.log("funds data", data.fundsReceive)
+    try {
+       
+        const trustOperationalEstablishmentData: any = {
+            trustId: toNullOrEmpty(data.trustId),
+            trustRegisteredWithCAC: toNumOrNull(data.trustRegisteredWithCAC),
+            cscDocument: toNullOrEmpty(data.cscDocument),
+            cscDocumentMimeType: toNullOrEmpty(data.cscDocumentMimeType),
+            yearIncorporated: toNumOrNull(data.yearIncorporated),
+            botConstitutedAndInaugurated: toNumOrNull(data.botConstitutedAndInaugurated),
+            managementCommitteeConstitutedAndInaugurated: toNumOrNull(data.managementCommitteeConstitutedAndInaugurated),
+            advisoryCommitteeConstitutedAndInaugurated: toNumOrNull(data.advisoryCommitteeConstitutedAndInaugurated),
+            isTrustDevelopmentPlanReadilyAvailable: toNumOrNull(data.isTrustDevelopmentPlanReadilyAvailable),
+            isTrustDevelopmentPlanBudgetReadilyAvailable: toNumOrNull(data.isTrustDevelopmentPlanBudgetReadilyAvailable),
+            yearDeveloped: toNumOrNull(data.yearDeveloped),
+            yearExpired: toNumOrNull(data.yearExpired),
+            developmentPlanDocument: toNullOrEmpty(data.developmentPlanDocument),
+            developmentPlanDocumentMimeType: toNullOrEmpty(data.developmentPlanDocumentMimeType),
+            developmentPlanBudgetDocument: toNullOrEmpty(data.developmentPlanBudgetDocument),
+            developmentPlanBudgetDocumentMimeType: toNullOrEmpty(data.developmentPlanBudgetDocumentMimeType),
+            yearOfNeedsAssessment: toNumOrNull(data.yearOfNeedsAssessment),
+            statusOfNeedAssessment: toNumOrNull(data.statusOfNeedAssessment),
+            communityWomenConsulted: toNumOrNull(data.communityWomenConsulted),
+            pwDsConsulted: toNumOrNull(data.pwDsConsulted),
+            communityYouthsConsulted: toNumOrNull(data.communityYouthsConsulted),
+            communityLeadershipConsulted: toNumOrNull(data.communityLeadershipConsulted),
+            attendanceSheet: null,
+            distributionMatrixDevelopedBySettlor: toNumOrNull(data.distributionMatrixDevelopedBySettlor),
+            trustDistributionMatrixDocument: toNullOrEmpty(data.trustDistributionMatrixDocument),
+            trustDistributionMatrixDocumentMimeType: toNullOrEmpty(data.trustDistributionMatrixDocumentMimeType),
+            completionStatus: toNumOrNull(data.completionStatus),
+        };
 
-    const trustOperationalEstablishmentData = {
-        trustId: data.trustId ?? null,
-        trustRegisteredWithCAC: data.trustRegisteredWithCAC ?? null,
-        cscDocument: data.cscDocument ? data.cscDocument : null,
-        cscDocumentMimeType: data.cscDocumentMimeType ?? null,
-        yearIncorporated: data.yearIncorporated ?? null,
-        botConstitutedAndInaugurated: data.botConstitutedAndInaugurated ?? null,
-        managementCommitteeConstitutedAndInaugurated: data.managementCommitteeConstitutedAndInaugurated ?? null,
-        advisoryCommitteeConstitutedAndInaugurated: data.advisoryCommitteeConstitutedAndInaugurated ?? null,
-        isTrustDevelopmentPlanReadilyAvailable: data.isTrustDevelopmentPlanReadilyAvailable ?? null,
-        isTrustDevelopmentPlanBudgetReadilyAvailable: data.isTrustDevelopmentPlanBudgetReadilyAvailable ?? null,
-        yearDeveloped: data.yearDeveloped ?? null,
-        yearExpired: data.yearExpired ?? null,
-        developmentPlanDocument: data.developmentPlanDocument ? data.developmentPlanDocument : null,
-        developmentPlanDocumentMimeType: data.developmentPlanDocumentMimeType ?? null,
-        developmentPlanBudgetDocument: data.developmentPlanBudgetDocument ? data.developmentPlanBudgetDocument : null,
-        developmentPlanBudgetDocumentMimeType: data.developmentPlanBudgetDocumentMimeType ?? null,
-        admin: data.admin ?? null,
-        yearOfNeedsAssessment: data.yearOfNeedsAssessment ?? null,
-        statusOfNeedAssessment: data.statusOfNeedAssessment ?? null,
-        communityWomenConsulted: data.communityWomenConsulted ?? null,
-        pwDsConsulted: data.pwDsConsulted ?? null,
-        communityYouthsConsulted: data.communityYouthsConsulted ?? null,
-        communityLeadershipConsulted: data.communityLeadershipConsulted ?? null,
-        attendanceSheet: null,
-        distributionMatrixDevelopedBySettlor: data.distributionMatrixDevelopedBySettlor ?? null,
-        trustDistributionMatrixDocument: data.trustDistributionMatrixDocument ? data.trustDistributionMatrixDocument : null,
-        trustDistributionMatrixDocumentMimeType: data.trustDistributionMatrixDocumentMimeType ?? null,
-        completionStatus: data.completionStatus ?? null,
-    };
-
-    let trustEstablishmentStatus;
-
-    // Use upsert to avoid redundant findUnique()
-    trustEstablishmentStatus = await prisma.trustEstablishmentStatus.upsert({
-        where: { trustId: data.trustId },
-        update: trustOperationalEstablishmentData,
-        create: trustOperationalEstablishmentData,
-    });
+        const adminValue = toNullOrEmpty(data.admin);
+        trustOperationalEstablishmentData.admin = adminValue !== undefined ? adminValue : null;
 
 
-    //  Handle settlorOperationalExpenditures and Funds Received  efficiently
+        let trustEstablishmentStatus;
 
-    const fundsReceivedInput: IFundsReceived[] = data.fundsReceive!.map((f) => ({
-        yearReceived: f?.yearReceived,
-        reserveReceived: f?.reserveReceived,
-        capitalExpenditureReceived: f?.capitalExpenditureReceived,
-        paymentCheck: f?.paymentCheck,
-        totalFundsReceived: f?.totalFundsReceived,
-        trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
-    }));
+        // Use upsert to avoid redundant findUnique()
+        trustEstablishmentStatus = await prisma.trustEstablishmentStatus.upsert({
+            where: { trustId: data.trustId },
+            update: trustOperationalEstablishmentData,
+            create: trustOperationalEstablishmentData,
+        });
 
-    // console.log(fundsReceivedInput)
+        //  Handle settlorOperationalExpenditures and Funds Received  efficiently
 
-    await prisma.$transaction([
-        prisma.fundsReceivedByTrust.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
-        prisma.fundsReceivedByTrust.createMany({ data: fundsReceivedInput, skipDuplicates: true }),
-    ]);
-    // prisma.operationalExpenditure.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
-    // prisma.operationalExpenditure.createMany({ data: operationalExpenditureInsert, skipDuplicates: true }),
+        const fundsReceivedInput: Prisma.FundsReceivedByTrustCreateManyInput[] = (data.fundsReceive || []).map((f) => ({
+            yearReceived: toNumOrUndefined(f?.yearReceived),
+            reserveReceived: toNumOrUndefined(f?.reserveReceived),
+            capitalExpenditureReceived: toNumOrUndefined(f?.capitalExpenditureReceived),
+            paymentCheck: toNumOrUndefined(f?.paymentCheck),
+            totalFundsReceived: toNumOrUndefined(f?.totalFundsReceived),
+            trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
+        }));
 
-    // if (data.settlorOperationalExpenditures!.length > 0 && data.fundsReceive!.length > 0) {
-    //     const operationalExpenditureInsert: IOperationalExpenditureInsert[] = data.settlorOperationalExpenditures!.map((ope) => ({
-    //         settlorOperationalExpenditureYear: ope.settlorOperationalExpenditureYear,
-    //         settlorOperationalExpenditure: ope.settlorOperationalExpenditure,
-    //         trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId,
-    //     }));
+        await prisma.$transaction([
+            prisma.fundsReceivedByTrust.deleteMany({ where: { trustEstablishmentStatusId: trustEstablishmentStatus.trustEstablishmentStatusId } }),
+            prisma.fundsReceivedByTrust.createMany({ data: fundsReceivedInput, skipDuplicates: true }),
+        ]);
 
-    // }
+    } catch (error: any) {
+        throw error; // Re-throw to let the controller handle it
+    }
 };
 
 
