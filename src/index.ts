@@ -29,6 +29,7 @@ app.use((req, res, next) => {
         "/api/auth/signIn",
         "/api/auth/signUp",
         "/api/setting/addDRA",
+        "/api/setting/registerUser",
         "/api/conflict/create",
         "/api/average-community-satisfaction/create",
         "/api/economic-impact/create"

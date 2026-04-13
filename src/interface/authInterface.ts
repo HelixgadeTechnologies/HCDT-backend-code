@@ -70,6 +70,16 @@ export interface IDraSignUp {
     status: number | null;
 }
 
+export interface IRegisterAnyUser {
+    userId?: string;
+    firstName: string | null;
+    lastName: string | null;
+    email: string;
+    roleId: string | null;
+    trustId: string | null;
+    status: number | null;
+}
+
 export interface ILogin {
     email: string;
     password: string;

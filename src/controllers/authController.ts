@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getAllRole, changePassword, updateProfilePicture, getSettlor, deleteCloudFile, updateLoginUser } from "../service/authService"
+import { loginUser, registerUser, registerAdmin, registerNuprc, registerDRA, registerAnyUser, registerSettlor, removeUser, getAllAdmin, getAllNUPRC, getAllDRA, getAllSettlor, removeSettlor, getUserById, getUsersByRoleId, getAllRole, changePassword, updateProfilePicture, getSettlor, deleteCloudFile, updateLoginUser } from "../service/authService"
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 import { Prisma, PrismaClient, Settlor, User } from "@prisma/client";
 import { JwtPayload } from "jsonwebtoken";
@@ -71,6 +71,15 @@ export const addAdmin = async (req: Request, res: Response) => {
     }
 };
 
+export const addAnyUser = async (req: Request, res: Response) => {
+    try {
+        const user = await registerAnyUser(req.body.data, req.body.isCreate);
+        res.status(201).json(successResponse(`User successfully ${req.body.isCreate ? "created" : "updated"}`, user));
+    } catch (error: any) {
+        res.status(400).json(errorResponse("Internal server error", error));
+    }
+};
+
 export const updateLogInUser = async (req: Request, res: Response) => {
     try {
         const admin = await updateLoginUser(req.body);
@@ -129,6 +138,20 @@ export const listAllDRA = async (req: Request, res: Response) => {
     try {
         const dra = await getAllDRA();
         res.status(201).json(successResponse("DRA", dra));
+    } catch (error: any) {
+        res.status(400).json(errorResponse("Internal server error", error));
+    }
+};
+
+export const listUsersByRole = async (req: Request, res: Response) => {
+    try {
+        const { roleId } = req.params;
+        if (!roleId) {
+            return res.status(400).json(errorResponse("Role ID is required", null));
+        }
+
+        const users = await getUsersByRoleId(roleId);
+        res.status(200).json(successResponse("Users retrieved successfully", users));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
     }

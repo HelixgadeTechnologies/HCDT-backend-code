@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { IDraSignUp, ILogin, ILoginUpdate, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
+import { IDraSignUp, ILogin, ILoginUpdate, IRegisterAnyUser, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { JWT_SECRET } from "../secrets";
 import { sendAdminRegistrationEmail } from "../utils/mail";
 import { deleteFile, getFileName, uploadFile } from "../utils/upload";
@@ -30,7 +30,7 @@ export const registerUser = async (data: any) => {
       phoneNumber: data.phoneNumber || null,
       community: data.community || null,
       state: data.state || null,
-      status: 1,
+      status: 0,
       localGovernmentArea: data.localGovernmentArea || null,
       role: roles?.roleId ? { connect: { roleId: roles?.roleId } } : undefined,
       password: hashedPassword
@@ -166,13 +166,13 @@ export const getAllNUPRC = async (): Promise<Array<IUserClient>> => {
 
 export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
 
-  const role = await prisma.role.findFirst({ where: { roleName: "DRA" } });
+  const role = await prisma.role.findFirst({ where: { roleName: "Data Reporting Agent (DRA)" } });
   try {
     if (isCreate) {
       const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
       if (existingUser) throw new Error("User with this email already exists");
 
-      await sendAdminRegistrationEmail(data.email, data.lastName as string, "DRA")
+      await sendAdminRegistrationEmail(data.email, data.lastName as string, "Data Reporting Agent (DRA)")
 
       // hash password
       const hashedPassword = await bcrypt.hash("12345", 10);
@@ -210,18 +210,66 @@ export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
   }
 };
 
+export const registerAnyUser = async (data: IRegisterAnyUser, isCreate: boolean) => {
+  try {
+    if (isCreate) {
+      console.log(data, "data")
+      const role = await prisma.role.findFirst({ where: { roleId: data.roleId as string } });
+      const existingUser = await prisma.user.findUnique({ where: { email: data.email } });
+      if (existingUser) throw new Error("User with this email already exists");
+
+      await sendAdminRegistrationEmail(data.email, data.lastName as string, role?.roleName as string);
+
+      // hash password
+      const hashedPassword = await bcrypt.hash("12345", 10);
+      return prisma.user.create({
+        data: {
+          firstName: data.firstName || null,
+          lastName: data.lastName || null,
+          email: data.email,
+          roleId: data.roleId || null,
+          trusts: data.trustId || null,
+          status: data.status ?? 0,
+          password: hashedPassword,
+        } as Prisma.UserCreateInput,
+      });
+    } else {
+      return prisma.user.update({
+        where: { userId: data.userId },
+        data: {
+          firstName: data.firstName || null,
+          lastName: data.lastName || null,
+          email: data.email || null,
+          roleId: data.roleId || null,
+          trusts: data.trustId || null,
+          status: data.status ?? null,
+        },
+      });
+    }
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
 export const getAllDRA = async (): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
-   SELECT * FROM user_view WHERE role IN(${"DRA"})
+   SELECT * FROM user_view WHERE role IN(${"Data Reporting Agent (DRA)"})
  `;
   return users;
 }
 export const getAllDRAByTrustId = async (trustId:string): Promise<Array<IUserClient>> => {
   const users: IUserView[] = await prisma.$queryRaw`
-   SELECT * FROM user_view WHERE role IN(${"DRA"} AND trusts = ${trustId})
+   SELECT * FROM user_view WHERE role IN(${"Data Reporting Agent (DRA)"} AND trusts = ${trustId})
  `;
   return users;
 }
+
+export const getUsersByRoleId = async (roleId: string): Promise<Array<IUserView>> => {
+  const users: IUserView[] = await prisma.$queryRaw`
+    SELECT * FROM user_view WHERE roleId = ${roleId}
+  `;
+  return users;
+};
 
 export const registerSettlor = async (data: Settlor, isCreate: boolean) => {
   const settlorData = {

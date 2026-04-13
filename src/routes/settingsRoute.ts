@@ -1,7 +1,86 @@
 import { Router } from "express";
-import { addAdmin, addDRA, addNuprc, addSettlor, changeUserPassword, deleteSettlor, deleteUser, getRoles, getUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, updateLogInUser, updateUserProfilePicture } from "../controllers/authController";
+import { addAdmin, addAnyUser, addDRA, addNuprc, addSettlor, changeUserPassword, deleteSettlor, deleteUser, getRoles, getUser, listAllAdmin, listAllDRA, listAllNUPRC, listAllSettlor, listUsersByRole, updateLogInUser, updateUserProfilePicture } from "../controllers/authController";
 
 const settingsRoute: Router = Router();
+
+/**
+ * @swagger
+ * /api/setting/registerUser:
+ *   post:
+ *     summary: Create or Update any User
+ *     tags: [Setting]
+ *     description: |
+ *       Registers a new user if `isCreate` is true, otherwise updates an existing user.
+ *       **Note:** No authorization required. `userId` can be ignored when `isCreate` is true but is required when `isCreate` is false.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - isCreate
+ *               - data
+ *             properties:
+ *               isCreate:
+ *                 type: boolean
+ *                 example: true
+ *               data:
+ *                 type: object
+ *                 required:
+ *                   - email
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                     example: "uuid-user-id"
+ *                   firstName:
+ *                     type: string
+ *                     example: "John"
+ *                   lastName:
+ *                     type: string
+ *                     example: "Doe"
+ *                   email:
+ *                     type: string
+ *                     example: "user@example.com"
+ *                   roleId:
+ *                     type: string
+ *                     example: "uuid-role-id"
+ *                   trustId:
+ *                     type: string
+ *                     example: "uuid-trust-id"
+ *                   status:
+ *                     type: integer
+ *                     example: 0
+ *     responses:
+ *       201:
+ *         description: Successfully created or updated the user.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 message:
+ *                   type: string
+ *                   example: "User successfully created"
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     userId:
+ *                       type: string
+ *                       example: "uuid-user-id"
+ *                     email:
+ *                       type: string
+ *                       example: "user@example.com"
+ *       400:
+ *         description: Bad request (e.g., email already exists when creating)
+ *       500:
+ *         description: Internal server error
+ */
+settingsRoute.post("/registerUser", addAnyUser);
+
 /**
  * @swagger
  * /api/setting/getUser/{userId}:
@@ -535,6 +614,46 @@ settingsRoute.post("/addDRA", addDRA);
  *         description: Internal server error
  */
 settingsRoute.get("/allDra", listAllDRA);
+
+/**
+ * @swagger
+ * /api/setting/getUsersByRole/{roleId}:
+ *   get:
+ *     summary: Retrieve all users by role ID
+ *     tags: [Setting]
+ *     parameters:
+ *       - in: path
+ *         name: roleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The ID of the role to filter users by
+ *     responses:
+ *       200:
+ *         description: Users retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   userId:
+ *                     type: string
+ *                   firstName:
+ *                     type: string
+ *                   lastName:
+ *                     type: string
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *       400:
+ *         description: Role ID is required or internal server error
+ *       500:
+ *         description: Internal server error
+ */
+settingsRoute.get("/getUsersByRole/:roleId", listUsersByRole);
 
 /**
  * @swagger
