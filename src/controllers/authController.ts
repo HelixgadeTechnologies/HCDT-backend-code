@@ -150,7 +150,7 @@ export const listUsersByRole = async (req: Request, res: Response) => {
             return res.status(400).json(errorResponse("Role ID is required", null));
         }
 
-        const users = await getUsersByRoleId(roleId);
+        const users = await getUsersByRoleId(Array.isArray(roleId) ? roleId[0] : roleId);
         res.status(200).json(successResponse("Users retrieved successfully", users));
     } catch (error: any) {
         res.status(400).json(errorResponse("Internal server error", error));
