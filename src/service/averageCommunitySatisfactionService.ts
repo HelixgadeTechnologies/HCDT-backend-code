@@ -12,7 +12,7 @@ export const upsertAverageCommunitySatisfaction = async (
     try {
         const emails = await getEmailsFronDraAndNUPRC(data.trustId as string);
         if (isCreate) {
-            await sendConflictReportEmail(emails, "Average Community Satisfaction");
+            await sendConflictReportEmail(emails, "Average Community Satisfaction", {});
             return await prisma.averageCommunitySatisfaction.create({
                 data: { ...data, averageCommunitySatisfactionId: undefined },
             });

@@ -43,7 +43,18 @@ export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: 
         };
 
         if (isCreate) {
-            await sendConflictReportEmail(emails, "Conflict");
+            // Fetch names for IDs to include in the email
+            const trust = await prisma.trust.findUnique({ where: { trustId: conflictData.trustId as string }, select: { trustName: true } });
+            const cause = conflictData.causeOfConflictId ? await prisma.causeOfConflict.findUnique({ where: { causeOfConflictId: conflictData.causeOfConflictId }, select: { causeOfConflict: true } }) : null;
+
+            const emailDetails = {
+                trustName: trust?.trustName,
+                causeOfConflict: cause?.causeOfConflict,
+                partiesInvolved: conflictData.partiesInvolve,
+                narrateIssues: conflictData.narrateIssues
+            };
+
+            await sendConflictReportEmail(emails, "Conflict", emailDetails);
             // Create a new conflict
             return await prisma.conflict.create({
                 data: { ...normalizedData, conflictId: undefined, userId: userId },

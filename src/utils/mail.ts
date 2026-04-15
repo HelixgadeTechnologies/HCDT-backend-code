@@ -131,7 +131,7 @@ export const sendAdminRegistrationEmail = async (email: string, adminName: strin
 
 
 
-export const sendConflictReportEmail = async (emails: string[], type: string) => {
+export const sendConflictReportEmail = async (emails: string[], type: string, details?: any) => {
   try {
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
@@ -159,15 +159,22 @@ export const sendConflictReportEmail = async (emails: string[], type: string) =>
         </head>
         <body style="font-family: Arial, sans-serif; background-color: #f9f9f9; padding: 20px;">
             <div style="max-width: 600px; margin: auto; background-color: #ffffff; border-radius: 8px; padding: 30px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
-            <h2 style="color: #1a73e8;">${type} Survey Submitted</h2>
+            <h2 style="color: #1a73e8;">New ${type} Survey Submitted</h2>
             <p>Dear Recipient,</p>
             <p>
-                This is to notify you that a new <strong>${type.trim().toLowerCase()}</strong> survey has been submitted successfully.
+                A new <strong>${type.trim().toLowerCase()}</strong> survey has been submitted with the following details:
             </p>
+            <div style="background-color: #f3f4f6; padding: 15px; border-radius: 5px; margin: 20px 0;">
+                <p><strong>Trust:</strong> ${details.trustName || 'N/A'}</p>
+                <p><strong>Cause of Conflict:</strong> ${details.causeOfConflict || 'N/A'}</p>
+                <p><strong>Parties Involved:</strong> ${details.partiesInvolved || 'N/A'}</p>
+                <p><strong>Issue Narrative:</strong></p>
+                <p style="white-space: pre-wrap;">${details.narrateIssues || 'N/A'}</p>
+            </div>
             <p style="color: #888888; font-size: 14px;">
                 Please note that this is an automated message. Do not reply to this email.
             </p>
-            <p>Thank you,<br /><strong>HCDT</strong></p>
+            <p>Thank you,<br /><strong>HCDT Team</strong></p>
             </div>
         </body>
         </html>

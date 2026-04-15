@@ -9,7 +9,7 @@ export const upsertEconomicImpact = async (data: IEconomicImpact, isCreate: bool
 
     const emails = await getEmailsFronDraAndNUPRC(data.trustId as string);
     if (isCreate) {
-          await sendConflictReportEmail(emails, "Economic Impact");
+          await sendConflictReportEmail(emails, "Economic Impact", {});
         // Create a new Economic Impact record
         return await prisma.economicImpact.create({
             data: { ...data, economicImpactId: undefined },
