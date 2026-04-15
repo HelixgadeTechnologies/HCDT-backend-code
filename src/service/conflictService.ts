@@ -46,12 +46,18 @@ export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: 
             // Fetch names for IDs to include in the email
             const trust = await prisma.trust.findUnique({ where: { trustId: conflictData.trustId as string }, select: { trustName: true } });
             const cause = conflictData.causeOfConflictId ? await prisma.causeOfConflict.findUnique({ where: { causeOfConflictId: conflictData.causeOfConflictId }, select: { causeOfConflict: true } }) : null;
+            const issueAddressBy = conflictData.issuesAddressById ? await prisma.issuesAddressBy.findUnique({ where: { issuesAddressById: conflictData.issuesAddressById }, select: { issuesAddressBy: true } }) : null;
+            const conflictStatus = conflictData.conflictStatusId ? await prisma.conflictStatus.findUnique({ where: { conflictStatusId: conflictData.conflictStatusId }, select: { conflictStatus: true } }) : null;
+            const courtLitigationStatus = conflictData.courtLitigationStatusId ? await prisma.courtLitigationStatus.findUnique({ where: { courtLitigationStatusId: conflictData.courtLitigationStatusId }, select: { courtLitigationStatus: true } }) : null;
 
             const emailDetails = {
                 trustName: trust?.trustName,
                 causeOfConflict: cause?.causeOfConflict,
                 partiesInvolved: conflictData.partiesInvolve,
-                narrateIssues: conflictData.narrateIssues
+                narrateIssues: conflictData.narrateIssues,
+                issueAddressedBy: issueAddressBy?.issuesAddressBy,
+                statusOfConflict: conflictStatus?.conflictStatus,
+                statusOfCourtLitigation: courtLitigationStatus?.courtLitigationStatus
             };
 
             await sendConflictReportEmail(emails, "Conflict", emailDetails);

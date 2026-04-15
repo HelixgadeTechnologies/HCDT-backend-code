@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { IAcsOptionOne, IAcsOptionTwo, IAverageCommunitySatisfaction, IAverageCommunitySatisfactionView } from "../interface/averageCommunitySatisfactionInterface";
 import { getEmailsFronDraAndNUPRC } from "./conflictService";
-import { sendConflictReportEmail } from "../utils/mail";
+import { sendConflictReportEmail, sendGeneralSurveyReportEmail } from "../utils/mail";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +12,7 @@ export const upsertAverageCommunitySatisfaction = async (
     try {
         const emails = await getEmailsFronDraAndNUPRC(data.trustId as string);
         if (isCreate) {
-            await sendConflictReportEmail(emails, "Average Community Satisfaction", {});
+            await sendGeneralSurveyReportEmail(emails, "Average Community Satisfaction");
             return await prisma.averageCommunitySatisfaction.create({
                 data: { ...data, averageCommunitySatisfactionId: undefined },
             });
