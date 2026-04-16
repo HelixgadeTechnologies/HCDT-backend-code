@@ -230,6 +230,11 @@ async function callProcedure(option: number, trustId: string, selectedYear: numb
             ["pct_paymentCheck_2"]: Number(row.f2),
             ["pct_paymentCheck_3"]: Number(row.f3)
         }));
+    } else if (option == 22) {
+        return cleaned.map((row: any) => ({
+            ["state"]: row.f0,
+            ["totalTrust"]: Number(row.f1),
+        }));
     } else {
         return []
     }
@@ -258,7 +263,8 @@ export async function getGeneralDashboardData(trustId: string, year: number, sta
         'BOT_INAUGURATION_CHECK',
         'COMMUNITY_LEADERSHIP_PERCENTAGE',
         'NEEDS_ASSESSMENT_PERCENTAGE',
-        'FUNDS_DISTRIBUTION_PERCENTAGE'
+        'FUNDS_DISTRIBUTION_PERCENTAGE',
+        'STATE_WISE_TRUST_COUNT'
     ];
 
     const finalResult: Record<string, any> = {};
