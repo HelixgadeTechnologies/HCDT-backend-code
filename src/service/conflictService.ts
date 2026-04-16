@@ -116,7 +116,15 @@ export const getConflictByTrustId = async (trustId: string): Promise<Array<IConf
         throw new Error("Failed to retrieve conflict");
     }
 };
-
+export const deleteConflict = async (conflictId: string): Promise<void> => {
+    try {
+        await prisma.conflict.delete({
+            where: { conflictId: conflictId },
+        });
+    } catch (error) {
+        throw new Error("Failed to delete conflict");
+    }
+};
 export const getCauseOfConflict = async (): Promise<ICauseOfConflict[]> => {
     try {
         const causeOfConflicts = await prisma.causeOfConflict.findMany();

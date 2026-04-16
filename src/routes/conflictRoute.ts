@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllCauseOfConflict, getAllConflictStatuses, getAllCourtLitigationStatuses, getAllIssuesAddressedBy, getAllPartiesInvolve, getConflict, getConflictDashboard, getConflictViaTrust, handleConflict, listConflicts } from "../controllers/conflictController";
+import { getAllCauseOfConflict, getAllConflictStatuses, getAllCourtLitigationStatuses, getAllIssuesAddressedBy, getAllPartiesInvolve, getConflict, getConflictDashboard, getConflictViaTrust, handleConflict, listConflicts, removeConflict } from "../controllers/conflictController";
 
 
 const conflictRouter = express.Router();
@@ -353,5 +353,38 @@ conflictRouter.get("/courtLitigationStatuses", getAllCourtLitigationStatuses);
  *         description: Internal server error
  */
 conflictRouter.get('/dashboard/:trustId/:year/:state/:settlor', getConflictDashboard);
+
+/**
+ * @swagger
+ * /api/conflict/delete/{conflictId}:
+ *   post:
+ *     summary: Delete a conflict
+ *     description: Deletes a conflict record by its ID.
+ *     tags:
+ *       - Conflict
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: conflictId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The unique identifier of the conflict to delete.
+ *     responses:
+ *       200:
+ *         description: Conflict deleted successfully
+ *       400:
+ *         description: Conflict ID is required
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             example:
+ *               success: false
+ *               message: "Internal server error"
+ *               data: "Failed to delete conflict"
+ */
+conflictRouter.post("/delete/:conflictId", removeConflict);
 
 export default conflictRouter;

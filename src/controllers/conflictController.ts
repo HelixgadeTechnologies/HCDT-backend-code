@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler";
-import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictByTrustId, getConflictDashboardData, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve } from "../service/conflictService";
+import { createOrUpdateConflict, getAllConflicts, getCauseOfConflict, getConflictById, getConflictByTrustId, getConflictDashboardData, getConflictStatuses, getCourtLitigationStatuses, getIssuesAddressedBy, getPartiesInvolve, deleteConflict } from "../service/conflictService";
 
 
 export const handleConflict = async (req: Request, res: Response) => {
@@ -52,6 +52,24 @@ export const getConflict = async (req: Request, res: Response) => {
         res.status(500).json(errorResponse("Internal server error", error));
     }
 };
+
+export const removeConflict = async (req: Request, res: Response) => {
+    try {
+        const { conflictId } = req.params;
+
+        if (!conflictId) {
+            res.status(400).json(notFoundResponse("Conflict ID is required", conflictId));
+            return;
+        }
+
+        await deleteConflict(Array.isArray(conflictId) ? conflictId[0] : conflictId);
+
+        res.status(200).json(successResponse("Conflict deleted successfully", null));
+    } catch (error: any) {
+        res.status(500).json(errorResponse("Internal server error", error.message));
+    }
+};
+
 export const getConflictViaTrust = async (req: Request, res: Response) => {
     try {
         const { trustId } = req.params;
