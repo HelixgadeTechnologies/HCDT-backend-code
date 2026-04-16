@@ -48,7 +48,7 @@ export const sendAdminRegistrationEmail = async (email: string, adminName: strin
             <p>Click the link below to log in:</p>
             <p><a href="https://app-hcdtmonitor.netlify.app/" target="_blank">Go to Login Page</a></p>
     
-            <p>Best regards,<br>HCDT Team</p>
+            <p>Best regards,<br>I-HCDT Monitor Team</p>
     
             <p style="color: gray; font-size: 12px;"><em>Please do not reply to this email. This is an automated message.</em></p>
         `,
@@ -177,7 +177,7 @@ export const sendConflictReportEmail = async (emails: string[], type: string, de
             <p style="color: #888888; font-size: 14px;">
                 Please note that this is an automated message. Do not reply to this email.
             </p>
-            <p>Thank you,<br /><strong>HCDT Team</strong></p>
+            <p>Thank you,<br /><strong>I-HCDT Monitor Team</strong></p>
             </div>
         </body>
         </html>
@@ -191,25 +191,25 @@ export const sendConflictReportEmail = async (emails: string[], type: string, de
 };
 
 export const sendGeneralSurveyReportEmail = async (emails: string[], type: string) => {
-    try {
-        const transporter = nodemailer.createTransport({
-            host: SMTP_HOST,
-            port: Number(SMTP_PORT),
-            secure: true,
-            auth: {
-                user: EMAIL_USER,
-                pass: EMAIL_PASS,
-            },
-            tls: {
-                rejectUnauthorized: false,
-            },
-        });
+  try {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: Number(SMTP_PORT),
+      secure: true,
+      auth: {
+        user: EMAIL_USER,
+        pass: EMAIL_PASS,
+      },
+      tls: {
+        rejectUnauthorized: false,
+      },
+    });
 
-        const mailOptions = {
-            from: EMAIL_USER,
-            to: emails.join(','),
-            subject: `New ${type} Submission`,
-            html: `
+    const mailOptions = {
+      from: EMAIL_USER,
+      to: emails.join(','),
+      subject: `New ${type} Submission`,
+      html: `
             <!DOCTYPE html>
             <html>
             <head>
@@ -226,19 +226,19 @@ export const sendGeneralSurveyReportEmail = async (emails: string[], type: strin
                 <p style="color: #888888; font-size: 14px;">
                     Please note that this is an automated message. Do not reply to this email.
                 </p>
-                <p>Thank you,<br /><strong>HCDT Team</strong></p>
+                <p>Thank you,<br /><strong>I-HCDT Monitor Team</strong></p>
                 </div>
             </body>
             </html>
         `,
-        };
+    };
 
-        await transporter.sendMail(mailOptions);
-    } catch (error) {
-        console.error("Error sending email:", error);
-    }
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending email:", error);
+  }
 };
-export const sendReportLinkEmail = async (emails: string[], type: string,link:string) => {
+export const sendReportLinkEmail = async (emails: string[], type: string, link: string) => {
   try {
     const transporter = nodemailer.createTransport({
       host: SMTP_HOST,
@@ -292,7 +292,7 @@ export const sendReportLinkEmail = async (emails: string[], type: string,link:st
                   This is an automated message. Please do not reply to this email.
                 </p>
 
-                <p>Thank you,<br /><strong>HCDT Team</strong></p>
+                <p>Thank you,<br /><strong>I-HCDT Monitor Team</strong></p>
               </div>
             </body>
           </html>
