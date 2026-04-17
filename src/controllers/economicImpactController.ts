@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { successResponse, errorResponse, notFoundResponse } from "../utils/responseHandler";
-import { getAllEconomicImpacts, getEconomicImpactById, getEconomicImpactByTrustId, getEconomicImpactDataByTrust, getImpactOptionOne, getImpactOptionTwo, upsertEconomicImpact } from "../service/economicimpactService";
+import { getAllEconomicImpacts, getEconomicImpactById, getEconomicImpactByTrustId, getEconomicImpactDataByTrust, getImpactOptionOne, getImpactOptionTwo, upsertEconomicImpact, validateEconomicImpactFile, bulkSaveEconomicImpact } from "../service/economicimpactService";
 
 export const createOrUpdateEconomicImpact = async (req: Request, res: Response) => {
     try {
@@ -106,5 +106,33 @@ export const getEconomicImpactDashboard = async (req: Request, res: Response) =>
     } catch (error: any) {
         // console.log(error)
         res.status(500).json(errorResponse('Internal Server Error', error.message));
+    }
+};
+
+export const validateEconomicImpactUpload = async (req: Request, res: Response) => {
+    try {
+        const { payload } = req.body;
+        if (!payload) {
+            return res.status(400).json(notFoundResponse("No file uploaded"));
+        }
+        const result = await validateEconomicImpactFile(payload);
+        res.status(200).json(successResponse("Economic impact validation complete", result));
+    } catch (error: any) {
+        console.error("Error during economic impact file validation", error);
+        res.status(500).json(errorResponse("Internal server error", error.message));
+    }
+};
+
+export const bulkUploadEconomicImpact = async (req: Request, res: Response) => {
+    try {
+        const records = req.body.payload;
+        if (!Array.isArray(records) || records.length === 0) {
+            return res.status(400).json(notFoundResponse("Request body must include an array of economic impact records"));
+        }
+        const result = await bulkSaveEconomicImpact(records);
+        res.status(200).json(successResponse("Economic impact records processed successfully", result));
+    } catch (error: any) {
+        console.error("Bulk economic impact upload failed", error);
+        res.status(500).json(errorResponse('Internal server error', error.message));
     }
 };

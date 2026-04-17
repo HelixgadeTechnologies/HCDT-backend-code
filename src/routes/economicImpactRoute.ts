@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createOrUpdateEconomicImpact, economicImpactByTrustId, getAllImpactOptionOne, getAllImpactOptionTwo, getEconomicImpact, getEconomicImpactDashboard, listEconomicImpacts } from "../controllers/economicImpactController";
+import { createOrUpdateEconomicImpact, economicImpactByTrustId, getAllImpactOptionOne, getAllImpactOptionTwo, getEconomicImpact, getEconomicImpactDashboard, listEconomicImpacts, validateEconomicImpactUpload, bulkUploadEconomicImpact } from "../controllers/economicImpactController";
 
 const economicImpactRouter = Router();
 
@@ -362,4 +362,58 @@ economicImpactRouter.get("/impactOptionTwo", getAllImpactOptionTwo);
  *         description: Internal server error
  */
 economicImpactRouter.get("/dashboard/:trustId/:year/:state/:settlor", getEconomicImpactDashboard);
+
+/**
+ * @swagger
+ * /api/economic-impact/validate-upload:
+ *   post:
+ *     summary: Validate an Economic Impact Excel upload
+ *     tags: [Economic Impact]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               payload:
+ *                 type: string
+ *                 description: Base64 encoded Excel file
+ *     responses:
+ *       200:
+ *         description: Validation results
+ *       400:
+ *         description: No file uploaded
+ */
+economicImpactRouter.post("/validate-upload", validateEconomicImpactUpload);
+
+/**
+ * @swagger
+ * /api/economic-impact/bulk-upload:
+ *   post:
+ *     summary: Bulk upload Economic Impact records
+ *     tags: [Economic Impact]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               payload:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ *     responses:
+ *       200:
+ *         description: Results of bulk upload
+ *       400:
+ *         description: Invalid payload
+ */
+economicImpactRouter.post("/bulk-upload", bulkUploadEconomicImpact);
+
 export default economicImpactRouter;
