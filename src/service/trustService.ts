@@ -72,7 +72,6 @@ export const getAllTrust = async (): Promise<Array<ITrustView>> => {
     const trusts: Array<ITrustView> = await prisma.$queryRaw`
       SELECT * FROM trust_view
     `;
-    console.log("trusts", trusts)
     return trusts
 }
 
