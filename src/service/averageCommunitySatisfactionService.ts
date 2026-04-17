@@ -1,4 +1,5 @@
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, Prisma } from "@prisma/client";
+import * as XLSX from "xlsx";
 import { IAcsOptionOne, IAcsOptionTwo, IAverageCommunitySatisfaction, IAverageCommunitySatisfactionView } from "../interface/averageCommunitySatisfactionInterface";
 import { getEmailsFronDraAndNUPRC } from "./conflictService";
 import { sendConflictReportEmail, sendGeneralSurveyReportEmail } from "../utils/mail";
@@ -160,3 +161,137 @@ export async function getCommunitySatisfactionDashboard(trustId: string, selecte
 
     return finalResult;
 }
+
+export async function validateSatisfactionFile(base64String: string): Promise<any> {
+    try {
+        const buffer = Buffer.from(base64String, "base64");
+        const workbook = XLSX.read(buffer, { type: "buffer" });
+
+        const sheetName = workbook.SheetNames.find(
+            (name) => name.toLowerCase() === "satisfaction" || name.toLowerCase() === "database"
+        ) || workbook.SheetNames[0];
+
+        const sheet = workbook.Sheets[sheetName];
+        const jsonData = XLSX.utils.sheet_to_json(sheet, { defval: null });
+
+        // Fetch valid trust IDs
+        const existingTrusts = await prisma.trust.findMany({
+            select: { trustId: true, trustName: true }
+        });
+        const trustIds = new Set(existingTrusts.map(t => t.trustId));
+        const trustNames = new Map(existingTrusts.map(t => [t.trustName.toUpperCase().trim(), t.trustId]));
+
+        const validationSummary: any[] = [];
+        const expectedNumericFields = [
+            'infoProjects', 'communityConsult', 'localParticipation', 'reportMechanism', 
+            'conflictMinimization', 'settlorAction', 'nuprcAction', 'projectHandover', 
+            'maintenanceConsult', 'incomeProject'
+        ];
+
+        jsonData.forEach((row: any, index: number) => {
+            const rowNumber = index + 2;
+            const errors: any[] = [];
+
+            // Trust validation
+            let trustId = row["trustId"];
+            const trustName = row["trustName"]?.toString().trim().toUpperCase();
+
+            if (!trustId && trustName) {
+                trustId = trustNames.get(trustName);
+            }
+
+            if (!trustId) {
+                errors.push({ rowNumber, field: "trustId", message: "Missing or invalid Trust ID/Name", value: row["trustId"] || row["trustName"] });
+            } else if (!trustIds.has(trustId)) {
+                errors.push({ rowNumber, field: "trustId", message: `Trust ID "${trustId}" not found`, value: trustId });
+            }
+
+            // Numeric field validation
+            expectedNumericFields.forEach(field => {
+                const val = row[field];
+                if (val !== null && val !== undefined && val !== "") {
+                    const num = Number(val);
+                    if (isNaN(num)) {
+                        errors.push({ rowNumber, field, message: `Field "${field}" must be a number`, value: val });
+                    } else {
+                        // Check ranges based on satisfaction form pattern
+                        const isOptionOneField = ['infoProjects', 'communityConsult', 'localParticipation', 'reportMechanism', 'conflictMinimization', 'settlorAction', 'nuprcAction'].includes(field);
+                        const maxVal = isOptionOneField ? 5 : 4;
+                        if (num < 1 || num > maxVal) {
+                            errors.push({ rowNumber, field, message: `Field "${field}" must be between 1 and ${maxVal}`, value: num });
+                        }
+                    }
+                }
+            });
+
+            if (errors.length > 0) {
+                validationSummary.push(...errors);
+            }
+        });
+
+        return {
+            totalRecords: jsonData.length,
+            totalInvalid: validationSummary.length,
+            allSatisfactionData: jsonData,
+            validationSummary,
+        };
+    } catch (error: any) {
+        console.error("Error validating satisfaction file:", error);
+        throw new Error("Failed to process Excel file.");
+    }
+}
+
+export const bulkSaveSatisfaction = async (records: any[]) => {
+    const failed: any[] = [];
+    const validRecords: Prisma.AverageCommunitySatisfactionCreateManyInput[] = [];
+
+    try {
+        const existingTrusts = await prisma.trust.findMany({ select: { trustId: true, trustName: true } });
+        const trustIds = new Set(existingTrusts.map(t => t.trustId));
+        const trustNames = new Map(existingTrusts.map(t => [t.trustName.toUpperCase().trim(), t.trustId]));
+
+        for (const [index, data] of records.entries()) {
+            try {
+                let trustId = data.trustId;
+                if (!trustId && data.trustName) {
+                    trustId = trustNames.get(data.trustName.toString().toUpperCase().trim());
+                }
+
+                if (!trustId || !trustIds.has(trustId)) {
+                    failed.push({ index, message: "Invalid Trust association", trustName: data.trustName, trustId: data.trustId });
+                    continue;
+                }
+
+                validRecords.push({
+                    infoProjects: Number(data.infoProjects) || 0,
+                    communityConsult: Number(data.communityConsult) || 0,
+                    localParticipation: Number(data.localParticipation) || 0,
+                    reportMechanism: Number(data.reportMechanism) || 0,
+                    conflictMinimization: Number(data.conflictMinimization) || 0,
+                    settlorAction: Number(data.settlorAction) || 0,
+                    nuprcAction: Number(data.nuprcAction) || 0,
+                    projectHandover: Number(data.projectHandover) || 0,
+                    maintenanceConsult: Number(data.maintenanceConsult) || 0,
+                    incomeProject: Number(data.incomeProject) || 0,
+                    trustId: trustId,
+                });
+            } catch (error: any) {
+                failed.push({ index, message: error.message, data });
+            }
+        }
+
+        const result = validRecords.length > 0 
+            ? await prisma.averageCommunitySatisfaction.createMany({ data: validRecords, skipDuplicates: true })
+            : { count: 0 };
+
+        return {
+            totalRecords: records.length,
+            totalInserted: result.count,
+            totalFailed: failed.length,
+            failed,
+        };
+    } catch (error) {
+        console.error("Bulk satisfaction upload failed:", error);
+        throw new Error("Bulk satisfaction upload failed");
+    }
+};

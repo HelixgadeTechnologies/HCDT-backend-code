@@ -1,5 +1,5 @@
 import express from "express";
-import { createOrUpdateAverageCommunitySatisfaction, getAllAcsOptionOne, getAllAcsOptionTwo, getAverageCommunitySatisfactionById, getAverageCommunitySatisfactionByTrustId, getDashboardData, listAverageCommunitySatisfaction } from "../controllers/averageCommunitySatisfactionController";
+import { bulkUploadSatisfaction, createOrUpdateAverageCommunitySatisfaction, getAllAcsOptionOne, getAllAcsOptionTwo, getAverageCommunitySatisfactionById, getAverageCommunitySatisfactionByTrustId, getDashboardData, listAverageCommunitySatisfaction, validateSatisfactionUpload } from "../controllers/averageCommunitySatisfactionController";
 
 const averageCommunitySatisfactionRouter = express.Router();
 
@@ -548,4 +548,43 @@ averageCommunitySatisfactionRouter.get("/acsOptionTwo", getAllAcsOptionTwo);
  *         description: Internal server error
  */
 averageCommunitySatisfactionRouter.get('/dashboard/:trustId/:year/:state/:settlor', getDashboardData);
+
+/**
+ * @swagger
+ * /api/average-community-satisfaction/validate-upload:
+ *   post:
+ *     summary: Validate a satisfaction Excel file
+ *     tags: [Average Community Satisfaction]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               payload:
+ *                 type: string
+ *                 description: Base64 string of the Excel file
+ */
+averageCommunitySatisfactionRouter.post("/validate-upload", validateSatisfactionUpload);
+
+/**
+ * @swagger
+ * /api/average-community-satisfaction/bulk-upload:
+ *   post:
+ *     summary: Bulk save satisfaction records
+ *     tags: [Average Community Satisfaction]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               payload:
+ *                 type: array
+ *                 items:
+ *                   type: object
+ */
+averageCommunitySatisfactionRouter.post("/bulk-upload", bulkUploadSatisfaction);
 export default averageCommunitySatisfactionRouter;
