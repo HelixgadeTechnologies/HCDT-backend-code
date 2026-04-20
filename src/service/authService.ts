@@ -1,7 +1,7 @@
 import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { IDraSignUp, ILogin, ILoginUpdate, IRegisterAnyUser, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
+import { IDraSignUp, ILogin, ILoginUpdate, IRegisterAnyUser, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { JWT_SECRET } from "../secrets";
 import { sendAdminRegistrationEmail } from "../utils/mail";
 import { deleteFile, getFileName, uploadFile } from "../utils/upload";
@@ -163,6 +163,25 @@ export const getAllNUPRC = async (): Promise<Array<IUserClient>> => {
   return users;
 }
 
+export const getBoTByTrust = async (trustId:string):Promise<Array<IUserClient>> =>{
+  const bots: IUserView[] = await prisma.$queryRaw`
+    SELECT * FROM user_view WHERE role IN(${"Board of Trustees"}) AND trusts = ${trustId}
+  `;
+  return bots;
+}
+
+export const getSettlorAssignToTrust = async (trustId:string):Promise<ISettlorSignUp> =>{
+  const trust = await prisma.trust.findUnique({ where: { trustId: trustId } });
+  const settlor = await prisma.settlor.findUnique({ where: { settlorName: trust?.settlor as string } });
+  return settlor as ISettlorSignUp;
+}
+
+export const getDRAByTrust = async (trustId:string):Promise<Array<IUserClient>> =>{
+  const dras: IUserView[] = await prisma.$queryRaw`
+    SELECT * FROM user_view WHERE role IN(${"Data Reporting Agent (DRA)"}) AND trusts = ${trustId}
+  `;
+  return dras;
+}
 
 export const registerDRA = async (data: IDraSignUp, isCreate: boolean) => {
 

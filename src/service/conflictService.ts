@@ -1,7 +1,7 @@
 import { PrismaClient } from "@prisma/client";
 import { ICauseOfConflict, IConflict, IConflictStatus, IConflictView, ICourtLitigationStatus, IIssuesAddressBy, IPartiesInvolve } from "../interface/conflictInterface";
 import { sendConflictReportEmail } from "../utils/mail";
-import { getAllAdminByTrustId, getAllDRAByTrustId, getAllNUPRC } from "./authService";
+import { getAllAdminByTrustId, getAllDRAByTrustId, getAllNUPRC, getBoTByTrust, getSettlorAssignToTrust } from "./authService";
 
 
 const prisma = new PrismaClient();
@@ -17,22 +17,23 @@ export const getEmailsFronDraAndNUPRC = async (trustId: string): Promise<string[
     // Remove duplicates
     return [...new Set(emails)] as string[];
 };
-export const getEmailsFromDraAndAdmin = async (trustId: string): Promise<string[]> => {
-    const dra = await getAllDRAByTrustId(trustId);
-    const admin = await getAllAdminByTrustId(trustId);
+export const getEmailsFromSettlorNUPRCAndBoT = async (trustId: string): Promise<string[]> => {
+    const settlor = await getSettlorAssignToTrust(trustId);
+    const nuprc = await getAllNUPRC();
+    const bots = await getBoTByTrust(trustId);
 
-    const emails = [...dra, ...admin]
+    const emails = [...nuprc, ...bots]
         .map(user => user.email)
         .filter(email => typeof email === 'string' && email.trim() !== '');
 
     // Remove duplicates
-    return [...new Set(emails)] as string[];
+    return [...new Set(emails), settlor.contactEmail] as string[];
 };
 
 export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean, userId: string) => {
     try {
         // Ensure conflictData is not null or undefined
-        const emails = await getEmailsFronDraAndNUPRC(conflictData.trustId as string);
+        const emails = await getEmailsFromSettlorNUPRCAndBoT(conflictData.trustId as string);
 
         // Normalize issuesAddressById: set to null if 0 or empty
         const normalizedData = {
