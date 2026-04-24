@@ -4,7 +4,7 @@ import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
 import { sendReportLinkEmail } from "../utils/mail";
-import { getEmailsFromDraAndAdmin } from "./conflictService";
+import { getEmailsFromSettlorNUPRCAndBoT } from "./conflictService";
 
 
 const prisma = new PrismaClient();
@@ -103,7 +103,7 @@ const toNumOrUndefined = (val: any) => {
 
 export const addTrustEstablishmentStatus = async (data: ITrustEstablishmentStatus) => {
     try {
-       
+
         const trustOperationalEstablishmentData: any = {
             trustId: toNullOrEmpty(data.trustId),
             trustRegisteredWithCAC: toNumOrNull(data.trustRegisteredWithCAC),
@@ -197,7 +197,7 @@ export const setSurveyAccess = async (trustId: string, accessName: string, url: 
         where: { trustId: trustId }
     });
     // console.log(url)
-    const emails = await getEmailsFromDraAndAdmin(trustId);
+    const emails = await getEmailsFromSettlorNUPRCAndBoT(trustId);
     if (trust) {
         if (accessName === "CONFLICT") {
             if (trust.disableConflictSurvey == false) {
