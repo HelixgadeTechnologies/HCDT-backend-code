@@ -47,7 +47,7 @@ export const deleteProjectController = async (req: Request, res: Response) => {
             return res.status(400).json(errorResponse("Project ID is required for deletion."));
         }
 
-        await deleteProject(projectId);
+        await deleteProject(Array.isArray(projectId) ? projectId[0] : projectId);
 
         res.status(200).json(successResponse("Project deleted successfully"));
     } catch (error: any) {
