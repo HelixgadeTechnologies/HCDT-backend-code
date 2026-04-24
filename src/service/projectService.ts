@@ -46,6 +46,12 @@ export const reportProject = async (projectId: string, reportData: Partial<IProj
     });
 };
 
+export const deleteProject = async (projectId: string) => {
+    return await prisma.project.delete({
+        where: { projectId },
+    });
+};
+
 export const getAllProjectsView = async (): Promise<IProjectClient[]> => {
     const projects = await prisma.$queryRaw<IProjectView[]>`
         SELECT * FROM project_view

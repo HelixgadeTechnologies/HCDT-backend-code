@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectDashboardData, getProjectsView, getProjectsViewByTrust, reportProject } from "../service/projectService";
+import { createOrUpdateProject, deleteProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectDashboardData, getProjectsView, getProjectsViewByTrust, reportProject } from "../service/projectService";
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 
 export const addOrUpdateProject = async (req: Request, res: Response) => {
@@ -34,6 +34,22 @@ export const reportProjectController = async (req: Request, res: Response) => {
         const project = await reportProject(projectId, data);
 
         res.status(200).json(successResponse("Project reported successfully", project));
+    } catch (error: any) {
+        res.status(500).json(errorResponse("Internal server error", error.message));
+    }
+};
+
+export const deleteProjectController = async (req: Request, res: Response) => {
+    try {
+        const { projectId } = req.params;
+
+        if (!projectId) {
+            return res.status(400).json(errorResponse("Project ID is required for deletion."));
+        }
+
+        await deleteProject(projectId);
+
+        res.status(200).json(successResponse("Project deleted successfully"));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error.message));
     }

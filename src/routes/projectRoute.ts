@@ -1,5 +1,5 @@
 import express from "express";
-import { addOrUpdateProject, getProject, getProjectByTrust, getProjectCategories, getProjectDashboard, getQualityRatings, getStatusReports, getTypeOfWork, listProjects, reportProjectController } from "../controllers/projectController";
+import { addOrUpdateProject, deleteProjectController, getProject, getProjectByTrust, getProjectCategories, getProjectDashboard, getQualityRatings, getStatusReports, getTypeOfWork, listProjects, reportProjectController } from "../controllers/projectController";
 
 
 const projectRouter = express.Router();
@@ -175,6 +175,33 @@ projectRouter.post("/save", addOrUpdateProject); // Handles both create and upda
  *         description: Internal server error
  */
 projectRouter.post("/report", reportProjectController);
+
+/**
+ * @swagger
+ * /api/project/delete/{projectId}:
+ *   post:
+ *     summary: Delete a project
+ *     description: Deletes a project by its project ID.
+ *     tags:
+ *       - Project
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: projectId
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The unique ID of the project to delete
+ *     responses:
+ *       200:
+ *         description: Project deleted successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+projectRouter.post("/delete/:projectId", deleteProjectController);
 
 /**
  * @swagger
