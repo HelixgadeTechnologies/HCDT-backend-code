@@ -1,5 +1,5 @@
 import express from "express";
-import { addOrUpdateProject, getProject, getProjectByTrust, getProjectCategories, getProjectDashboard, getQualityRatings, getStatusReports, getTypeOfWork, listProjects } from "../controllers/projectController";
+import { addOrUpdateProject, getProject, getProjectByTrust, getProjectCategories, getProjectDashboard, getQualityRatings, getStatusReports, getTypeOfWork, listProjects, reportProjectController } from "../controllers/projectController";
 
 
 const projectRouter = express.Router();
@@ -118,6 +118,63 @@ const projectRouter = express.Router();
  *         description: Internal server error
  */
 projectRouter.post("/save", addOrUpdateProject); // Handles both create and update
+
+/**
+ * @swagger
+ * /api/project/report:
+ *   post:
+ *     summary: Report on a project's progress and impact
+ *     description: Updates specific project fields related to status, quality, employment, and beneficiaries.
+ *     tags:
+ *       - Project
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               projectId:
+ *                 type: string
+ *                 example: "fkfiifi"
+ *               data:
+ *                 type: object
+ *                 properties:
+ *                   projectStatus:
+ *                     type: integer
+ *                   qualityRatingId:
+ *                     type: integer
+ *                   projectVideo:
+ *                     type: string
+ *                   projectVideoMimeType:
+ *                     type: string
+ *                   numberOfMaleEmployedByContractor:
+ *                     type: integer
+ *                   numberOfFemaleEmployedByContractor:
+ *                     type: integer
+ *                   numberOfPwDsEmployedByContractor:
+ *                     type: integer
+ *                   typeOfWork:
+ *                     type: string
+ *                   numberOfHostCommunityMemberContracted:
+ *                     type: integer
+ *                   numberOfMaleBenefited:
+ *                     type: integer
+ *                   numberOfFemaleBenefited:
+ *                     type: integer
+ *                   numberOfPwDsBenefited:
+ *                     type: integer
+ *     responses:
+ *       200:
+ *         description: Project reported successfully
+ *       400:
+ *         description: Bad request
+ *       500:
+ *         description: Internal server error
+ */
+projectRouter.post("/report", reportProjectController);
 
 /**
  * @swagger

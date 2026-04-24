@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectDashboardData, getProjectsView, getProjectsViewByTrust } from "../service/projectService";
+import { createOrUpdateProject, getAllProjectCategories, getAllProjectsView, getAllQualityRatings, getAllStatusReports, getAllTypeOfWork, getProjectDashboardData, getProjectsView, getProjectsViewByTrust, reportProject } from "../service/projectService";
 import { errorResponse, notFoundResponse, successResponse } from "../utils/responseHandler";
 
 export const addOrUpdateProject = async (req: Request, res: Response) => {
@@ -18,6 +18,22 @@ export const addOrUpdateProject = async (req: Request, res: Response) => {
 
         const message = isCreate ? "Project created successfully" : "Project updated successfully";
         res.status(201).json(successResponse(message, project));
+    } catch (error: any) {
+        res.status(500).json(errorResponse("Internal server error", error.message));
+    }
+};
+
+export const reportProjectController = async (req: Request, res: Response) => {
+    try {
+        const { projectId, data } = req.body;
+
+        if (!projectId) {
+            return res.status(400).json(errorResponse("Project ID is required for reporting."));
+        }
+
+        const project = await reportProject(projectId, data);
+
+        res.status(200).json(successResponse("Project reported successfully", project));
     } catch (error: any) {
         res.status(500).json(errorResponse("Internal server error", error.message));
     }

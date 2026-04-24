@@ -35,6 +35,17 @@ export const createOrUpdateProject = async (projectData: IProject, isCreate: boo
     }
 };
 
+export const reportProject = async (projectId: string, reportData: Partial<IProject>) => {
+    return await prisma.project.update({
+        where: { projectId },
+        data: {
+            ...reportData,
+            completeAt: reportData.projectStatus == 4 ? new Date().toISOString() : undefined,
+            projectVideo: reportData.projectVideo ? reportData.projectVideo : undefined,
+        },
+    });
+};
+
 export const getAllProjectsView = async (): Promise<IProjectClient[]> => {
     const projects = await prisma.$queryRaw<IProjectView[]>`
         SELECT * FROM project_view
