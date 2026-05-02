@@ -41,9 +41,20 @@ export async function getDashboardSummaryStats() {
         );
 
         const cleaned = normalizeBigInts(rawData);
-        
+        const result = cleaned.map((item: any) => {
+            return {
+                trustCacCount: Number(item.f0),
+                trustFundsCount: Number(item.f1),
+                totalConflicts: Number(item.f2),
+                resolvedConflicts: Number(item.f3),
+                grandTotalEmployment: Number(item.f4),
+                totalHostCommunityContracted: Number(item.f5),
+            }
+        });
+        //console.log("cleaned", result);
+
         // Since the procedure returns a single row of stats
-        return cleaned[0] || {
+        return result[0] || {
             trustCacCount: 0,
             trustFundsCount: 0,
             totalConflicts: 0,
