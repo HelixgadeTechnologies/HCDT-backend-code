@@ -1,7 +1,23 @@
 import express from 'express';
 import { generalDashboard } from '../controllers/generalDashboardController';
+import { getDashboardSummary } from '../controllers/dashboardSummaryController';
 
 const generalRouter = express.Router();
+
+/**
+ * @swagger
+ * /api/dashboard/summary:
+ *   get:
+ *     summary: Get general dashboard summary statistics
+ *     tags:
+ *       - Dashboard
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved summary statistics
+ *       500:
+ *         description: Server error while retrieving summary statistics
+ */
+generalRouter.get('/summary', getDashboardSummary);
 
 /**
  * @swagger
