@@ -21,6 +21,7 @@ const options: swaggerJSDoc.Options = {
       { name: "Conflict", description: "Conflict Management Endpoints" },
       { name: "Average Community Satisfaction", description: "Average Community Satisfaction Management Endpoints" },
       { name: "Economic Impact", description: "Economic Impact Management Endpoints" },
+      { name: "Dashboard", description: "Dashboard Endpoints" },
     ],
     components: {
       securitySchemes: {
