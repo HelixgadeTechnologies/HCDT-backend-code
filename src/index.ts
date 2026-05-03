@@ -5,11 +5,22 @@ import rootRoutes from "./routes/index";
 import setupSwagger from './swagger';
 import { lifeCheck } from "./routes/lfeCheck";
 import authenticateToken from "./middlewares/auth.middleware";
-var cors = require('cors')
+import cors from 'cors';
 let app: Express = express();
 
-// Enable CORS before body parsers (to handle preflight requests properly)
-app.use(cors());
+// Explicit CORS config — required for Heroku proxy and Swagger UI
+const corsOptions = {
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
+    credentials: false,
+    optionsSuccessStatus: 200, // Some browsers (IE11) choke on 204
+};
+
+app.use(cors(corsOptions));
+
+// Explicitly handle preflight OPTIONS requests for all routes
+app.options('*', cors(corsOptions));
 
 // Trust proxy (for Heroku or reverse proxies)
 app.set("trust proxy", 1);
