@@ -5,7 +5,7 @@ import rootRoutes from "./routes/index";
 import setupSwagger from './swagger';
 import { lifeCheck } from "./routes/lfeCheck";
 import authenticateToken from "./middlewares/auth.middleware";
-import cors from 'cors';
+var cors = require('cors')
 let app: Express = express();
 
 // Explicit CORS config — required for Heroku proxy and Swagger UI
