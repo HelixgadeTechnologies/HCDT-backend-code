@@ -7,6 +7,8 @@ export interface IAverageCommunitySatisfaction {
     conflictMinimization?: number | null;
     settlorAction?: number | null,
     nuprcAction?: number | null,
+    trustTransparencyAndAccountability?: number | null,
+    fairInvolvement?: number | null,
     projectHandover?: number | null;
     maintenanceConsult?: number | null;
     incomeProject?: number | null;
@@ -23,6 +25,8 @@ export interface IAverageCommunitySatisfactionView {
     conflictMinimization?: number | null;
     settlorAction?: number | null,
     nuprcAction?: number | null,
+    trustTransparencyAndAccountability?: number | null,
+    fairInvolvement?: number | null,
 
     infoProjectsStatus?: string | null;
     communityConsultStatus?: string | null;

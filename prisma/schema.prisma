@@ -300,6 +300,8 @@ model AverageCommunitySatisfaction {
   conflictMinimization           Int?
   settlorAction                  Int?
   nuprcAction                    Int?
+  trustTransparencyAndAccountability Int?
+  fairInvolvement                Int?
   projectHandover                Int?
   maintenanceConsult             Int?
   incomeProject                  Int?
