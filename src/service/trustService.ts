@@ -327,8 +327,8 @@ async function callProcedure(option: number, trustId: string): Promise<void | an
             ["completionStatus"]: row.f14,
             ["updateAt"]: row.f15,
             ["statusOfNeedAssessment"]: Number(row.f16),
-            ["distributionMatrixDevelopedBySettlor"]: Number(row.f17)
-            ["isTrustDevelopmentPlanBudgetReadilyAvailable"]: Number(row.f18)
+            ["distributionMatrixDevelopedBySettlor"]: Number(row.f17),
+            ["isTrustDevelopmentPlanBudgetReadilyAvailable"]: Number(row.f18),
             ["isTrustDevelopmentPlanReadilyAvailable"]: Number(row.f19)
         }));
     } else if (option == 2) {
