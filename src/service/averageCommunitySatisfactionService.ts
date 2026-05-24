@@ -148,6 +148,8 @@ export async function getCommunitySatisfactionDashboard(trustId: string, selecte
         'projectHandover',
         'maintenanceConsult',
         'incomeProject',
+        'trustTransparencyAndAccountability',
+        'fairInvolvement'
     ];
 
 
