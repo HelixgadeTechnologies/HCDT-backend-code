@@ -151,7 +151,7 @@ export async function validateEconomicImpactFile(base64String: string): Promise<
 
         const validationSummary: any[] = [];
         const expectedNumericFields = [
-            'businessGrowth', 'incomeIncrease', 'livelihoodImprove','communityPeaceAndSecurity', 'accessAmenities',
+            'businessGrowth', 'incomeIncrease', 'livelihoodImprove', 'communityPeaceAndSecurity',
         ];
 
         jsonData.forEach((row: any, index: number) => {
@@ -172,22 +172,32 @@ export async function validateEconomicImpactFile(base64String: string): Promise<
                 errors.push({ rowNumber, field: "trustId", message: `Trust ID "${trustId}" not found`, value: trustId });
             }
 
-            // Numeric field validation
+            // Numeric field validation (single value, 1–3)
             expectedNumericFields.forEach(field => {
                 const val = row[field];
                 if (val !== null && val !== undefined && val !== "") {
                     const num = Number(val);
                     if (isNaN(num)) {
                         errors.push({ rowNumber, field, message: `Field "${field}" must be a number`, value: val });
-                    } else {
-                        // Check ranges
-                        const maxVal = field === 'accessAmenities' ? 8 : 3;
-                        if (num < 1 || num > maxVal) {
-                            errors.push({ rowNumber, field, message: `Field "${field}" must be between 1 and ${maxVal}`, value: num });
-                        }
+                    } else if (num < 1 || num > 3) {
+                        errors.push({ rowNumber, field, message: `Field "${field}" must be between 1 and 3`, value: num });
                     }
                 }
             });
+
+            // accessAmenities: comma-separated values, each must be 0–7
+            const amenitiesVal = row["accessAmenities"];
+            if (amenitiesVal !== null && amenitiesVal !== undefined && amenitiesVal !== "") {
+                const parts = String(amenitiesVal).split(",").map(s => s.trim());
+                parts.forEach(part => {
+                    const num = Number(part);
+                    if (isNaN(num) || !Number.isInteger(num)) {
+                        errors.push({ rowNumber, field: "accessAmenities", message: `accessAmenities contains non-integer value "${part}"`, value: amenitiesVal });
+                    } else if (num < 0 || num > 7) {
+                        errors.push({ rowNumber, field: "accessAmenities", message: `accessAmenities values must be between 0 and 7, got ${num}`, value: amenitiesVal });
+                    }
+                });
+            }
 
             if (errors.length > 0) {
                 validationSummary.push(...errors);
