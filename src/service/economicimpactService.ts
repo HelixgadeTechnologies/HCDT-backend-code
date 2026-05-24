@@ -242,7 +242,7 @@ export const bulkSaveEconomicImpact = async (records: any[]) => {
                     incomeIncrease: Number(data.incomeIncrease) || 0,
                     livelihoodImprove: Number(data.livelihoodImprove) || 0,
                     communityPeaceAndSecurity: Number(data.communityPeaceAndSecurity) || 0,
-                    accessAmenities: Number(data.accessAmenities) || 0,
+                    accessAmenities: String(data.accessAmenities) || "",
                     trustId: trustId,
                 });
             } catch (error: any) {
