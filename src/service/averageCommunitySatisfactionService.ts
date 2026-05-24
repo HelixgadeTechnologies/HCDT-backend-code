@@ -107,7 +107,7 @@ async function callProcedure(trustId: string, option: number, selectedYear: numb
     );
 
     const cleaned = normalizeBigInts(raw);
-    if (option < 8) {
+    if (option < 10) {
         return cleaned.map((row: any) => ({
             ["QUESTION"]: row.f0,
             ["RESPONSE"]: {
@@ -144,11 +144,11 @@ export async function getCommunitySatisfactionDashboard(trustId: string, selecte
         'conflictMinimization',
         'settlorAction',
         'nuprcAction',
+        'trustTransparencyAndAccountability',
+        'fairInvolvement',
         'projectHandover',
         'maintenanceConsult',
-        'incomeProject',
-        'trustTransparencyAndAccountability',
-        'fairInvolvement'
+        'incomeProject'
     ];
 
 
