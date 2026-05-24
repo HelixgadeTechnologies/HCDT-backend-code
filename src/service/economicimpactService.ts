@@ -117,6 +117,7 @@ export async function getEconomicImpactDataByTrust(trustId: string, selectedYear
         'businessGrowth',
         'incomeIncrease',
         'livelihoodImprove',
+        'communityPeaceAndSecurity',
         'accessAmenities'
     ];
 
@@ -151,7 +152,7 @@ export async function validateEconomicImpactFile(base64String: string): Promise<
 
         const validationSummary: any[] = [];
         const expectedNumericFields = [
-            'businessGrowth', 'incomeIncrease', 'livelihoodImprove', 'accessAmenities'
+            'businessGrowth', 'incomeIncrease', 'livelihoodImprove','communityPeaceAndSecurity', 'accessAmenities',
         ];
 
         jsonData.forEach((row: any, index: number) => {
@@ -231,6 +232,7 @@ export const bulkSaveEconomicImpact = async (records: any[]) => {
                     businessGrowth: Number(data.businessGrowth) || 0,
                     incomeIncrease: Number(data.incomeIncrease) || 0,
                     livelihoodImprove: Number(data.livelihoodImprove) || 0,
+                    communityPeaceAndSecurity: Number(data.communityPeaceAndSecurity) || 0,
                     accessAmenities: Number(data.accessAmenities) || 0,
                     trustId: trustId,
                 });

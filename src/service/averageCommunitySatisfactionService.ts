@@ -1,8 +1,8 @@
-import { PrismaClient, Prisma } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 import * as XLSX from "xlsx";
 import { IAcsOptionOne, IAcsOptionTwo, IAverageCommunitySatisfaction, IAverageCommunitySatisfactionView } from "../interface/averageCommunitySatisfactionInterface";
+import { sendGeneralSurveyReportEmail } from "../utils/mail";
 import { getEmailsFronDraAndNUPRC } from "./conflictService";
-import { sendConflictReportEmail, sendGeneralSurveyReportEmail } from "../utils/mail";
 
 const prisma = new PrismaClient();
 
@@ -185,9 +185,9 @@ export async function validateSatisfactionFile(base64String: string): Promise<an
 
         const validationSummary: any[] = [];
         const expectedNumericFields = [
-            'infoProjects', 'communityConsult', 'localParticipation', 'reportMechanism', 
-            'conflictMinimization', 'settlorAction', 'nuprcAction', 'projectHandover', 
-            'maintenanceConsult', 'incomeProject'
+            'infoProjects', 'communityConsult', 'localParticipation', 'reportMechanism',
+            'conflictMinimization', 'settlorAction', 'nuprcAction', 'trustTransparencyAndAccountability', 'fairInvolvement', 'projectHandover',
+            'maintenanceConsult', 'incomeProject',
         ];
 
         jsonData.forEach((row: any, index: number) => {
@@ -275,6 +275,8 @@ export const bulkSaveSatisfaction = async (records: any[]) => {
                     projectHandover: Number(data.projectHandover) || 0,
                     maintenanceConsult: Number(data.maintenanceConsult) || 0,
                     incomeProject: Number(data.incomeProject) || 0,
+                    trustTransparencyAndAccountability: Number(data.trustTransparencyAndAccountability) || 0,
+                    fairInvolvement: Number(data.fairInvolvement) || 0,
                     trustId: trustId,
                 });
             } catch (error: any) {
@@ -282,7 +284,7 @@ export const bulkSaveSatisfaction = async (records: any[]) => {
             }
         }
 
-        const result = validRecords.length > 0 
+        const result = validRecords.length > 0
             ? await prisma.averageCommunitySatisfaction.createMany({ data: validRecords, skipDuplicates: true })
             : { count: 0 };
 

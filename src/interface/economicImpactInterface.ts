@@ -4,6 +4,7 @@ export interface IEconomicImpact {
     incomeIncrease?: number | null;
     livelihoodImprove?: number | null;
     accessAmenities?: number | null;
+    communityPeaceAndSecurity?: number | null;
     trustId?: string | null;
 }
 
@@ -17,6 +18,8 @@ export interface IEconomicImpactView {
     livelihoodImproveStatus?: string | null;
     accessAmenities?: number | null;
     accessAmenitiesStatus?: string | null;
+    communityPeaceAndSecurity?: number | null;
+    communityPeaceAndSecurityStatus?: string | null;
     trustId?: string | null;
     trustName?: string | null;
     createAt?: string | null;

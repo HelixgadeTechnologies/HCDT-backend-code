@@ -52,7 +52,7 @@ model Role {
 model Settlor {
   settlorId          String  @id @default(uuid())
   settlorName        String? @unique
-  rcNumber            String? 
+  rcNumber           String?
   contactName        String?
   contactEmail       String?
   contactPhoneNumber String?
@@ -234,21 +234,21 @@ model TypeOfWork {
 }
 
 model Conflict {
-  conflictId              String                 @id @default(uuid())
+  conflictId              String           @id @default(uuid())
   trustId                 String?
-  user                    User?                  @relation(fields: [userId], references: [userId])
+  user                    User?            @relation(fields: [userId], references: [userId])
   userId                  String?
-  causeOfConflict         CauseOfConflict?       @relation(fields: [causeOfConflictId], references: [causeOfConflictId])
+  causeOfConflict         CauseOfConflict? @relation(fields: [causeOfConflictId], references: [causeOfConflictId])
   causeOfConflictId       Int?
   partiesInvolve          String?
   narrateIssues           String?
-  conflictStatus          ConflictStatus?        @relation(fields: [conflictStatusId], references: [conflictStatusId])
+  conflictStatus          ConflictStatus?  @relation(fields: [conflictStatusId], references: [conflictStatusId])
   conflictStatusId        Int?
-  issuesAddressBy         IssuesAddressBy?       @relation(fields: [issuesAddressById], references: [issuesAddressById])
+  issuesAddressBy         IssuesAddressBy? @relation(fields: [issuesAddressById], references: [issuesAddressById])
   issuesAddressById       Int?
   courtLitigationStatusId Int?
-  createAt                DateTime?              @default(now())
-  updateAt                DateTime?              @default(now())
+  createAt                DateTime?        @default(now())
+  updateAt                DateTime?        @default(now())
 
   @@map("conflict")
 }
@@ -262,7 +262,7 @@ model CauseOfConflict {
 }
 
 model PartiesInvolve {
-  partiesInvolveId Int        @id @default(autoincrement())
+  partiesInvolveId Int     @id @default(autoincrement())
   partiesInvolve   String?
 
   @@map("partiesinvolve")
@@ -285,30 +285,30 @@ model IssuesAddressBy {
 }
 
 model CourtLitigationStatus {
-  courtLitigationStatusId Int        @id @default(autoincrement())
+  courtLitigationStatusId Int     @id @default(autoincrement())
   courtLitigationStatus   String?
 
   @@map("courtlitigationstatus")
 }
 
 model AverageCommunitySatisfaction {
-  averageCommunitySatisfactionId String    @id @default(uuid())
-  infoProjects                   Int?
-  communityConsult               Int?
-  localParticipation             Int?
-  reportMechanism                Int?
-  conflictMinimization           Int?
-  settlorAction                  Int?
-  nuprcAction                    Int?
+  averageCommunitySatisfactionId     String    @id @default(uuid())
+  infoProjects                       Int?
+  communityConsult                   Int?
+  localParticipation                 Int?
+  reportMechanism                    Int?
+  conflictMinimization               Int?
+  settlorAction                      Int?
+  nuprcAction                        Int?
   trustTransparencyAndAccountability Int?
-  fairInvolvement                Int?
-  projectHandover                Int?
-  maintenanceConsult             Int?
-  incomeProject                  Int?
-  trust                          Trust?    @relation(fields: [trustId], references: [trustId])
-  trustId                        String?
-  createAt                       DateTime? @default(now())
-  updateAt                       DateTime? @default(now())
+  fairInvolvement                    Int?
+  projectHandover                    Int?
+  maintenanceConsult                 Int?
+  incomeProject                      Int?
+  trust                              Trust?    @relation(fields: [trustId], references: [trustId])
+  trustId                            String?
+  createAt                           DateTime? @default(now())
+  updateAt                           DateTime? @default(now())
 
   @@map("averagecommunitysatisfaction")
 }
@@ -328,15 +328,16 @@ model AcsOptionTwo {
 }
 
 model EconomicImpact {
-  economicImpactId  String    @id @default(uuid())
-  businessGrowth    Int?
-  incomeIncrease    Int?
-  livelihoodImprove Int?
-  accessAmenities   Int?
-  trust             Trust?    @relation(fields: [trustId], references: [trustId])
-  trustId           String?
-  createAt          DateTime? @default(now())
-  updateAt          DateTime? @default(now())
+  economicImpactId          String    @id @default(uuid())
+  businessGrowth            Int?
+  incomeIncrease            Int?
+  livelihoodImprove         Int?
+  accessAmenities           Int?
+  communityPeaceAndSecurity Int?
+  trust                     Trust?    @relation(fields: [trustId], references: [trustId])
+  trustId                   String?
+  createAt                  DateTime? @default(now())
+  updateAt                  DateTime? @default(now())
 
   @@map("economicimpact")
 }

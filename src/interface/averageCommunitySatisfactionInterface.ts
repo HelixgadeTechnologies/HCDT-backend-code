@@ -35,6 +35,8 @@ export interface IAverageCommunitySatisfactionView {
     conflictMinimizationStatus?: string | null;
     settlorActionStatus?: number | null,
     nuprcActionStatus?: number | null,
+    trustTransparencyAndAccountabilityStatus?:string|null,
+    fairInvolvementStatus?:string|null,
 
     projectHandover?: number | null;
     maintenanceConsult?: number | null;
