@@ -1,12 +1,11 @@
-import { Prisma, PrismaClient, Role, Settlor, User } from "@prisma/client";
+import { Prisma, Role, Settlor, User } from "@prisma/client";
+import prisma from "../lib/prisma";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import { IDraSignUp, ILogin, ILoginUpdate, IRegisterAnyUser, ISettlorSignUp, ISignUpAdmin, ISignUpNUPRC, IUserClient, IUserView } from "../interface/authInterface"
 import { JWT_SECRET } from "../secrets";
 import { sendAdminRegistrationEmail } from "../utils/mail";
 import { deleteFile, getFileName, uploadFile } from "../utils/upload";
-
-const prisma = new PrismaClient();
 
 const SECRET = "hcdtSecretKey";
 
@@ -170,10 +169,11 @@ export const getBoTByTrust = async (trustId:string):Promise<Array<IUserClient>> 
   return bots;
 }
 
-export const getSettlorAssignToTrust = async (trustId:string):Promise<ISettlorSignUp> =>{
+export const getSettlorAssignToTrust = async (trustId:string):Promise<ISettlorSignUp | null> =>{
   const trust = await prisma.trust.findUnique({ where: { trustId: trustId } });
-  const settlor = await prisma.settlor.findUnique({ where: { settlorName: trust?.settlor as string } });
-  return settlor as ISettlorSignUp;
+  if (!trust?.settlor) return null;
+  const settlor = await prisma.settlor.findUnique({ where: { settlorName: trust.settlor } });
+  return settlor as ISettlorSignUp | null;
 }
 
 export const getDRAByTrust = async (trustId:string):Promise<Array<IUserClient>> =>{

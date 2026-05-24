@@ -2,9 +2,8 @@ import { Request, Response } from "express";
 import { errorResponse, successResponse, notFoundResponse } from "../utils/responseHandler";
 import { addTrustEstablishmentStatus, bulkSaveTrusts, createOrUpdateTrust, getAllTrust, getEstablishmentDashboardData, getFundsSupplyDashboardData, getFundsSupplyStatusDashboardData, getTrust, getTrustEstablishment, removeCACFile, removeMatrixFile, removeTrust, setSurveyAccess, validateTrustFile } from "../service/trustService";
 import { ITrustView } from "../interface/trustInterface";
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
 
-const prisma = new PrismaClient();
 export const createTrust = async (req: Request, res: Response) => {
     try {
         const { isCreate, data } = req.body;

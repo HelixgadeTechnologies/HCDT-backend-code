@@ -1,13 +1,12 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import prisma from "../lib/prisma";
 import { IFundsReceived, IOperationalExpenditureInsert, ITrust, ITrustEstablishmentStatus, ITrustView } from "../interface/trustInterface";
 import fs from "fs";
 import path from "path";
 import * as XLSX from "xlsx";
 import { sendReportLinkEmail } from "../utils/mail";
-import { getEmailsFromSettlorNUPRCAndBoT } from "./conflictService";
+import { getEmailFromDra, getEmailsFromSettlorNUPRCAndBoT } from "./conflictService";
 
-
-const prisma = new PrismaClient();
 
 export const createOrUpdateTrust = async (data: ITrust, isCreate: boolean) => {
 
@@ -193,15 +192,22 @@ export const getTrustEstablishment = async (trustId: string): Promise<ITrustEsta
 };
 
 export const setSurveyAccess = async (trustId: string, accessName: string, url: string): Promise<void> => {
+    try {
+        
+    
+    // console.log("trustId", trustId)
+    // console.log("accessName", accessName)
+    // console.log("url", url)
     const trust = await prisma.trust.findUnique({
         where: { trustId: trustId }
     });
-    // console.log(url)
-    const emails = await getEmailsFromSettlorNUPRCAndBoT(trustId);
+    console.log("trust", trust)
+    const emails = await getEmailFromDra(trustId);
+    console.log("emails", emails)
     if (trust) {
         if (accessName === "CONFLICT") {
             if (trust.disableConflictSurvey == false) {
-                await sendReportLinkEmail(emails, "Conflict", url);
+                // await sendReportLinkEmail(emails, "Conflict", url);
                 // If the survey is already disabled, we do not send an email
             }
 
@@ -213,7 +219,7 @@ export const setSurveyAccess = async (trustId: string, accessName: string, url: 
             });
         } else if (accessName === "SATISFACTION") {
             if (trust.disableConflictSurvey == false) {
-                await sendReportLinkEmail(emails, "Average Community Satisfaction", url);
+                // await sendReportLinkEmail(emails, "Average Community Satisfaction", url);
                 // If the survey is already disabled, we do not send an email
             }
 
@@ -225,7 +231,7 @@ export const setSurveyAccess = async (trustId: string, accessName: string, url: 
             });
         } else if (accessName === "ECONOMIC") {
             if (trust.disableConflictSurvey == false) {
-                await sendReportLinkEmail(emails, "Economic Impact", url);
+                // await sendReportLinkEmail(emails, "Economic Impact", url);
                 // If the survey is already disabled, we do not send an email
             }
 
@@ -238,6 +244,10 @@ export const setSurveyAccess = async (trustId: string, accessName: string, url: 
             });
         }
     }
+}catch(error){
+    console.log(error)
+    throw new Error("Failed to set survey access")
+}
 }
 export const removeCACFile = async (establishmentId: string): Promise<void> => {
     // Update cscDocument

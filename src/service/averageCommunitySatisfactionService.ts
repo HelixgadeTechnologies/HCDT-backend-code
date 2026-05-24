@@ -1,10 +1,9 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import { Prisma } from "@prisma/client";
+import prisma from "../lib/prisma";
 import * as XLSX from "xlsx";
 import { IAcsOptionOne, IAcsOptionTwo, IAverageCommunitySatisfaction, IAverageCommunitySatisfactionView } from "../interface/averageCommunitySatisfactionInterface";
 import { sendGeneralSurveyReportEmail } from "../utils/mail";
 import { getEmailsFronDraAndNUPRC } from "./conflictService";
-
-const prisma = new PrismaClient();
 
 export const upsertAverageCommunitySatisfaction = async (
     data: IAverageCommunitySatisfaction,
@@ -159,8 +158,6 @@ export async function getCommunitySatisfactionDashboard(trustId: string, selecte
         const result = await callProcedure(trustId, index + 1, selectedYear, selectedState, settlor);
         finalResult[keys[index]] = result;
     }
-
-
     return finalResult;
 }
 
@@ -217,7 +214,7 @@ export async function validateSatisfactionFile(base64String: string): Promise<an
                         errors.push({ rowNumber, field, message: `Field "${field}" must be a number`, value: val });
                     } else {
                         // Check ranges based on satisfaction form pattern
-                        const isOptionOneField = ['infoProjects', 'communityConsult', 'localParticipation', 'reportMechanism', 'conflictMinimization', 'settlorAction', 'nuprcAction'].includes(field);
+                        const isOptionOneField = ['infoProjects', 'communityConsult', 'localParticipation', 'reportMechanism', 'conflictMinimization', 'settlorAction', 'nuprcAction', 'trustTransparencyAndAccountability', 'fairInvolvement'].includes(field);
                         const maxVal = isOptionOneField ? 5 : 4;
                         if (num < 1 || num > maxVal) {
                             errors.push({ rowNumber, field, message: `Field "${field}" must be between 1 and ${maxVal}`, value: num });

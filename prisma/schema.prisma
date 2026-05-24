@@ -332,7 +332,7 @@ model EconomicImpact {
   businessGrowth            Int?
   incomeIncrease            Int?
   livelihoodImprove         Int?
-  accessAmenities           Int?
+  accessAmenities           String?
   communityPeaceAndSecurity Int?
   trust                     Trust?    @relation(fields: [trustId], references: [trustId])
   trustId                   String?

@@ -1,10 +1,8 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
 import * as XLSX from "xlsx";
 import { IEconomicImpact, IEconomicImpactView, IImpactOptionOne, IImpactOptionTwo } from "../interface/economicImpactInterface";
 import { getEmailsFronDraAndNUPRC } from "./conflictService";
 import { sendConflictReportEmail, sendGeneralSurveyReportEmail } from "../utils/mail";
-
-const prisma = new PrismaClient();
 
 export const upsertEconomicImpact = async (data: IEconomicImpact, isCreate: boolean): Promise<IEconomicImpact> => {
 
@@ -83,7 +81,7 @@ async function callProcedure(trustId: string, option: number, selectedYear:numbe
 
     const cleaned = normalizeBigInts(raw);
     
-    if (option < 4) {
+    if (option < 5) {
         return cleaned.map((row: any) => ({
             ["QUESTION"]: row.f0,
             ["RESPONSE"]:{
@@ -98,13 +96,14 @@ async function callProcedure(trustId: string, option: number, selectedYear:numbe
         return cleaned.map((row: any) => ({
             ["QUESTION"]: row.f0,
             ["RESPONSE"]:{
-                ["HEALTHCARE"]: row.f1,
-                ["EDUCATION"]: row.f2,
-                ["PORTABLE WATER"]: row.f3,
-                ["ELECTRICITY"]: row.f4,
-                ["GOOD ROADS"]: row.f5,
-                ["MARKET"]: row.f6,
-                ["FAVORABLE BUSINESS ENVIRONMENT"]: row.f7,
+                ["NONE"]: row.f1,
+                ["HEALTHCARE"]: row.f2,
+                ["EDUCATION"]: row.f3,
+                ["PORTABLE WATER"]: row.f4,
+                ["ELECTRICITY"]: row.f5,
+                ["GOOD ROADS"]: row.f6,
+                ["MARKET"]: row.f7,
+                ["FAVORABLE BUSINESS ENVIRONMENT"]: row.f8,
             },
             ["VALUE TYPE"]:"tOTAL",
         }));
@@ -182,7 +181,7 @@ export async function validateEconomicImpactFile(base64String: string): Promise<
                         errors.push({ rowNumber, field, message: `Field "${field}" must be a number`, value: val });
                     } else {
                         // Check ranges
-                        const maxVal = field === 'accessAmenities' ? 7 : 3;
+                        const maxVal = field === 'accessAmenities' ? 8 : 3;
                         if (num < 1 || num > maxVal) {
                             errors.push({ rowNumber, field, message: `Field "${field}" must be between 1 and ${maxVal}`, value: num });
                         }

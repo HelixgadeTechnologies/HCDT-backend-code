@@ -1,7 +1,6 @@
-import { Prisma, PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
 import { IProject, IProjectCategory, IProjectClient, IProjectView, IQualityRating, IStatusReport, ITypeOfWork } from "../interface/projectInterface";
 import { bufferToHex, hexToBuffer } from "../utils/hexBufaBufaHex";
-const prisma = new PrismaClient();
 
 
 export const createOrUpdateProject = async (projectData: IProject, isCreate: boolean) => {

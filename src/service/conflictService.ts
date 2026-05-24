@@ -1,11 +1,18 @@
-import { PrismaClient } from "@prisma/client";
+import prisma from "../lib/prisma";
 import { ICauseOfConflict, IConflict, IConflictStatus, IConflictView, ICourtLitigationStatus, IIssuesAddressBy, IPartiesInvolve } from "../interface/conflictInterface";
 import { sendConflictReportEmail } from "../utils/mail";
 import { getAllAdminByTrustId, getAllDRAByTrustId, getAllNUPRC, getBoTByTrust, getSettlorAssignToTrust } from "./authService";
 
 
-const prisma = new PrismaClient();
+export const getEmailFromDra = async (trustId: string): Promise<string[]> => {
+    const dra = await getAllDRAByTrustId(trustId);
+    const emails = dra
+        .map(user => user.email)
+        .filter(email => typeof email === 'string' && email.trim() !== '');
 
+    // Remove duplicates
+    return [...new Set(emails)] as string[];
+}
 export const getEmailsFronDraAndNUPRC = async (trustId: string): Promise<string[]> => {
     const dra = await getAllDRAByTrustId(trustId);
     const nuprc = await getAllNUPRC();
@@ -27,7 +34,7 @@ export const getEmailsFromSettlorNUPRCAndBoT = async (trustId: string): Promise<
         .filter(email => typeof email === 'string' && email.trim() !== '');
 
     // Remove duplicates
-    return [...new Set(emails), settlor.contactEmail] as string[];
+    return [...new Set(emails), settlor?.contactEmail] as string[];
 };
 
 export const createOrUpdateConflict = async (conflictData: IConflict, isCreate: boolean, userId: string) => {

@@ -1,6 +1,4 @@
-import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
+import prisma from "../lib/prisma";
 
 function normalizeBigInts<T>(data: T): T {
     if (Array.isArray(data)) {
